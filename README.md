@@ -1,5 +1,11 @@
 # BIM.AI
 
+<img src="docs/images/pipeline.png" width="600">
+
+AI-Based Pipeline for Regional Building Inventory Procurement
+
+# 
+
 ###### Tested with Python 3.6.6 
 
 ### 1. Data preparation 
