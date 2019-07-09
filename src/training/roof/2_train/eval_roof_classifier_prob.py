@@ -9,7 +9,7 @@ tf.app.flags.DEFINE_string('dataset_name', '/tmp/tfmodel/','Directory where mode
 tf.app.flags.DEFINE_string('dataset_split_name', '/tmp/tfmodel/','Directory where models reside.')
 tf.app.flags.DEFINE_string('dataset_dir', '/tmp/tfmodel/','Directory where models reside.')
 
-tf.app.flags.DEFINE_integer('num_classes', 2, 'The number of classes.')
+tf.app.flags.DEFINE_integer('num_classes', 3, 'The number of classes.')
 tf.app.flags.DEFINE_string('infile','/work/05735/c_w/maverick2/roof/incep-2000blgd-120k/tmp/dataset/roof/roof_validation_00000-of-00002.tfrecord', 'Image file, one image per line.')
 tf.app.flags.DEFINE_boolean('tfrecord',True, 'Input file is formatted as TFRecord.')
 tf.app.flags.DEFINE_string('outfile','./pred_split0.txt', 'Output file for prediction probabilities.')
@@ -45,6 +45,7 @@ if FLAGS.tfrecord:
   fls = tf.python_io.tf_record_iterator(path=FLAGS.infile)
 else:
   fls = [s.strip() for s in open(FLAGS.infile)]
+
 
 
 model_variables = model_name_to_variables.get(FLAGS.model_name)
@@ -116,6 +117,7 @@ for fl in fls:
       # pdb.set_trace()
       # image_name = 'TFRecord'
       image_name = example.features.feature['filename'].bytes_list.value[0]
+      print("image_name is: ", image_name)
 
     probs = sess.run(probabilities, feed_dict={image_string:x})
     #np_image, network_input, probs = sess.run([image, processed_image, probabilities], feed_dict={image_string:x})

@@ -21,7 +21,7 @@ tmpDir=${baseDir}/tmp
 SLIM_DIR=${tmpDir}/models/research/slim
 
 cd ${workDir}
-cp eval_roof_classifier_prob.py ${SLIM_DIR}/.
+cp eval_image_classifier_demo.py ${SLIM_DIR}/.
 #cp roof.py ${SLIM_DIR}/datasets/.
 #cp dataset_factory.py ${SLIM_DIR}/datasets/.
 #unzip dataset.zip
@@ -45,7 +45,7 @@ SET=validation
 # Run evaluation.
 
 echo "Extracting ${SET} Features..."
-python eval_roof_classifier_prob.py \
+python eval_image_classifier_demo.py \
   --slim_dir=${SLIM_DIR} \
   --checkpoint_path=${TRAIN_DIR} \
   --eval_dir=${TRAIN_DIR} \

@@ -138,6 +138,8 @@ def main(_):
         batch_size=FLAGS.batch_size,
         num_threads=FLAGS.num_preprocessing_threads,
         capacity=5 * FLAGS.batch_size)
+    
+    
 
     ####################
     # Define the model #
@@ -162,9 +164,23 @@ def main(_):
     # Define the metrics:
     names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
         'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
-        'Recall_5': slim.metrics.streaming_recall_at_k(
-            logits, labels, 5),
+        'Recall_5': slim.metrics.streaming_recall_at_k(logits, labels, 5),
     })
+
+
+    from skimage import io
+    import numpy as np
+    tf_train_dataset = tf.placeholder(tf.float32, shape=(None, 256 * 256),name="train_to_restore")
+    img = io.imread('newimage.png', as_grey=True)
+    nx, ny = img.shape
+    img_flat = img.reshape(nx * ny)
+    IMG = np.reshape(img,(1,256*256))
+    answer = session.run(predictions, feed_dict={tf_train_dataset: IMG})
+    print(answer)
+    exit()
+
+
+
 
     # Print the summaries to screen.
     for name, value in names_to_values.items():
@@ -172,6 +188,8 @@ def main(_):
       op = tf.summary.scalar(summary_name, value, collections=[])
       op = tf.Print(op, [value], summary_name)
       tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
+
+
 
     # TODO(sguada) use num_epochs=1
     if FLAGS.max_num_batches:
