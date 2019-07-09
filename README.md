@@ -1,6 +1,7 @@
 # BIM.AI
 
-<img src="docs/images/pipeline.png" width="600">
+<img src="docs/images/pipeline.png" width="800">
+
 
 AI-Based Pipeline for Regional Building Inventory Procurement
 
@@ -47,7 +48,7 @@ Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building i
 cd src/training/yearBuilt
 python yearBuiltNNSpatial.py
 ```
-<img src="docs/images/yearBuilt-prediction-error.png" width="600">
+<img src="docs/images/yearBuilt-prediction-error.png" width="700">
 
 
 
@@ -55,6 +56,6 @@ python yearBuiltNNSpatial.py
 ### 5. BIM data release
 SimCenter will post obtained data here.
 ###### Data 1. Atlantic coastal cities, NJ (coming soon)
-<img src="docs/images/AtlanticCities.png" height="150">
-<img src="docs/images/BIM-demo.png" height="150">
+<img src="docs/images/AtlanticCities.png" width="700">
+<img src="docs/images/BIM-demo.png" width="700">
 
