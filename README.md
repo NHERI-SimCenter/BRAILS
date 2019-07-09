@@ -11,13 +11,8 @@ AI-Based Pipeline for Regional Building Inventory Procurement
 
 ### 1. Data preparation 
 
-Prepare a list of building addresses.
 
-Prepare basic building information dataset based on tax information.
-
-Download computer generated building footprints -> [USBuildingFootprints](https://github.com/microsoft/USBuildingFootprints)
-
-
+[Prepare data](src/preparedata/README.md)
 
 
 ### 2. Train
