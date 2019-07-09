@@ -41,5 +41,5 @@ python yearBuiltNNSpatial.py
 
 ##### 4. BIM data release
 SimCenter will post obtained data here.
-###### Data 1. Atlantic costal cities, NJ (coming soon)
+###### Data 1. Atlantic coastal cities, NJ (coming soon)
 ![image](docs/images/AtlanticCities.png)
