@@ -50,7 +50,9 @@ Then run the following command from src/preparedata
 ```
 python geocoding_addr.py
 ```
+
 This will create a BIM file Atlantic_Cities_BIM.geojson containing basic building information within the interested region.
+The generated BIM file can be visulized in a GIS software, such as QGIS.
 ```
 {
 	"type": "FeatureCollection",

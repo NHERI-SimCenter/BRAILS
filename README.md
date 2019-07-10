@@ -7,7 +7,7 @@ AI-Based Pipeline for Regional Building Inventory Procurement
 
 # 
 
-###### Tested with Python 3.6.6 
+###### Tested with Tensorflow in Python 3.6.6 
 
 ### 1. Data preparation 
 
@@ -25,7 +25,11 @@ sh finetune_inception_v3_on_roof_train.sh
 # test
 sh finetune_inception_v3_on_roof_eval.sh
 ```
-
+ Before your run the test *"sh finetune_inception_v3_on_roof_eval.sh"*, make sure you set the following variables correctly in *"finetune_inception_v3_on_roof_eval.sh"*:
+ ```
+ checkpoint_file = the-path-of-your-checkpoint-file
+ TEST_DIR = the-path-of-your-testing-images-dir
+ ```
 
 
 ### 3. Predict

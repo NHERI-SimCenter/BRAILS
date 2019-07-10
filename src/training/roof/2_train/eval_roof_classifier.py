@@ -1,218 +1,162 @@
-"""
-/*-------------------------------------------------------------------------*
-| Generic evaluation script that evaluates a model using a given dataset.  |
-| Modified from eval_image_classifier.py in slim repo.                     |
-|                                                                          |
-| Author: Charles Wang,  UC Berkeley c_w@berkeley.edu                      |
-|                                                                          |
-| Date:    05/02/2019                                                      |
-*-------------------------------------------------------------------------*/
-"""
+#!/usr/bin/env python
+# Version 1: accepts a file/folder/tf_record file where stores test images, i.e., FLAGS.infile
+# Author: Qian Yu
+# Date: 05/13/2019
 
-
-from __future__ import absolute_import
-from __future__ import division
 from __future__ import print_function
-
-import math
-import tensorflow as tf
 import sys
+# sys.path.append('../../tensorflow/models/slim/') # add slim to PYTHONPATH
+import tensorflow as tf
 
-
-
-slim = tf.contrib.slim
-
-tf.app.flags.DEFINE_string(
-    'slim_dir', '/tmp/tfmodel/',
-    'Directory where models reside.')
-    
-tf.app.flags.DEFINE_integer(
-    'batch_size', 100, 'The number of samples in each batch.')
-
-tf.app.flags.DEFINE_integer(
-    'max_num_batches', None,
-    'Max number of batches to evaluate by default use all.')
-
-tf.app.flags.DEFINE_string(
-    'master', '', 'The address of the TensorFlow master to use.')
-
-tf.app.flags.DEFINE_string(
-    'checkpoint_path', '/tmp/tfmodel/',
-    'The directory where the model was written to or an absolute path to a '
-    'checkpoint file.')
-
-tf.app.flags.DEFINE_string(
-    'eval_dir', '/tmp/tfmodel/', 'Directory where the results are saved to.')
-
-tf.app.flags.DEFINE_integer(
-    'num_preprocessing_threads', 4,
-    'The number of threads used to create the batches.')
-
-tf.app.flags.DEFINE_string(
-    'dataset_name', 'imagenet', 'The name of the dataset to load.')
-
-tf.app.flags.DEFINE_string(
-    'dataset_split_name', 'test', 'The name of the train/test split.')
-
-tf.app.flags.DEFINE_string(
-    'dataset_dir', None, 'The directory where the dataset files are stored.')
-
-tf.app.flags.DEFINE_integer(
-    'labels_offset', 0,
-    'An offset for the labels in the dataset. This flag is primarily used to '
-    'evaluate the VGG and ResNet architectures which do not use a background '
-    'class for the ImageNet dataset.')
-
-tf.app.flags.DEFINE_string(
-    'model_name', 'inception_v3', 'The name of the architecture to evaluate.')
-
-tf.app.flags.DEFINE_string(
-    'preprocessing_name', None, 'The name of the preprocessing to use. If left '
-    'as `None`, then the model_name flag is used.')
-
-tf.app.flags.DEFINE_float(
-    'moving_average_decay', None,
-    'The decay to use for the moving average.'
-    'If left as None, then moving averages are not used.')
-
-tf.app.flags.DEFINE_integer(
-    'eval_image_size', None, 'Eval image size')
-
-tf.app.flags.DEFINE_bool(
-    'quantize', False, 'whether to use quantized graph or not.')
-
+tf.app.flags.DEFINE_string('slim_dir', '/tmp/tfmodel/','Directory where models reside.')
+tf.app.flags.DEFINE_string('eval_dir', '/tmp/tfmodel/','Directory where trained nn reside.')
+tf.app.flags.DEFINE_string('dataset_name', '/tmp/tfmodel/','')
+tf.app.flags.DEFINE_string('dataset_split_name', '/tmp/tfmodel/','')
+tf.app.flags.DEFINE_string('dataset_dir', '/tmp/tfmodel/','')
+tf.app.flags.DEFINE_integer('num_classes', 3, 'The number of classes.')
+tf.app.flags.DEFINE_string('infile','/Users/simcenter/Codes/SimCenter/BIM.AI/data/images/raw/roof/roof_photos/new/gabled/', 'Image file, one image per line.')
+tf.app.flags.DEFINE_boolean('tfrecord',False, 'Input file is formatted as TFRecord.')
+tf.app.flags.DEFINE_string('outfile','./pred_demo.txt', 'Output file for prediction probabilities.')
+tf.app.flags.DEFINE_string('model_name', 'inception_v3', 'The name of the architecture to evaluate.')
+tf.app.flags.DEFINE_string('preprocessing_name', None, 'The name of the preprocessing to use. If left as `None`, then the model_name flag is used.')
+tf.app.flags.DEFINE_string('checkpoint_path', '/Users/simcenter/Codes/SimCenter/BIM.AI/src/training/roof/tmp/roof-traindir/all/model.ckpt-119999','The directory where the model was written to or an absolute path to a checkpoint file.')
+tf.app.flags.DEFINE_integer('eval_image_size', None, 'Eval image size.')
 FLAGS = tf.app.flags.FLAGS
 
 sys.path.append(FLAGS.slim_dir)
-from datasets import dataset_factory
+import numpy as np
+import re
+import os
+from os import listdir
+from os.path import isfile, join
+
+from datasets import imagenet
+from nets import inception
+from nets import resnet_v1
+from nets import inception_utils
+from nets import resnet_utils
+from preprocessing import inception_preprocessing
 from nets import nets_factory
 from preprocessing import preprocessing_factory
 
-def main(_):
-  if not FLAGS.dataset_dir:
-    raise ValueError('You must supply the dataset directory with --dataset_dir')
+slim = tf.contrib.slim
 
-  tf.logging.set_verbosity(tf.logging.INFO)
-  with tf.Graph().as_default():
-    tf_global_step = slim.get_or_create_global_step()
+model_name_to_variables = {'inception_v3':'InceptionV3','inception_v4':'InceptionV4','resnet_v1_50':'resnet_v1_50','resnet_v1_152':'resnet_v1_152'}
+categories = ['flat', 'gabled', 'hipped'] # change to roof categories
 
-    ######################
-    # Select the dataset #
-    ######################
-    dataset = dataset_factory.get_dataset(
-        FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
+preprocessing_name = FLAGS.preprocessing_name or FLAGS.model_name
+eval_image_size = FLAGS.eval_image_size
 
-    ####################
-    # Select the model #
-    ####################
-    network_fn = nets_factory.get_network_fn(
-        FLAGS.model_name,
-        num_classes=(dataset.num_classes - FLAGS.labels_offset),
-        is_training=False)
+#
 
-    ##############################################################
-    # Create a dataset provider that loads data from the dataset #
-    ##############################################################
-    provider = slim.dataset_data_provider.DatasetDataProvider(
-        dataset,
-        shuffle=False,
-        common_queue_capacity=2 * FLAGS.batch_size,
-        common_queue_min=FLAGS.batch_size)
-    [image, label] = provider.get(['image', 'label'])
-    label -= FLAGS.labels_offset
+if FLAGS.tfrecord:
+  fls = tf.python_io.tf_record_iterator(path=FLAGS.infile)
+else:
+  if os.path.isdir(FLAGS.infile):
+      # print("\nIt is a directory")
+      fls = [f for f in listdir(FLAGS.infile) if isfile(join(FLAGS.infile, f))]
+  elif os.path.isfile(FLAGS.infile):
+      # print("\nIt is a normal file")
+      fls = [FLAGS.infile]
+  else:
+      print("test dir is not defined correctly. quit.")
+      exit()
 
-    #####################################
-    # Select the preprocessing function #
-    #####################################
-    preprocessing_name = FLAGS.preprocessing_name or FLAGS.model_name
-    image_preprocessing_fn = preprocessing_factory.get_preprocessing(
-        preprocessing_name,
-        is_training=False)
+model_variables = model_name_to_variables.get(FLAGS.model_name)
+if model_variables is None:
+  tf.logging.error("Unknown model_name provided `%s`." % FLAGS.model_name)
+  sys.exit(-1)
 
-    eval_image_size = FLAGS.eval_image_size or network_fn.default_image_size
+if FLAGS.tfrecord:
+  tf.logging.warn('Image name is not available in TFRecord file.')
 
-    image = image_preprocessing_fn(image, eval_image_size, eval_image_size)
+if tf.gfile.IsDirectory(FLAGS.checkpoint_path):
+  checkpoint_path = tf.train.latest_checkpoint(FLAGS.checkpoint_path)
+else:
+  checkpoint_path = FLAGS.checkpoint_path
 
-    images, labels = tf.train.batch(
-        [image, label],
-        batch_size=FLAGS.batch_size,
-        num_threads=FLAGS.num_preprocessing_threads,
-        capacity=5 * FLAGS.batch_size)
-    
-    
 
-    ####################
-    # Define the model #
-    ####################
-    logits, _ = network_fn(images)
+image_string = tf.placeholder(tf.string) # Entry to the computational graph, e.g. image_string = tf.gfile.FastGFile(image_file).read()
 
-    if FLAGS.quantize:
-      tf.contrib.quantize.create_eval_graph()
+#image = tf.image.decode_image(image_string, channels=3)
+image = tf.image.decode_jpeg(image_string, channels=3, try_recover_truncated=True, acceptable_fraction=0.3) ## To process corrupted image files
 
-    if FLAGS.moving_average_decay:
-      variable_averages = tf.train.ExponentialMovingAverage(
-          FLAGS.moving_average_decay, tf_global_step)
-      variables_to_restore = variable_averages.variables_to_restore(
-          slim.get_model_variables())
-      variables_to_restore[tf_global_step.op.name] = tf_global_step
+image_preprocessing_fn = preprocessing_factory.get_preprocessing(preprocessing_name, is_training=False)
+
+network_fn = nets_factory.get_network_fn(FLAGS.model_name, FLAGS.num_classes, is_training=False)
+
+if FLAGS.eval_image_size is None:
+  eval_image_size = network_fn.default_image_size
+
+processed_image = image_preprocessing_fn(image, eval_image_size, eval_image_size)
+
+processed_images  = tf.expand_dims(processed_image, 0) # Or tf.reshape(processed_image, (1, eval_image_size, eval_image_size, 3))
+
+logits, _ = network_fn(processed_images)
+
+probabilities = tf.nn.softmax(logits)
+
+init_fn = slim.assign_from_checkpoint_fn(checkpoint_path, slim.get_model_variables(model_variables))
+
+sess = tf.Session()
+init_fn(sess)
+
+fout = sys.stdout
+if FLAGS.outfile is not None:
+  fout = open(FLAGS.outfile, 'w')
+h = ['image']
+h.extend(['class%s' % i for i in range(FLAGS.num_classes)])
+h.append('predicted_class')
+print('\t'.join(h), file=fout)
+print('--------------------------------------------------')
+
+
+for fl in fls:
+  image_name = None
+
+  try:
+    if FLAGS.tfrecord is False:
+      if os.path.isdir(FLAGS.infile):
+        filename = FLAGS.infile + '/' + fl
+      else:
+        filename = fl
+      x = tf.gfile.FastGFile(filename, 'rb').read() # You can also use x = open(fl).read()
+      image_name = os.path.basename(filename)
+      print('Testing image "{}"\n'.format(image_name))
+
     else:
-      variables_to_restore = slim.get_variables_to_restore()
+      example = tf.train.Example()
+      example.ParseFromString(fl)
 
-    predictions = tf.argmax(logits, 1)
-    labels = tf.squeeze(labels)
+      # Note: The key of example.features.feature depends on how you generate n
+      # n
+      # ntfrecord.
+      x = example.features.feature['image/encoded'].bytes_list.value[0] # retrieve image string
+      # import pdb
+      # pdb.set_trace()
+      # image_name = 'TFRecord'
+      image_name = example.features.feature['filename'].bytes_list.value[0]
 
-    # Define the metrics:
-    names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
-        'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
-        'Recall_5': slim.metrics.streaming_recall_at_k(logits, labels, 5),
-    })
+    probs = sess.run(probabilities, feed_dict={image_string:x})
+    #np_image, network_input, probs = sess.run([image, processed_image, probabilities], feed_dict={image_string:x})
 
+  except Exception as e:
+    tf.logging.warn('Cannot process image file %s' % fl)
+    continue
 
-    from skimage import io
-    import numpy as np
-    tf_train_dataset = tf.placeholder(tf.float32, shape=(None, 256 * 256),name="train_to_restore")
-    img = io.imread('newimage.png', as_grey=True)
-    nx, ny = img.shape
-    img_flat = img.reshape(nx * ny)
-    IMG = np.reshape(img,(1,256*256))
-    answer = session.run(predictions, feed_dict={tf_train_dataset: IMG})
-    print(answer)
-    exit()
+  # import pdb
+  # pdb.set_trace()
+  probs = probs[0, 0:]
+  a = [image_name]
+  a.extend(probs)
+  ind = np.argmax(probs)
+  a.append(ind)
+  print('\t'.join([str(e) for e in a]), file=fout)
+  # class_id need to be consistent with definitions when creating tf_records
+  # modify based on what you want to display.
+  print('Predictions: {}  {} {}\n'.format(probs[0], probs[1], probs[2]))
+  print('The building belongs to class {} -- {}'.format(categories[ind], probs[ind]))
+  print('--------------------------------------------------')
 
-
-
-
-    # Print the summaries to screen.
-    for name, value in names_to_values.items():
-      summary_name = 'eval/%s' % name
-      op = tf.summary.scalar(summary_name, value, collections=[])
-      op = tf.Print(op, [value], summary_name)
-      tf.add_to_collection(tf.GraphKeys.SUMMARIES, op)
-
-
-
-    # TODO(sguada) use num_epochs=1
-    if FLAGS.max_num_batches:
-      num_batches = FLAGS.max_num_batches
-    else:
-      # This ensures that we make a single pass over all of the data.
-      num_batches = math.ceil(dataset.num_samples / float(FLAGS.batch_size))
-
-    if tf.gfile.IsDirectory(FLAGS.checkpoint_path):
-      checkpoint_path = tf.train.latest_checkpoint(FLAGS.checkpoint_path)
-    else:
-      checkpoint_path = FLAGS.checkpoint_path
-
-    tf.logging.info('Evaluating %s' % checkpoint_path)
-
-    slim.evaluation.evaluate_once(
-        master=FLAGS.master,
-        checkpoint_path=checkpoint_path,
-        logdir=FLAGS.eval_dir,
-        num_evals=num_batches,
-        eval_op=list(names_to_updates.values()),
-        variables_to_restore=variables_to_restore)
-
-
-if __name__ == '__main__':
-  tf.app.run()
+sess.close()
+fout.close()
