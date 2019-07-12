@@ -1,7 +1,15 @@
-#!/usr/bin/env python
-# Version 1: accepts a file/folder/tf_record file where stores test images, i.e., FLAGS.infile
-# Author: Qian Yu
-# Date: 05/13/2019
+"""
+/*-------------------------------------------------------------------------*
+| Generic evaluation script that evaluates a model using a given dataset.  |
+| Modified from eval_image_classifier.py in slim repo.                     |
+|                                                                          |
+| Author: Chaofeng Wang,  UC Berkeley c_w@berkeley.edu                      |
+|                                                                          |
+| Date:    05/02/2019                                                      |
+*-------------------------------------------------------------------------*/
+"""
+
+
 
 from __future__ import print_function
 import sys

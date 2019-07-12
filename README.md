@@ -17,10 +17,10 @@ AI-Based Pipeline for Regional Building Inventory Procurement
 
 ### 2. Train
 
-###### Roof
+##### Roof
 ```
 cd src/training/roof/2_train
-# train
+# train (better to run on a GPU machine)
 sh finetune_inception_v3_on_roof_train.sh
 # test
 sh finetune_inception_v3_on_roof_eval.sh
@@ -42,7 +42,7 @@ Use trained NN to predict building properties.
 ### 4. Enhance
 
 Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building information:
-###### Year built
+##### Year built
 ```
 cd src/training/yearBuilt
 python yearBuiltNNSpatial.py
@@ -54,7 +54,7 @@ python yearBuiltNNSpatial.py
 
 ### 5. BIM data release
 SimCenter will post obtained data here.
-###### Data 1. Atlantic coastal cities, NJ (coming soon)
+##### Data 1. Atlantic coastal cities, NJ (coming soon)
 <img src="docs/images/AtlanticCities.png" width="700">
 <img src="docs/images/BIM-demo.png" width="700">
 

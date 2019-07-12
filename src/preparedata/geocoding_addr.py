@@ -1,3 +1,13 @@
+"""
+/*------------------------------------------------------*
+|  This script creates a basic BIM file .               |
+|                                                       |
+| Author: Chaofeng Wang,  UC Berkeley c_w@berkeley.edu  |
+|                                                       |
+| Date:    06/02/2019                                   |
+*------------------------------------------------------*/
+"""
+
 import csv
 import re
 import os

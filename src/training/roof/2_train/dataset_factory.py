@@ -4,7 +4,7 @@
 | image/label pairs.                                    |
 | Modified from dataset_factory.py in slim repo.        |
 |                                                       |
-| Author: Charles Wang,  UC Berkeley c_w@berkeley.edu   |
+| Author: Chaofeng Wang,  UC Berkeley c_w@berkeley.edu  |
 |                                                       |
 | Date:    05/02/2019                                   |
 *------------------------------------------------------*/

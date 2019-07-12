@@ -3,7 +3,7 @@
 | Generic training script that trains a model using a given dataset.       |
 | Modified from train_image_classifier.py in slim repo.                    |
 |                                                                          |
-| Author: Charles Wang,  UC Berkeley c_w@berkeley.edu                      |
+| Author: Chaofeng Wang,  UC Berkeley c_w@berkeley.edu                     |
 |                                                                          |
 | Date:    05/02/2019                                                      |
 *-------------------------------------------------------------------------*/

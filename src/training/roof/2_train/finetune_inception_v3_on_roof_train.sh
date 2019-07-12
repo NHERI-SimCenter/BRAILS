@@ -4,7 +4,7 @@
 | This script fine-tunes an InceptionV3 model on the roof training set.    |
 | Modified from finetune_inception_v3_on_flowers.sh in slim repo.          |
 |                                                                          |
-| Authors: Charles Wang, Qian Yu                                           |
+| Authors: Chaofeng Wang, Qian Yu                                           |
 |          UC Berkeley c_w@berkeley.edu                                    |
 |                                                                          |
 | Date:    05/02/2019                                                      |
