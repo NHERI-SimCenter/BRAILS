@@ -35,13 +35,19 @@ sh finetune_inception_v3_on_roof_eval.sh
 ### 3. Predict
 
 Use trained NN to predict building properties.
-
+##### Roof
+```
+cd src/predicting
+sh classifyRoof.sh
+```
 
 
 
 ### 4. Enhance
 
 Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building information:
+
+
 ##### Year built
 ```
 cd src/training/yearBuilt
@@ -49,12 +55,22 @@ python yearBuiltNNSpatial.py
 ```
 <img src="docs/images/yearBuilt-prediction-error.png" width="700">
 
+##### Number of stories 
 
+<img src="docs/images/stories_Predictions_classification_error.png" width="700">
+
+##### Structure type
+
+<img src="docs/images/structureType_Predictions_classification_error.png" width="700">
+
+##### Occupancy
+
+<img src="docs/images/occupancy_Predictions_classification_error.png" width="700">
 
 
 ### 5. BIM data release
 SimCenter will post obtained data here.
-##### Data 1. Atlantic coastal cities, NJ (coming soon)
+##### Data 1. Atlantic coastal cities, NJ -> [Download](https://berkeley.box.com/shared/static/5tb6gszbbyj35bgpypk1gsdem0ntt5ca.geojson)
 <img src="docs/images/AtlanticCities.png" width="700">
 <img src="docs/images/BIM-demo.png" width="700">
 

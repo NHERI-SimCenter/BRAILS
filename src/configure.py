@@ -35,3 +35,8 @@ resultBIMFileName = dataDir+"/Atlantic_Cities_BIM.geojson"
 cleanedBIMFile_w_coord_Name = dataDir+"/Atlantic_Cities_Addrs_Coords.csv"
 # where to put json files of addrs' coords
 baseDir_addrCoordJson = dataDir+"/geocoding/"
+
+roofDownloadDir = dataDir+"/roof/"
+
+# maximum number of images to be downloaded from google
+maxNumofRoofImgs = 10000 # 2.00 USD per 1000

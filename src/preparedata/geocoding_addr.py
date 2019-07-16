@@ -27,7 +27,7 @@ from configure import *
 
 
 # -----------------------------------------------------------------------------
-# 1. User need to provide therse files:                                       |
+# 1. Users need to provide these files:                                       |
 # -----------------------------------------------------------------------------
 '''
 # geojson file defining the boundary of the interested area
