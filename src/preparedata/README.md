@@ -13,8 +13,10 @@ For example, Atlantic_Cities_Addrs.csv looks like this
 ![img](../../docs/images/addressList.png)
 
 These basic information are scraped from tax websites. 
+
 For some buildings, some information may be missing from the websites, just leave them blank in csv file.
-Once Atlantic_Cities_Addrs.csv is prepared, define the path of it in src/confiugre.py like this:
+
+Once [Atlantic_Cities_Addrs.csv](https://berkeley.box.com/shared/static/hi0nzfykbadtczioj4tymrsjjgwahhbw.csv) is prepared, define the path of it in src/confiugre.py like this:
 
 ```
 cleanedBIMFileName = dataDir+"/Atlantic_Cities_Addrs.csv"
@@ -31,9 +33,13 @@ Define the path in src/configure.py like this:
 ```
 RegionBoundaryFileName = dataDir+"/AtlanticCoastalCities_Boundary.geojson"
 ```
+For this demo, we have prepared this boundary file for you, download [here](https://berkeley.box.com/shared/static/gfridzvcjo6k533554q9plh0g3v9fpzi.geojson)
 
 ### 3. Prepare building footprints in geojson format
-Download computer generated building footprints -> [USBuildingFootprints](https://github.com/microsoft/USBuildingFootprints)
+
+Computer generated building footprints database -> [USBuildingFootprints](https://github.com/microsoft/USBuildingFootprints)
+
+We have prepared a cleaned version that just contains Atlantic coastal cities, download [here](https://berkeley.box.com/shared/static/0ueibjzbo1b0mgru4h6n8l2rmww8nx0z.geojson)
 
 Define the path of this footprints file in src/configure.py like this:
 ```
@@ -45,7 +51,7 @@ Define the file path to store BIM for all buildings in src/configure.py like thi
 ```
 resultBIMFileName = dataDir+"/Atlantic_Cities_BIM.geojson"
 ```
-Then run the following command from src/preparedata
+Then run the following command from src/preparedata (This will cost $ because it calls Google API. To avoid this, download the [Atlantic geocoding file](https://berkeley.box.com/shared/static/mb8dya89hslfj1eo8rzns2v6gllq4x68.zip) and unzip it in your data/preparedata dir. The code will first look into this dir for geocoding information, if it was not there, the code will call Google API.)
 
 ```
 python geocoding_addr.py

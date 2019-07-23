@@ -58,8 +58,8 @@ floatVariables = ['lat', 'lon']
 #                                                                             |
 # -----------------------------------------------------------------------------
 
-baseurl_addr_mq_open = "http://www.mapquestapi.com/geocoding/v1/address?key="+MapquestOpenAPIKey+"&location={}" # mapquest
-baseurl_addr_mq = 'http://www.mapquestapi.com/geocoding/v1/address?key='+MapquestAPIKey+'&location={}'
+#baseurl_addr_mq_open = "http://www.mapquestapi.com/geocoding/v1/address?key="+MapquestOpenAPIKey+"&location={}" # mapquest
+#baseurl_addr_mq = 'http://www.mapquestapi.com/geocoding/v1/address?key='+MapquestAPIKey+'&location={}'
 baseurl_addr_google="https://maps.googleapis.com/maps/api/geocode/json?address={}&key="+GoogleMapAPIKey
 # which API to use
 baseurl_addr = baseurl_addr_google
