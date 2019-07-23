@@ -76,10 +76,7 @@ Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building i
 
 
 ##### Year built
-```
-cd src/training/yearBuilt
-python yearBuiltNNSpatial.py
-```
+
 <img src="docs/images/yearBuilt-prediction-error.png" width="700">
 
 ##### Number of stories 
