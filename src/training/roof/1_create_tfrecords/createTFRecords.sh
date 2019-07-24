@@ -1,0 +1,1 @@
+python create_tfrecord.py --dataset_dir=/Users/simcenter/Codes/SimCenter/BIM.AI/Data/images/raw/roof --tfrecord_filename=roof
