@@ -6,3 +6,5 @@ matplotlib
 selenium
 tensorflow
 
+seaborn
+
