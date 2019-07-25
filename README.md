@@ -101,9 +101,9 @@ SimCenter will post obtained data here.
 <img src="docs/images/BIM-demo.png" width="700">
 
 ### 6. Trained CNN  
-https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip
+
+https://berkeley.box.com/shared/static/awyyc22sjwknn9xg3p7wru4v5zwnlkjp.zip
 
 ### 7. Test dataset
 https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip
 
-https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip
