@@ -94,16 +94,14 @@ Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building i
 <img src="docs/images/occupancy_Predictions_classification_error.png" width="700">
 
 
-### 5. BIM data release
+### 5. Release of BIM data
 SimCenter will post obtained data here.
-##### Data 1. Atlantic coastal cities, NJ -> [Download](https://berkeley.box.com/shared/static/5tb6gszbbyj35bgpypk1gsdem0ntt5ca.geojson)
+##### Data 1. City-scale BIM for Atlantic coastal cities, NJ -> [Download](https://berkeley.box.com/shared/static/5tb6gszbbyj35bgpypk1gsdem0ntt5ca.geojson)
 <img src="docs/images/AtlanticCities.png" width="700">
 <img src="docs/images/BIM-demo.png" width="700">
 
-### 6. Trained CNN  
-
+### 6. Release of trained CNN  
+##### Roof type classifier
 https://berkeley.box.com/shared/static/awyyc22sjwknn9xg3p7wru4v5zwnlkjp.zip
 
-### 7. Test dataset
-https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip
 
