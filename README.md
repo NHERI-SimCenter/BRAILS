@@ -1,9 +1,9 @@
-# BIM.AI
+# BRAILS
 
-<img src="docs/images/pipeline.png" width="800">
+<img src="docs/images/pipeline-left.png" height="200"><img src="docs/images/BIM3D.gif" height="200">&nbsp;&nbsp;&nbsp;<img src="docs/Logo/Logo.png" height="200">
 
 
-AI-Based Pipeline for Regional Building Inventory Procurement
+AI-Based Pipeline for City-scale Building Information Modeling
 
 # 
 
