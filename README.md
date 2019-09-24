@@ -1,6 +1,6 @@
-# BRAILS
+# <img src="docs/Logo/Logo.png" height="80"> Building recognition using AI at large-scale.
 
-<img src="docs/images/pipeline-left.png" height="180"><img src="docs/images/BIM3D.gif" height="180">&nbsp;&nbsp;&nbsp;<img src="docs/Logo/Logo.png" height="180">
+<img src="docs/images/pipeline-left.png" height="230"><img src="docs/images/BIM3D.gif" height="230">
 
 
 AI-Based Pipeline for City-scale Building Information Modeling
