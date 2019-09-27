@@ -26,7 +26,7 @@ sh finetune_inception_v3_on_roof_train.sh
 ```
 
 The training takes a long time on laptops. 
-If you don't want to run the training process, we have a CNN trained on TACC and can be downloaded [here](https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip).
+If you don't want to run the training process, we have a CNN trained on TACC and can be downloaded [here](https://berkeley.box.com/shared/static/awyyc22sjwknn9xg3p7wru4v5zwnlkjp.zip).
 Put the downloaded file inside src/training/roof/tmp/roof-traindir/ and unzip it.
 
 ###### testing
@@ -36,6 +36,8 @@ Put the downloaded file inside src/training/roof/tmp/roof-traindir/ and unzip it
  checkpoint_file = the-path-of-your-checkpoint-file
  TEST_DIR = the-path-of-your-testing-images-dir
  ```
+ We've prepared some labeld images for you to test. These images can be downloaded [here](https://berkeley.box.com/shared/static/wfwf4ku9561lcytldy1p7vkjoobgv9sz.zip).
+
 Now you can test if the trained CNN works or not:
  ```
 cd src/training/roof/2_train
@@ -103,5 +105,19 @@ SimCenter will post obtained data here.
 ### 6. Release of trained CNN  
 Trained CNNs in the format of Tensorflow checkpoint will be posted here.
 ##### Roof type classifier ->[Download](https://berkeley.box.com/shared/static/awyyc22sjwknn9xg3p7wru4v5zwnlkjp.zip)
+
+---
+
+## How to Cite
+You can cite this software as follows:
+
+
+
+
+## Acknowledgement
+This material is based upon work supported by the National Science Foundation under Grant No. 1612843.
+
+## Contact
+Charles Wang, NHERI SimCenter, UC Berkeley, c_w@berkeley.edu
 
 
