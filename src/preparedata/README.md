@@ -39,7 +39,7 @@ For this demo, we have prepared this boundary file for you, download [here](http
 
 Computer generated building footprints database -> [USBuildingFootprints](https://github.com/microsoft/USBuildingFootprints)
 
-We have prepared a cleaned version that just contains Atlantic coastal cities, download [here](https://berkeley.box.com/shared/static/0ueibjzbo1b0mgru4h6n8l2rmww8nx0z.geojson)
+We have prepared a cleaned version that just contains Atlantic coastal cities, download [here](https://berkeley.box.com/shared/static/0ueibjzbo1b0mgru4h6n8l2rmww8nx0z.geojson).
 
 Define the path of this footprints file in src/configure.py like this:
 ```
