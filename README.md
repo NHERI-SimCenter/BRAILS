@@ -1,7 +1,6 @@
 # <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/Logo/Logo.png" alt="logo" height="80"/> Building Recognition using AI at Large-Scale.
 
-<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/pipeline-left.png" alt="BRAILS" height="230"/>
-<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/BIM3D.gif" height="230">
+<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/pipeline-left.png" alt="BRAILS" height="230"/><img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/BIM3D.gif" height="230">
 
 #
 
