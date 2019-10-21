@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/Logo/Logo.png" alt="logo" height="80"/> Building Recognition using AI at Large-Scale.
 
-<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/pipeline-left.png" alt="BRAILS" height="230"/><img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/BIM3D.gif" height="230">
+<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/brails-demo.gif" alt="BRAILS" height="230"/>
 
 #
 
@@ -25,7 +25,8 @@ Trained CNNs in the format of Tensorflow checkpoint will be posted here.
 
 
 ## How to Cite
-You can cite this software as follows:
+
+Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
 
 
 

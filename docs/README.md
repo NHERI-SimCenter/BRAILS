@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/Logo/Logo.png" alt="logo" height="80"/> Building Recognition using AI at Large-Scale.
 
-<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/pipeline-left.png" alt="BRAILS" height="200"/><img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/BIM3D.gif" height="200">
+<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/brails-demo.gif" alt="BRAILS" height="200"/>
 
 
 ## 1. What is BRAILS?
@@ -45,6 +45,7 @@ cd src/training/roof/2_train
 sh finetune_inception_v3_on_roof_eval.sh
 ```
 
+`If you have your own data, you can train your own neural nets following the above procedures.`
 
 ### c. Predict
 
@@ -75,13 +76,12 @@ If the image is not downloaded, it will assign a null value for the roof type in
 
 ### d. Enhance
 
-Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building information:
+Use [*SURF*](https://github.com/charlesxwang/SURF) to predict missing building information.
 
 
 #### Year built
 
 <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/yearBuilt-prediction-error.png" width="700">
-
 
 
 #### Number of stories 
@@ -109,8 +109,7 @@ Trained CNNs in the format of Tensorflow checkpoint will be posted here.
 
 
 ## 5. How to Cite
-You can cite this software as follows:
-
+Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
 
 
 
