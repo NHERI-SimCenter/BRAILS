@@ -4,18 +4,18 @@
 
 #
 
-## What is BRAILS?
+## What is BRAILS
 
 BRAILS is the acronym for Building Recognition using AI at Large-Scale, 
 which is an AI-Based pipeline for city-scale building information modeling (BIM).
 
-## How to use?
+## How to use
 
 Read the document <a href="https://nheri-simcenter.github.io/BRAILS/">here</a>.
 
 
 
-## How to Cite
+## How to cite
 
 Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
 
