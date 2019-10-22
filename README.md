@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/Logo/Logo.png" alt="logo" height="80"/> Building Recognition using AI at Large-Scale.
+# <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/Logo/Logo.png" alt="logo" height="80"/> <span style="color:#FFFFFF;background-color: #000000;">B</span>uilding <span style="color:#FFFFFF;background-color: #000000;">R</span>ecognition using <span style="color:#FFFFFF;background-color: #000000;">AI</span> at <span style="color:#FFFFFF;background-color: #000000;">L</span>arge-<span style="color:#FFFFFF;background-color: #000000;">S</span>cale.
 
 <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/brails-demo.gif" alt="BRAILS" height="250"/>
 
