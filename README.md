@@ -13,6 +13,7 @@ which is an AI-Based pipeline for city-scale building information modeling (BIM)
 
 Read the document <a href="https://nheri-simcenter.github.io/BRAILS/">here</a>.
 
+More details in paper: <a href="https://arxiv.org/abs/1910.06391">here</a>.
 
 
 ## How to cite
