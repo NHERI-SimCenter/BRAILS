@@ -13,6 +13,7 @@
 
 - Data release
 
+  - [Training data](Data-release.md)
   - [CNN](CNN-release.md)
   - [BIM](BIM-release.md)
 
