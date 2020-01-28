@@ -1,0 +1,21 @@
+div.wy-side-scroll{
+	background:#cb463f;
+}
+
+span.caption-text{
+	color: #000000;
+}
+
+td{
+	white-space: normal !important;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.borderless {
+    border-collapse: collapse;
+    border: 0px solid white;
+    background-color: white;
+}
