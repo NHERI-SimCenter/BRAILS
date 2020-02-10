@@ -4,14 +4,14 @@
    contain the root `toctree` directive.
 
 Building Recognition using AI at Large-Scale
-=====================================================================
+=================================================
 
 
 .. image:: images/brails-demo.gif
   :width: 700
   :alt: BRAILS
 
-What is |brailsName|
+What is |brailsName|   
 ---------------------------
 |brailsName| is the acronym for Building Recognition using AI at Large-Scale, which is an AI-Based pipeline for city-scale building information modeling (BIM).
 
@@ -19,45 +19,56 @@ BRAILS helps users create regional-scale database of building inventory, where b
 
 BIM, as an efficient way for describing buildings, gives architecture, engineering, and construction (AEC) professionals the insight and tools to more efficiently plan, design, construct, and manage buildings and infrastructure.
 
-Natural disasters cause losses to human society by damaging or destroying buildings, which consequently endangers lives and goods. Buildings are the major components of a human built environment, hence are of the major considerations in planning for, responding to and recovering from disasters. BIM contains information showing building geometry, components, material, usage, etc, which makes it an ideal source for generation and running of simulations of building behavior under both normal and emergency scenarios. For example, based on BIM, structure engineers can create numerical models for dynamic simulations of seismic loading conditions.
+Natural disasters cause losses to human society by damaging or destroying buildings, 
+which consequently endangers lives and goods. Buildings are the major components of a human built environment, 
+hence are of the major considerations in planning for, responding to and recovering from disasters. 
+BIM contains information showing building geometry, components, material, usage, etc, 
+which makes it an ideal source for generation and running of simulations of building behavior under both normal and emergency scenarios. 
+For example, based on BIM, structure engineers can create numerical models for dynamic simulations of seismic loading conditions.
+
+In addition to semantic descriptions of basic attributes of buildings, 
+|brailsName| can also detect attributes that are critical to natural hazards evaluation. 
+For example, there are pretrained convolutional neural networks shipped with |brailsName| for detecting soft-story buildings that are vulnerable to earthquakes.
+
 
 .. toctree::
    :caption: User Manual
    :maxdepth: 1
    :numbered: 2
 
-   
-   common/user_manual/installation/installation
-   common/user_manual/usage/preparedata 
-   common/user_manual/usage/train 
-   common/user_manual/usage/enhance 
    common/license
+   common/user_manual/installation/installation
+   common/user_manual/usage/tutorial
+   common/user_manual/bugs
+   
 
 
 .. _lbl-technical-manual:
 
 .. toctree::
    :caption: Technical Manual
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered: 2
 
    common/technical_manual/theory
+   common/technical_manual/vnv
 
 
 .. _lbl-developer-manual:
 
 .. toctree::
    :caption: Developer Manual
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered: 2
 
-   common/developer_manual/dev
+   common/developer_manual/how_to_extend/how_to_extend
+   common/developer_manual/coding_style/coding_style
  
 
 How to cite
 ---------------------------
 
-Charles Wang. (2019, September 28). NHERI-SimCenter/SURF: v0.2.0 (Version v0.2.0). Zenodo. http://doi.org/10.5281/zenodo.3463676
+Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
 
 License
 ---------------------------

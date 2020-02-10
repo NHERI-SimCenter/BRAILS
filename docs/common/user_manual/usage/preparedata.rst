@@ -5,7 +5,7 @@ Prepare and fuse data
 
 
 
-1. Get google map api key
+Get google map api key
 --------------------------------------------------
 
 Obtain the API key from `<https://developers.google.com/maps/documentation/embed/get-api-key>`_.
@@ -17,12 +17,12 @@ Define api key in src/keys.py file like this:
     GoogleMapAPIKey = "replace this with your key" 
 
 
-2. Prepare a list of building addresses in csv format
+Prepare a list of building addresses in csv format
 -------------------------------------------------------
 
-For example, Atlantic_Cities_Addrs.csv looks like Figure :numref:`address_list`.
+For example, Atlantic_Cities_Addrs.csv looks like :numref:`address_list`.
 
-.. _address_list
+.. _address_list:
 
 .. figure:: ../../../images/addressList.png
 	:align: center
@@ -44,7 +44,7 @@ Once `Atlantic_Cities_Addrs.csv <https://berkeley.box.com/shared/static/hi0nzfyk
 
 
 
-3. Prepare a boundary file of the region of interest in geojson format
+Prepare a boundary file of the region of interest in geojson format
 --------------------------------------------------
 
 Define the path in src/configure.py like this:
@@ -57,7 +57,7 @@ Define the path in src/configure.py like this:
 For this demo, we have prepared this boundary file for you, download from `here <https://berkeley.box.com/shared/static/gfridzvcjo6k533554q9plh0g3v9fpzi.geojson>`_.
 
 
-4. Prepare building footprints in geojson format
+Prepare building footprints in geojson format
 --------------------------------------------------
 
 AI generated building footprints database -> `USBuildingFootprints <https://github.com/microsoft/USBuildingFootprints>`_.
@@ -71,7 +71,7 @@ Define the path of this footprints file in src/configure.py like this:
     BuildingFootPrintsFileName = dataDir+"/AtlanticCoastalCities_Footprints.geojson"
 
 
-5. Geocode buildings and create a basic BIM file for this region.
+Geocode buildings and create a basic BIM file for this region.
 --------------------------------------------------
 
 

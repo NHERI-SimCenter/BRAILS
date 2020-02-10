@@ -1,2101 +1,677 @@
+%
+%
+% August 20, 2011
+%
+% Bibtex bibliographic data base using the canonical set given in the
+%   ASCE web document "Instructions For Preparation Of Electronic Manuscripts"
+% For use with the ascelike.bst bibliographic style file.
+%
+% A few 'fine points' about bibtex data bases:
+%   1) Entries that are NOT enclosed in quotations marks ("" "") 
+%      must contain data.  For example, the NUMBER entry.  If you don't
+%      know the NUMBER, don't leave it blank.  Just remove the entire 
+%      NUMBER line.
+%   2) Bibtex will suppress capital letters within the TITLE of an article
+%      (except for the first word of the title).  To force capitalization, 
+%      enclose the capitalized letter(s) in curly braces, such as {ASCE}
+%      of {SI}.
+%   3) Although unusual, if the reference has no author, you will need to
+%      be somewhat creative to produce ASCE-like output.  This usually occurs
+%      when the "non-author" is an organization instead of a person, but
+%      it also applies to newspaper articles.  Try the following:
+%        a) if the non-author is a a single word or abreviation ("ASTM" or
+%           "Newsweek"), try formatting as a book, incollection, or article,
+%           placing the non-author in the AUTHOR field.
+%        b) if the non-author is multiple word (Federal Highway 
+%           Administration), you will need to be creative, since bibtex
+%           will confuse the non-author as a person with first, middle, and
+%           last names (for example, Federal, H. A.).  Try using the MANUAL
+%           format as shown in FHWA:1991a, FR:1968a, and ICBO:1988a
+%
+%
+@INCOLLECTION{ASTM:1991a,
+    AUTHOR       = "ASTM",
+    TITLE        = "Standard practice for the use of the international system of units ({SI}) (the modernized metric system)",
+    EDITOR       = "",
+    BOOKTITLE    = "E 380-91a",
+    PUBLISHER    = "ASTM",
+    ADDRESS      = "Philadelphia, Pa.",
+    MONTH        = "",
+    YEAR         = 1991,
+    EDITION      = "",
+    PAGES        = "",
+    ORGANIZATION = "",
+    NOTE         = "",
+    }
 
-@article{Andrade.etal:2008,
-  title={Random porosity fields and their influence on the stability of granular media},
-  author={Andrade, J. E. and Baker, J. W. and Ellison, K. C.},
-  journal={{International Journal for Numerical and Analytical Methods in Geomechanics}},
-  volume={32},
-  number={10},
-  pages={1147},
-  year={2008}
+@MISC{Burka:1993a,
+  author = {Burka, L. P.},
+  title = {A hypertext history of multi-user dimensions},
+  journal = {MUD history},
+  year = {1993},
+  month = {Dec. 5, 1994},
+  url = {http://www.ccs.neu.edu},
+}
+%
+@ARTICLE{Dasgupta:2008a,
+    AUTHOR       = "Dasgupta, G.",
+    TITLE        = "Stiffness matrix from isoparametric closed form 
+                    shape functions using exact integration",
+    JOURNAL      = "J. Aerosp. Eng.",
+    YEAR         = 2008,
+    NOTE         = "in press",
+    }
+%
+@TECHREPORT{Duan:1990a,
+   AUTHOR        = "Duan, L. and Loh, J. T. and Chen, W. F.",
+   TITLE         = "M-{P}-f-based analysis of dented tubular members",
+   INSTITUTION   = "School of Civ. Engrg., Purdue Univ.",
+   TYPE          = "Struct. Engrg. Rep. No.",
+   NUMBER        = "CE-STR-90-27",
+   ADDRESS       = "West Lafayette, Ind.",
+   YEAR          =  1990,
+   NOTE          = "",
+   URL           = "",
+}
+%
+@BOOK{Duvant:1972a,
+    AUTHOR       = "Duvant, G. and Lions, J. L.",
+    EDITOR       = "",
+    TITLE        = "Les in{\'{e}}quations en m{\'{e}}chanique et en physique",
+    PUBLISHER    = "Dunod",
+    ADDRESS      = "Paris, France",
+    YEAR         = 1972,
+    EDITION      = "",
+    NOTE         = "(in French)",
+    }
+%
+@PHDTHESIS{Chang:1987a,
+    AUTHOR       = "Chang, T. C.",
+    TITLE        = "Network resource allocation using an expert system 
+                    with fuzzy logic reasoning",
+    SCHOOL       = "University of California",
+    ADDRESS      = "Berkeley, CA",
+    YEAR         = 1987,
+    URL          = "",
+    }
+%
+@INPROCEEDINGS{Eshenaur:1991a,
+    AUTHOR       = "Eshenaur, S. R. and Kulicki, J. M. and Mertz, D. R.",
+    TITLE        = "Retrofitting distortion-induced fatigue cracking of 
+                    non-composite steel girder-floorbeam-stringer bridges",
+    BOOKTITLE    = "Proc., 8th Annual Int. Bridge Conf.",
+    EDITOR       = "",
+    PUBLISHER    = "",
+    YEAR         = 1991,
+    ORGANIZATION = "Engineers' Soc. of Western Pennsylvania",
+    ADDRESS      = "Pittsburgh, Pa.",
+    PAGES        = "380--388",
+    NOTE         = "",
+    }
+%
+@INPROCEEDINGS{Garrett:2003a,
+    AUTHOR       = "Garrett, D. L.",
+    TITLE        = "Coupled analysis of floating production systems",
+    BOOKTITLE    = "Proc., Int. Symp. on Deep Mooring Systems",
+    EDITOR       = "",
+    PUBLISHER    = "",
+    YEAR         = 2003,
+    ORGANIZATION = "ASCE",
+    ADDRESS      = "Reston, VA",
+    PAGES        = "152--167",
+    NOTE         = "",
+    HOWPUBLISHED = "CD-ROM",
+    }
+%
+@ARTICLE{Gaspar:2001a,
+    AUTHOR       = "Gaspar, N. and Koenders, M. A.",
+    TITLE        = "Micromechanic formulation of macroscopic
+                    structures in a granular medium",
+    JOURNAL      = "J. Engrg. Mech.",
+    YEAR         = 2001,
+    VOLUME       = 127,
+    NUMBER       = 10,
+    PAGES        = "987--993",
+    NOTE         = "",
+    }
+%
+@INCOLLECTION{Gaspar:2001b,
+    AUTHOR       = "Gaspar, N. and Koenders, M. A.",
+    TITLE        = "Estimates of the shear modulus of a granular assembly
+                    using heterogeneous media techniques",
+    EDITOR       = "Kishino, Y.",
+    BOOKTITLE    = "Powders and Grains 2001",
+    PUBLISHER    = "A.A. Balkema",
+    ADDRESS      = "Lisse",
+    YEAR         = 2001,
+    PAGES        = "389--392",
+    ORGANIZATION = "",
+    NOTE         = "",
+    }
+%
+@MANUAL{FHWA:1991a,
+   AUTHOR        = "",
+   KEY           = "Federal",
+   TITLE         = "Evaluating scour at bridges",
+   ORGANIZATION  = "Federal Highway Administration (FHWA)",
+   PUBLISHER     = "Rep., Hydr. Engrg. Circular No. 18: FHWA-IP-90-017",
+   ADDRESS       = "Washington, D.C.",
+   YEAR          = 1991,
+   NOTE          = "",
+}
+%
+@MANUAL{FR:1968a,
+    AUTHOR       = "",
+    KEY          = "Federal",
+    TITLE        = "Federal Register",
+    HOWPUBLISHED = "",
+    YEAR         = 1988,
+    NOTE         = "33(No. 146; July 27), 10756",
+    }
+%
+@ARTICLE{Frater:1992a,
+    AUTHOR       = "Frater, G. S. and Packer, J. A.",
+    TITLE        = "Weldment design for {RHS} truss connections.  {I}: Applications",
+    JOURNAL      = "J. Struct. Engrg.",
+    ORGANIZATION = "ASCE",
+    YEAR         = 1992,
+    VOLUME       = 118,
+    NUMBER       = 10,
+    PAGES        = "2784--2803",
+    NOTE         = "",
+    }
+%
+@ARTICLE{Frater:1992b,
+    AUTHOR       = "Frater, G. S. and Packer, J. A.",
+    TITLE        = "Weldment design for {RHS} truss connections.  {II}: Experimentation",
+    JOURNAL      = "J. Struct. Engrg.",
+    ORGANIZATION = "ASCE",
+    MONTH        = "",
+    YEAR         = 1992,
+    VOLUME       = 118,
+    NUMBER       = 10,
+    PAGES        = "2804--2820",
+    NOTE         = "",
+    }
+%
+@BOOK{Goossens:1994a,
+    AUTHOR       = "Goossens, M. and Mittlebach, F. and Samarin, A.",
+    TITLE        = "The \LaTeX\ Companion",
+    PUBLISHER    = "Addison--Wesley Pub. Co.",
+    ADDRESS      = "Reading, Mass.",
+    YEAR         = 1994,
+    }
+@ARTICLE{Huang2009a,
+  author = {Yue Huang and Roger Bird and Margaret Bell},
+  title = {A comparative study of the emission by road maintenance works and
+        the disrupted traffic using life cycle assessment and micro-simulation},
+  journal = {Transportation Research Part D},
+  year = {2009},
+  volume = {14},
+  pages = {197-204},
 }
 
-@book{Andrus:1994,
-  title={In Situ Characterization of Gravelly Soils That Liquefied in the 1983 Borah Peak Earthquake},
-  author={Andrus, R. D.},
-  year={1994}
+@ARTICLE{Huang2009b,
+  author = {Yue Huang and Roger Bird and Oliver Hendrich},
+  title = {Development of a life cycle assessment tool for construction and
+        maintenance of asphalt pavements},
+  journal = {Journal of Cleaner Production},
+  year = {2009},
+  volume = {17},
+  pages = {283-296},
 }
 
-@article{Baise.etal:2006,
-  title={Liquefaction hazard mapping -- statistical and spatial characterization of susceptible units},
-  author={Baise, L. G. and Higgins, R. B. and Brankman, C. M.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={132},
-  number={6},
-  pages={705--715},  
-  year={2006},
-  publisher={American Society of Civil Engineers}
+@MANUAL{ICBO:1988a,
+    AUTHOR       = "",
+    ORGANIZATION = "International Conference of Building Officials",
+    TITLE        = "Uniform building code",
+    KEY          = "International",
+    PUBLISHER    = "",
+    ADDRESS      = "Whittier, Calif.",
+    MONTH        = "",
+    YEAR         = 1988,
+    EDITION      = "",
+    NOTE         = "",
+    }
+%
+@ARTICLE{Ireland:1954a,
+    AUTHOR       = "Ireland, H. O.",
+    TITLE        = "Stability analysis of {C}ongress {S}treet open cut 
+                    in {C}hicago",
+    JOURNAL      = "G{\'{e}}otechnique",
+    ORGANIZATION = "London, England",
+    MONTH        = "",
+    YEAR         = 1954,
+    VOLUME       = 4,
+    NUMBER       = 4,
+    PAGES        = "163--168",
+    NOTE         = "",
+    }
+%
+@MISC{Kuhn:2011a,
+  author = {Kuhn, M. R.},
+  title = {Style files for {ASCE}-like documents},
+  journal = {ascelike},
+  year = {2011},
+  month = {Nov. 17, 2011},
+  url = {http://www.ctan.org/tex-archive/macros/latex/contrib/ascelike},
 }
+%
+@BOOK{Lamport:1994a,
+    AUTHOR       = "Lamport, L.",
+    TITLE        = "\LaTeX: A Document Prepartation System User's Guide
+                    and Reference Manual",
+    PUBLISHER    = "Addison--Wesley Pub. Co.",
+    ADDRESS      = "Reading, Mass.",
+    YEAR         = 1994,
+    }
+
+@INCOLLECTION{Liggett:1998a,
+  author = {Liggett, J. A. and Caughey, D. A.},
+  title = {Fluid statics},
+  booktitle = {Fluid mechanics},
+  year = {1998},
+  howpublished = {CD-ROM},
+  chapter = {2},
+  publisher = {ASCE},
+  address = {Reston, VA},
+  pages = {167--177},
+}
+%
+@MANUAL{Lotus:1985a,
+    AUTHOR       = "",
+    TITLE        = "Lotus 1-2-3 reference manual; release 2.01",
+    PUBLISHER    = "Lotus Development Corp.",
+    KEY          = "Lotus",
+    ADDRESS      = "Cambridge,  Mass.",
+    EDITION      = "",
+    MONTH        = "",
+    YEAR         = 1985,
+    NOTE         = "",
+    }
+%
+@BOOK{Melan:1913a,
+    AUTHOR       = "Melan, J.",
+    EDITOR       = "",
+    TITLE        = "Theory of arches and suspension bridges",
+    PUBLISHER    = "Myron C. Clark",
+    ADDRESS      = "Chicago, Ill",
+    MONTH        = "",
+    YEAR         = 1913,
+    EDITION      = "",
+    NOTE         = "D. B. Steinman, translator",
+    }
+%
+@MANUAL{Moody:1988a,
+    AUTHOR       = "",
+    TITLE        = "Moody's municipal \& government manual",
+    PUBLISHER    = "Moody's Investors Service",
+    KEY          = "Moody",
+    ADDRESS      = "New York,  N.Y.",
+    EDITION      = "",
+    MONTH        = "",
+    YEAR         = 1988,
+    NOTE         = "",
+    }
+%
+@ARTICLE{Pennoni:1992a,
+    AUTHOR       = "Pennoni, C. R.",
+    TITLE        = "Visioning: the future of civil engineering",
+    JOURNAL      = "J. Profl. Issues in Engrg. Education and Practice",
+    ORGANIZATION = "ASCE",
+    MONTH        = "",
+    YEAR         = 1992,
+    VOLUME       = 118,
+    NUMBER       = 3,
+    PAGES        = "221--233",
+    NOTE         = "",
+    }
+%
+@ARTICLE{Reiffenstuhl:1982a,
+    AUTHOR       = "Reiffenstuhl, H.",
+    TITLE        = "Das Vorspannen von Bewehrung auf Druck: 
+                    Grundsaetzliches und Anwendungsmoeglichkeiten 
+                    [prestressing of reinforcing in compression: 
+                    fundamentals and application possibilities]",
+    JOURNAL      = "Beton-und Stahlbetonbau",
+    ORGANIZATION = "Berlin, Germany",
+    MONTH        = "",
+    YEAR         = 1982,
+    VOLUME       = 77,
+    NUMBER       = 3,
+    PAGES        = "69--73",
+    NOTE         = "(in German)",
+    }
+%
+% Note that the TYPE can be left blank ("") for the default M.S. thesis
+@MASTERSTHESIS{Sotiropulos:1991a,
+    AUTHOR       = "Sotiropulos, S. N.",
+    TITLE        = "Static response of bridge superstructures 
+                    made of fiber reinforced plastic",
+    SCHOOL       = "West Virginia Univ.",
+    ADDRESS      = "Morgantown, WV",
+    YEAR         = 1991,
+    TYPE         = "M.{S}. thesis",
+    URL          = "",
+    }
+%
+@ARTICLE{Stahl:2004a,
+    AUTHOR       = "Stahl, D. C. and Wolfe, R. W. and Begel, M.",
+    TITLE        = "Improved analysis of timber rivet connections",
+    JOURNAL      = "J. Struct. Eng.",
+    YEAR         = 2004,
+    VOLUME       = 130,
+    NUMBER       = 8,
+    PAGES        = "1272--1279",
+    }
+%
+@ARTICLE{Vesilind:1992a,
+    AUTHOR       = "Vesilind, P. A.",
+    TITLE        = "Discussion of `{G}uidance for engineering-design-class 
+                    lectures on ethics,' by {R}ichard {H}. {M}c{C}uen",
+    JOURNAL      = "J. Profl. Issues in Engrg. Education and Practice",
+    ORGANIZATION = "ASCE",
+    MONTH        = "",
+    YEAR         = 1992,
+    VOLUME       = 118,
+    NUMBER       = 2,
+    PAGES        = "214--215",
+    NOTE         = "",
+    }
+%
+@INCOLLECTION{Zadeh:1981a,
+    AUTHOR       = "Zadeh, L. A.",
+    TITLE        = "Possibility theory and soft data analysis",
+    EDITOR       = "L. Cobb and R. M.  Thrall",
+    BOOKTITLE    = "Mathematical frontiers of the social and policy sciences",
+    PUBLISHER    = "Westview Press, Inc.",
+    ADDRESS      = "Boulder, Colo.",
+    MONTH        = "",
+    YEAR         = 1981,
+    EDITION      = "",
+    PAGES        = "69--129",
+    ORGANIZATION = "",
+    NOTE         = "",
+    }
+%
+@PHDTHESIS{Wichtmann:2005a,
+    AUTHOR       = "Wichtmann, T.",
+    TITLE        = "Explicit accumulation model for non-cohesive 
+                    soils under cyclic loading",
+    SCHOOL       = "Institute for Soil Mechanics and Foundation Engineering,
+                    Ruhr-Univ. Bochum, Germany",
+    ADDRESS      = "",
+    YEAR         = 2005,
+    URL          = "www.rz.uni-karlsruhe.de/$\sim$gn97/",
+    MONTH        = "2007",
+    }
+    
 
 
-@article{Baker.Faber:2008,
-  title={Liquefaction risk assessment using geostatistics to account for soil spatial variability},
-  author={Baker, J. W. and Faber, M. H.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={134},
+@article{hubel1968receptive,
+  title={Receptive fields and functional architecture of monkey striate cortex},
+  author={Hubel, David H and Wiesel, Torsten N},
+  journal={The Journal of physiology},
+  volume={195},
   number={1},
-  pages={14--23},
-  year={2008},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Baker.etal:2011,
-  title={Characterization of random fields at multiple scales: an efficient conditional simulation procedure and applications in geomechanics},
-  author={Baker, J. W. and Seifried, A. and Andrade, J. E. and Chen, Q.},
-  journal={{Applications of Statistics and Probability in Civil Engineering}},
-  pages={347},
-  year={2011},
-  publisher={{CRC Press}}
-}
-
-@techreport{Bartlett.etal:2007,
-  title={{Probabilistic liquefaction potential and liquefaction-induced ground failure maps for the urban Wasatch Front: Phase IV}},
-  author={Bartlett, S. F. and Gerber, T. M. and Hinckley, D.},
-  year={2007},
-  number={{Awards 07HQGR0021 and 07HQGR0024}},  
-  institution={{Technical Report submitted to the United States Geological Survey}}
-}
-
-@article{Bennett:1990,
-  title={{Ground deformation and liquefaction of soil in the Marina District - effects of the Loma Prieta earthquake on the Marina District, San Francisco, California}},
-  author={Bennett, M. J.},
-  journal={{US Geol. Surv. Open-File Rept. 90}},
-  volume={253},
-  pages={D1--D11},
-  year={1990}
-}
-
-@article{Bonilla:1992,
-  title={Geologic and historical factors affecting earthquake damage},
-  author={Bonilla, M. G.},
-  journal={{The Loma Prieta, California, Earthquake of October 17, 1989--Marina District}},
-  pages={F7--F34},
-  year={1992}
-}
-
-@inproceedings{Budiman.etal:1995,
-  title={Effect of large inclusions on liquefaction of sands},
-  author={Budiman, J. S. and Mohammadi, J. and Bandi, S.},
-  booktitle={Static and Dynamic Properties of Gravelly Soils},
-  pages={48--63},
-  year={1995},
-  organization={{ASCE}}
-}
-
-@article{Cetin.etal:2004,
-  title={Standard penetration test-based probabilistic and deterministic assessment of seismic soil liquefaction potential},
-  author={Cetin, K. O. and Seed, R. B. and Der Kiureghian, A. and Tokimatsu, K. and Harder Jr, L. F. and Kayen, R. E. and Moss, R. E. S.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={130},
-  number={12},
-  pages={1314--1340},
-  year={2004},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Cetin.etal:2009a,
-  title={Probabilistic models for cyclic straining of saturated clean sands},
-  author={Cetin, K. O. and Bilge, H. T. and Wu, J. and Kammerer, A. M. and Seed, R. B.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={135},
-  number={3},
-  pages={371--386},
-  year={2009},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Cetin.etal:2009b,
-  title={Probabilistic model for the assessment of cyclically induced reconsolidation (volumetric) settlements},
-  author={Cetin, K. O. and Bilge, H. T. and Wu, J. and Kammerer, A. M. and Seed, R. B.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={135},
-  number={3},
-  pages={387--398},
-  year={2009},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Chen.etal:2011,
-  title={{AES} for multiscale localization modeling in granular media},
-  author={Chen, Q. and Andrade, J. E. and Samaniego, E.},
-  journal={Computer Methods in Applied Mechanics and Engineering},
-  volume={200},
-  number={33},
-  pages={2473--2482},
-  year={2011},
-  publisher={Elsevier}
-}
-
-@article{Chen.etal:2012,
-  title={Characterization of random fields and their impact on the mechanics of geosystems at multiple scales},
-  author={Chen, Q. and Seifried, A. and Andrade, J. E. and Baker, J. W.},
-  journal={{International Journal for Numerical and Analytical Methods in Geomechanics}},
-  volume={36},
-  number={2},
-  pages={140--165},
-  year={2012},
+  pages={215--243},
+  year={1968},
   publisher={Wiley Online Library}
 }
 
-@article{Chen.etal:2014,
-  title={Development of a used fuel cladding damage model incorporating circumferential and radial hydride responses},
-  author={Chen, Q. and Ostien, J. T. and Hansen, G.},
-  journal={{Journal of Nuclear Materials}},
-  volume=447,
-  number=1,
-  pages={292--303},
-  year=2014,
-}
-
-@article{Chen.etal:2015,
-  title={{CPT-based} evaluation of liquefaction potential accounting for soil spatial variability at multiple scales},
-  author={Chen, Q. and Wang, C. and Juang, C. H.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  year={2015},
-  pages = {04015077},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Cressie:1985,
-  title={Fitting variogram models by weighted least squares},
-  author={Cressie, N.},
-  journal={{Journal of the International Association for Mathematical Geology}},
-  volume={17},
-  number={5},
-  pages={563--586},
-  year={1985},
-  publisher={Springer}
-}
-
-@article{Dawson.Baise:2005,
-  title={Three-dimensional liquefaction potential analysis using geostatistical interpolation},
-  author={Dawson, K. M. and Baise, L. G.},
-  journal={Soil Dynamics and Earthquake Engineering},
-  volume={25},
-  number={5},
-  pages={369--381},
-  year={2005},
-  publisher={Elsevier}
-}
-
-@article{DeGroot.Baecher:1993,
-  title={Estimating autocovariance of in-situ soil properties},
-  author={DeGroot, D. J. and Baecher, G. B.},
-  journal={{Journal of Geotechnical Engineering}},
-  year={1993},
-  publisher={American Society of Civil Engineers}
-}
-
-@book{Deutsch:1965,
-  title={Estimation Theory},
-  author={Deutsch, R},
-  year={1965},
-  publisher={Prentice Hall}
-}
-
-@inproceedings{Dubes:1990,
-  title={{MRF model-based algorithms for image segmentation}},
-  author={Dubes, R. C. and Jain, A. K. and Nadabar, S. G. and Chen, C. C.},
-  booktitle={Pattern Recognition, 1990. Proceedings., 10th International Conference on},
-  volume={1},
-  pages={808--814},
-  year={1990},
-  organization={IEEE}
-}
-
-@article{Duncan:2000,
-  title={Factors of safety and reliability in geotechnical engineering},
-  author={Duncan, J. M.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={126},
-  number={4},
-  pages={307--316},
-  year={2000},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Elkateb.etal:2003,
-  title={{Simplified geostatistical analysis of earthquake-induced ground response at the Wildlife Site, California, USA}},
-  author={Elkateb, T. and Chalaturnyk, R. and Robertson, P. K.},
-  journal={{Canadian Geotechnical Journal}},
-  volume={40},
-  number={1},
-  pages={16--35},
-  year={2003},
-  publisher={{NRC Research Press}}
-}
-
-@book{Evans.etal:1987,
-  title={Undrained cyclic triaxial testing of gravels: the effect of membrane compliance},
-  author={Evans, M. D. and Seed, H. B.},
-  year={1987},
-  publisher={College of Engineering, University of California}
-}
-
-@article{Fenton.Vanmarcke:1998,
-  title={Spatial variation in liquefaction risk},
-  author={Fenton, G. A. and Vanmarcke, E. H.},
-  journal={G\'eotechnique},
-  volume={48},
-  number={6},
-  pages={819--831},
-  year={1998},
-  publisher={{Thomas Telford}}
-}
-
-@article{Fenton:1999,
-  title={Estimation for stochastic soil models},
-  author={Fenton, G. A.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  year={1999},
-  publisher={{American Society of Civil Engineers}}
-}
-
-@article{Gandomi:2013,
-  title={Metaheuristic algorithms in modeling and optimization},
-  author={Gandomi, A. H. and Yang, X. and Talatahari, S. and Alavi, A. H.},
-  journal={Metaheuristic Applications in Structures and Infrastructures},
-  pages={1--24},
-  year={2013}
-}
-
-@inproceedings{Geman.Graffigne:1986,
-  title={Markov random field image models and their applications to computer vision},
-  author={Geman, S. and Graffigne, C.},
-  booktitle={Proceedings of the International Congress of Mathematicians},
-  volume={1},
-  pages={2},
-  year={1986}
-}
-
-@book{Goovaerts:1997,
-  title={Geostatistics for natural resources evaluation},
-  author={Goovaerts, P.},
-  year={1997},
-  publisher={{Oxford University Press}}
-}
-
-@article{Gringarten.Deutsch:2001,
-  title={{Teacher's aide variogram interpretation and modeling}},
-  author={Gringarten, E. and Deutsch, C. V.},
-  journal={{Mathematical Geology}},
-  volume={33},
-  number={4},
-  pages={507--534},
-  year={2001}
-}
-
-@book{Harder:1988,
-  title={Use of penetration tests to determine the cyclic loading resistance of gravelly soils during earthquake shaking},
-  author={Harder, L. F.},
-  volume={2},
-  year={1988},
-  publisher={University of California, Berkeley}
-}
-
-@techreport{Helley.Graymer:1997,
-  title={{Quaternary geology of Alameda County, and parts of
-Contra Costa, Santa Clara, San Mateo, San Francisco, Stanislaus, and San Joaquin counties,
-California: A digital database}},
-  author={Helley, E. J. and Graymer, R. W.},
-  year={1997},
-  number={{97-97}},  
-  institution={{U.S. Geological Survey Open-File Report}}
-}
-
-@phdthesis{Hinckley:2010,
-  title={{Liquefaction-induced ground displacement mapping for the Salt Lake Valley, Utah}},
-  author={Hinckley, D. W.},
-  year={2010},
-  school={The University of Utah}
-}
-
-@article{Holzer.etal:2006a,
-  title={{Liquefaction hazard mapping with LPI in the greater Oakland, California, area}},
-  author={Holzer, T. L. and Bennett, M. J. and Noce, T. E. and Padovani, A. C. and Tinsley III, J. C.},
-  journal={{Earthquake Spectra}},
-  volume={22},
-  number={3},
-  pages={693--708},
-  year={2006}
-}
-
-@article{Holzer.etal:2006b,
-  title={{Predicted liquefaction of East Bay fills during a repeat of the 1906 San Francisco earthquake}},
-  author={Holzer, T. L. and Blair, J. L and Noce, T. E. and Bennett, M. J},
-  journal={{Earthquake Spectra}},
-  volume={22},
-  number={S2},
-  pages={261--277},
-  year={2006}
-}
-
-@book{Hynes:1988,
-  title={Pore pressure generation characteristics of gravel under undrained cyclic loading},
-  author={Hynes, M. E.},
-  volume={1},
-  year={1988},
-  publisher={University of California, Berkeley}
-}
-
-@article{Idriss.Boulanger:2006,
-  title={Semi-empirical procedures for evaluating liquefaction potential during earthquakes},
-  author={Idriss, I. M. and Boulanger, R. W.},
-  journal={{Soil Dynamics and Earthquake Engineering}},
-  volume={26},
-  number={2},
-  pages={115--130},
-  year={2006},
-  publisher={Elsevier}
-}
-
-@book{Isaaks.Srivastava:1989,
-  title={{Applied Geostatistics}},
-  author={Isaaks, E. H. and Srivastava, R. M.},
-  publisher={{Oxford University Press, New York}},
-  year={1989}
-}
-
-@article{Ishihara.Yoshimine:1992,
-  title={Evaluation of settlements in sand deposits following liquefaction during earthquakes.},
-  author={Ishihara, K. and Yoshimine, M.},
-  journal={{Soils and Foundations}},
-  volume={32},
-  number={1},
-  pages={173--188},
-  year={1992}
-}
-
-@inproceedings{Iwasaki.etal:1978,
-  title={A practical method for assessing soil liquefaction potential based on case studies at various sites in {Japan}},
-  author={Iwasaki, T. and Tatsuoka, F. and Tokida, K. and Yasuda, S.},
-  booktitle={{Proceedings 2nd International Conference on Microzonation}},
-  pages={885--896},
-  year={1978}
-}
-
-@inproceedings{Iwasaki.etal:1982,
-  title={Microzonation for soil liquefaction potential using simplified methods},
-  author={Iwasaki, T. and Tokida, K. and Tatsuoka, F. and Watanabe, S. and Yasuda, S. and Sato, H.},
-  booktitle={{Proceedings of the 3rd International Conference on Microzonation, Seattle}},
-  volume={3},
-  pages={1310--1330},
-  year={1982}
-}
-
-@inproceedings{Ishihara:1985,
-  title={Stability of natural deposits during earthquakes},
-  author={Ishihara, K.},
-  booktitle={Proc., 11th Int. Conf. on Soil Mechanics and Foundation Engineering},
-  volume={1},
-  pages={321--376},
-  year={1985},
-  organization={Balkema Rotterdam, The Netherlands}
-}
-
-@article{Jamiolkowski.etal:1985,
-  title={Penetration resistance and liquefaction of sands},
-  author={Jamiolkowski, M. and Baldi, G. and Bellotti, R. and Ghionna, V. and Pasqualini, E.},
-  journal={{Proc. XI ICSMFE}},
-  pages={1891--1896},
-  year={1985}
-}
-
-@article{Juang.etal:2000,
-  title={Risk-based liquefaction potential evaluation using standard penetration tests},
-  author={Juang, C. H. and Chen, C. J. and Jiang, T. and Andrus, R. D.},
-  journal={{Canadian Geotechnical Journal}},
-  volume={37},
-  number={6},
-  pages={1195--1208},
-  year={2000},
-  publisher={{NRC Research Press}}
-}
-
-@article{Juang.etal:2001,
-  title={Probabilistic framework for liquefaction potential by shear wave velocity},
-  author={Juang, C. H. and Chen, C. J. and Jiang, T.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={127},
-  number={8},
-  pages={670--678},
-  year={2001},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Juang.etal:2002,
-  title={Assessing probability-based methods for liquefaction potential evaluation},
-  author={Juang, C. H. and Jiang, T. and Andrus, R. D.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={128},
+@article{wang2017hybrid,
+  title={A hybrid geotechnical and geological data-based framework for multiscale regional liquefaction hazard mapping},
+  author={Wang, C and Chen, Q},
+  journal={G{\'e}otechnique},
+  volume={68},
   number={7},
-  pages={580--589},
-  year={2002},
-  publisher={American Society of Civil Engineers}
+  pages={614--625},
+  year={2018},
+  publisher={Thomas Telford Ltd}
 }
 
-@article{Juang.etal:2003,
-  title={Simplified cone penetration test-based method for evaluating liquefaction resistance of soils},
-  author={Juang, C. H. and Yuan, H. and Lee, D. H. and Lin, P.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={129},
-  number={1},
-  pages={66--80},
-  year={2003},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Juang.etal:2006,
-  title={First-order reliability method for probabilistic liquefaction triggering analysis using {CPT}},
-  author={Juang, C. H. and Fang, S. Y. and Khor, E. H.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  year={2006},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Juang.etal:2008a,
-  title={Calibration of liquefaction potential index: A re-visit focusing on a new {CPTU} model},
-  author={Juang, C. H. and Liu, C. N. and Chen, C. H. and Hwang, J. H. and Lu, C. C.},
-  journal={Engineering Geology},
-  volume={102},
-  number={1},
-  pages={19--30},
-  year={2008},
-  publisher={Elsevier}
-}
-
-@article{Juang.etal:2008b,
-  title={{Simplified procedure for developing joint distribution of $a_{\rm max}$ and $M_w$ for probabilistic liquefaction hazard analysis}},
-  author={Juang, C. H. and Li, D. K. and Fang, S. Y. and Liu, Z. and Khor, E. H.},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={134},
-  number={8},
-  pages={1050--1058},
-  year={2008}
-}
-
-@article{Juang.etal:2009,
-  title={Assessing probability of surface manifestation of liquefaction at a given site in a given exposure time using CPTU},
-  author={Juang, C. H. and Lu, C. C. and Hwang, J. H.},
-  journal={Engineering Geology},
-  volume={104},
-  number={3},
-  pages={223--231},
-  year={2009},
-  publisher={Elsevier}
-}
-
-@article{Juang.etal:2013,
-  title={Simplified procedure for estimation of liquefaction-induced settlement and site-specific probabilistic settlement exceedance curve using cone penetration test ({CPT})},
-  author={Juang, C. H. and Ching, J. and Wang, L. and Khoshnevisan, S. and Ku, C. S.},
-  journal={Canadian Geotechnical Journal},
-  volume={50},
-  number={10},
-  pages={1055--1066},
-  year={2013},
-  publisher={{NRC Research Press}}
-}
-
-@article{Kayen.etal:1998,
-  title={Soil liquefaction in the east bay during the earthquake},
-  author={Kayen, R. E. and Mitchell, J. K. and Seed, R. B. and Nishio, S.},
-  journal={The Loma Prieta, California Earthquake of October, 17, 1989 - Liquefaction, Professional Paper No. 1551-B},
-  pages={61--86},
-  year={1998}
-}
-
-@article{Kishida:1996,
-  title={Damage to reinforced concrete  buildings in Niigata City with special reference to foundation engineering},
-  author={Kishida, H.},
-  journal={Soils and Foundations},
-  pages={71-88},
-  year={1966}
-}
-
-@article{Koizumi:1966,
-  title={Change in density of sand subsoil caused by the Niigata Earthquake},
-  author={Koizumi, Y.},
-  journal={Soils and Foundations},
-  volume={6},
-  number={2},
-  pages={38-44},
-  year={1966},
-}
-
-@incollection{Konrad.Dubeau:2003,
-  title={Cyclic strength of stratified soil samples},
-  author={Konrad, J. M. and Dubeau, S.},
-  booktitle={Submarine Mass Movements and Their Consequences},
-  pages={47--57},
-  year={2003},
-  publisher={Springer}
-}
-
-@book{Kramer:1996,
-  title={Geotechnical earthquake engineering},
-  author={Kramer, S. L.},
-  year={1996},
-  publisher={Prentice Hall Upper Saddle River, NJ}
-}
-
-@inproceedings{Kramer.Mayfield.2005,
-  title={Performance-based liquefaction hazard evaluation},
-  author={Kramer, S. L. and Mayfield, R. T.},
-  booktitle={Earthquake Engineering and Soil Dynamics, Proceedings of Sessions of the Geo-Frontiers 2005 Congress, Austin, Tex},
-  pages={24--26},
-  year={2005}
-}
-
-@inproceedings{Kramer.etal:2006,
-  title={Performance-based liquefaction hazard evaluation: implications for codes and standards},
-  author={Kramer, SL},
-  booktitle={{8th US National Conference on Earthquake Engineering, San Francisco, 2006}},
-  year={2006}
-}
-
-@book{Krige:1951,
-  title={A statistical approach to some mine valuation and allied problems on the Witwatersrand},
-  author={Krige, D. G.},
-  year={1951},
-  publisher={J Chem Metall Min Soc S Afr}
-}
-
-@article{Ku.etal:2012,
-  title={Probabilistic version of the Robertson and Wride method for liquefaction evaluation: development and application},
-  author={Ku, C. S. and Juang, C. H. and Chang, C. W. and Ching, J.},
-  journal={Canadian Geotechnical Journal},
-  volume={49},
-  number={1},
-  pages={27--44},
-  year={2012},
-  publisher={{NRC Research Press}}
-}
-
-@article{Lafferty:2001,
-  title={Conditional random fields: Probabilistic models for segmenting and labeling sequence data},
-  author={Lafferty, J. and McCallum, A. and Pereira, F. C. N.},
-  year={2001}
-}
-
-@article{Lai.etal:2006,
-  title={Logistic regression model for evaluating soil liquefaction probability using {CPT} data},
-  author={Lai, S. Y. and Chang, W. J. and Lin, P. S.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={132},
-  number={6},
-  pages={694--704},
-  year={2006},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Lee:2007,
-  title={Earthquake-induced settlements in saturated sandy soils},
-  author={Lee, C. Y.},
-  journal={ARPN Journal of Engineering and Applied Sciences},
-  volume={2},
-  number={4},
-  pages={6--13},
-  year={2007},
-  publisher={Citeseer}
-}
-
-@article{Lee.Albaisa:1974,
-  title={Earthquake induced settlements in saturated sands},
-  author={Lee, K. L. and Albaisa, A.},
-  journal={{Journal of Geotechnical Engineering Div. ASCE}},
-  volume={100},
-  number={4},
-  pages={387--406},
-  year={1974}
-}
-
-@article{Lenz.Baise:2007,
-  title={Spatial variability of liquefaction potential in regional mapping using {CPT} and {SPT} data},
-  author={Lenz, J. A. and Baise, L. G.},
+@article{wang2017spatial,
+  title={On the spatial variability of CPT-based geotechnical parameters for regional liquefaction evaluation},
+  author={Wang, Chaofeng and Chen, Qiushi and Shen, Mengfen and Juang, C Hsein},
   journal={Soil Dynamics and Earthquake Engineering},
-  volume={27},
-  number={7},
-  pages={690--702},
-  year={2007},
-  publisher={Elsevier}
-}
-
-
-
-@article{Liao.etal:1988,
-  title={Regression models for evaluating liquefaction probability},
-  author={Liao, S. S. C. and Veneziano, D. and Whitman, R. V.},
-  journal={Journal of Geotechnical Engineering},
-  volume={114},
-  number={4},
-  pages={389--411},
-  year={1988},
-  publisher={American Society of Civil Engineers}
-}
-
-@inproceedings{Liao.Lum:1998,
-  title={Statistical analysis and application of the magnitude scaling factor in liquefaction analysis},
-  author={Liao, S. S. C. and Lum, K. Y.},
-  booktitle={{Geotechnical earthquake engineering and soil dynamics III}},
-  pages={410--421},
-  year={1998},
-  organization={{ASCE}}
-}
-
-
-@article{Lu.etal:2009,
-  title={Framework for assessing probability of exceeding a specified liquefaction-induced settlement at a given site in a given exposure time},
-  author={Lu, C. C. and Hwang, J. H. and Juang, C. H. and Ku, C. S. and Luo, Z.},
-  journal={Engineering Geology},
-  volume={108},
-  number={1},
-  pages={24--35},
-  year={2009}
-}
-
-
-
-@inproceedings{Marrone.etal:2003,
-  title={Probabilistic liquefaction hazard evaluation: method and application},
-  author={Marrone, J. and Ostadan, F. and Youngs, R. and Litehiser, J.},
-  booktitle={Transaction of the 17th International Conference on Structural Mechanics in Reactor Technology, Prague, Czech Republic},
-  volume={1722},
-  year={2003}
-}
-
-
-@inproceedings{Mitchell.Tseng:1990,
-  title={Assessment of liquefaction potential by cone penetration resistance},
-  author={Mitchell, J. K. and Tseng, D.},
-  booktitle={{Proceedings of the HB Seed Memorial Symposium, Bi Tech Publishing}},
-  volume={2},
-  pages={335--350},
-  year={1990}
-}
-
-
-
-
-@article{Nagase.Ishihara:1988,
-  title={Liquefaction-induced compaction and settlement of sand during earthquakes},
-  author={Nagase, H. and Ishihara, K.},
-  journal={Soils and Foundations},
-  volume={28},
-  number={1},
-  pages={65--76},
-  year={1988},
-  publisher={Japanese Society of Soil Mechanics and Foundation Engineering}
-}
-
-
-@inproceedings{Olsen:1984,
-  title={Liquefaction analysis using the cone penetrometer test},
-  author={Olsen, R. S.},
-  booktitle={Proc., 8th World Conf. on Earthquake Engineering},
-  pages={247--254},
-  year={1984},
-  organization={{EERI San Francisco}}
-}
-
-@inproceedings{Olsen.Koester:1995,
-  title={{Prediction of liquefaction resistance using the CPT}},
-  author={Olsen, R. S. and Koester, J. P.},
-  booktitle={{Proc., Int. Symp. on Cone Penetration Testing, CPT}},
   volume={95},
-  pages={251--256},
-  year={1995}
-}
-
-
-@book{Popescu:1995,
-  title={Stochastic variability of soil properties: data analysis, digital simulation, effects on system behavior},
-  author={Popescu, R.},
-  year={1995},
-  publisher={Princeton University}
-}
-
-
-@inproceedings{Popescu.etal:1998a,
-  title={Characteristic percentile of soil strength for dynamic analyses},
-  author={Popescu, R. and Prevost, J. H. and Deodatis, G.},
-  booktitle={{Geotechnical Earthquake Engineering and Soil Dynamics III}},
-  pages={1461--1471},
-  year={1998},
-  organization={{ASCE}}
-}
-
-@inproceedings{Popescu.etal:1998b,
-  title={Spatial variability of soil properties: two case studies},
-  author={Popescu, R. and P., Jean H. and Deodatis, G.},
-  booktitle={{Geotechnical Earthquake Engineering and Soil Dynamics III}},
-  pages={568--579},
-  year={1998},
-  organization={{ASCE}}
-}
-
-
-
-@article{Pradel:1998,
-  title={Procedure to evaluate earthquake-induced settlements in dry sandy soils},
-  author={Pradel, D.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={124},
-  number={4},
-  pages={364--368},
-  year={1998},
-  publisher={American Society of Civil Engineers}
-}
-
-
-
-
-@article{Robertson.Campanella:1985,
-  title={{Liquefaction potential of sands using the CPT}},
-  author={Robertson, P. K. and Campanella, R. G.},
-  journal={Journal of Geotechnical Engineering},
-  volume={111},
-  number={3},
-  pages={384--403},
-  year={1985},
-  publisher={American Society of Civil Engineers}
-}
-
-
-
-@article{Rosenfeld.Davis:1979,
-  title={Image segmentation and image models},
-  author={Rosenfeld, A. and Davis, L. S.},
-  journal={{Proceedings of the IEEE}},
-  volume={67},
-  number={5},
-  pages={764--772},
-  year={1979},
-  publisher={{IEEE}}
-}
-
-@article{Seed.Idriss:1971,
-  title={Simplified procedure for evaluating soil liquefaction potential},
-  author={Seed, H. B. and Idriss, I. M.},
-  journal={{Journal of the Soil Mechanics and Foundations Division}},
-  year={1971}
-}
-
-@techreport{Seed.etal:1975,
-  title={{Evaluation of soil liquefaction potential for level ground during earthquakes. A summary report}},
-  author={Seed, H. B. and Arango, I. and Chan, C. K.},
-  year={1975},
-  institution={{Shannon and Wilson, Inc., Seattle, Wash.(USA); Agbabian Associates, El Segundo, Calif.(USA)}}
-}
-
-@article{Seed:1983,
-  title={Evaluation of liquefaction potential using field performance data},
-  author={Seed, H. B. and Idriss, I. M. and Arango, I.},
-  journal={Journal of Geotechnical Engineering},
-  volume={109},
-  number={3},
-  pages={458--482},
-  year={1983},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Seed.etal:1984,
-  title={{The influence of SPT procedures in soil liquefaction resistance evaluations: Berkeley, University of California}},
-  author={Seed, H. B. and Tokimatsu, K. and Harder, L. F. and Chung, R. M.},
-  journal={{Earthquake Engineering Research Center Report UBC/EERC-84}},
-  volume={15},
-  year={1984}
-}
-
-
-@inproceedings{Seed.DeAlba:1986,
-  title={{Use of SPT and CPT tests for evaluating the liquefaction resistance of sands}},
-  author={Seed, H.B. and De Alba, P.},
-  booktitle={Use of in situ tests in geotechnical engineering},
-  pages={281--302},
-  year={1986},
-  organization={{ASCE}}
-}
-
-
-
-@article{Shamoto.etal:1998,
-  title={Methods for evaluating residual post-liquefaction ground settlement and horizontal displacement},
-  author={Shamoto, Y. and Zhang, J. M. and Tokimatsu, K.},
-  journal={Soils and Foundations},
-  volume={38},
-  pages={69--84},
-  year={1998},
-  publisher={Japanese Society of soil Mechanics and Foundation Engineering}
-}
-
-@article{Shinozuka.etal:2000,
-  title={Statistical analysis of fragility curves},
-  author={Shinozuka, M. and Feng, M. Q. and Lee, J. and Naganuma, T.},
-  journal={Journal of Engineering Mechanics},
-  volume={126},
-  number={12},
-  pages={1224--1231},
-  year={2000},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Shuttle.Cunning:2007,
-  title={Liquefaction potential of silts from {CPTu}},
-  author={Shuttle, D. A. and Cunning, J.},
-  journal={Canadian Geotechnical Journal},
-  volume={44},
-  number={1},
-  pages={1--19},
-  year={2007},
-  publisher={{NRC Research Press}}
-}
-
-@article{Sonmez:2003,
-  title={Modification of the liquefaction potential index and liquefaction susceptibility mapping for a liquefaction-prone area {(Inegol, Turkey)}},
-  author={Sonmez, H.},
-  journal={Environmental Geology},
-  volume={44},
-  number={7},
-  pages={862--871},
-  year={2003},
-  publisher={Springer}
-}
-
-@article{Sonmez.Gokceoglu:2005,
-  title={A liquefaction severity index suggested for engineering practice},
-  author={Sonmez, H. and Gokceoglu, C.},
-  journal={Environmental Geology},
-  volume={48},
-  number={1},
-  pages={81--91},
-  year={2005},
-  publisher={Springer}
-}
-
-@book{Sowers.etal:2010,
-  title={{Creek \& watershed map of Oakland and Berkeley}},
-  author={Sowers, J. M. and Richard, C. M.},
-  year={2010},
-  publisher={Oakland Museum of California}
-}
-
-@article{Stark.Olson:1995,
-  title={{Liquefaction resistance using CPT and field case histories}},
-  author={Stark, T. D. and Olson, S. M.},
-  journal={Journal of Geotechnical Engineering},
-  volume={121},
-  number={12},
-  pages={856--869},
-  year={1995},
-  publisher={American Society of Civil Engineers}
-}
-
-@inproceedings{Sugawara:1989,
-  title={{Empirical correlation of liquefaction potential using CPT}},
-  author={Sugawara, N.},
-  booktitle={Proc., 12th Int. Conf. on Soil Mechanics and Foundation Engineering},
-  pages={335--338},
-  year={1989}
-}
-
-@inproceedings{Suzuki.etal:1995,
-  title={Empirical correlation of soil liquefaction based on cone penetration test},
-  author={Suzuki, Y. and Koyamada, K. and Tokimatsu, K. and Taya, Y. and Kubota, Y.},
-  booktitle={Proc., 1st Int. Conf. Geotechnical Earthquake Engineering},
-  pages={369--374},
-  year={1995},
-  organization={{AA Balkema, Rotterdam, The Netherlands}}
-}
-
-@article{Taylor.Burrough:1986,
-  title={{Multiscale sources of spatial variation in soil. III. Improved methods for fitting the nested model to one-dimensional semivariograms}},
-  author={Taylor, C, C. and Burrough, P. A.},
-  journal={Mathematical Geology},
-  volume={18},
-  number={8},
-  pages={811--821},
-  year={1986},
-  publisher={Springer}
-}
-
-@article{Thompson.etal:2007,
-  title={{Spatial correlation of shear-wave velocity in the San Francisco Bay Area sediments}},
-  author={Thompson, E. M. and Baise, L. G. and Kayen, R. E.},
-  journal={Soil Dynamics and Earthquake Engineering},
-  volume={27},
-  number={2},
-  pages={144--152},
-  year={2007},
+  pages={153--166},
+  year={2017},
   publisher={Elsevier}
 }
 
-@inproceedings{Toprak.etal:1999,
-  title={{CPT-and SPT-based probabilistic assessment of liquefaction potential}},
-  author={Toprak, S. and Holzer, T. L. and Bennett, M. J. and Tinsley, J. C.},
-  booktitle={Proc., 7th US--Japan Workshop on Earthquake Resistant Design of Lifeline Facilities and Countermeasures against Liquefaction},
-  year={1999}
+
+@software{SURF,
+  author       = {Charles Wang},
+  title        = {NHERI-SimCenter/SURF: v0.2.0},
+  month        = sep,
+  year         = 2019,
+  publisher    = {Zenodo},
+  version      = {v0.2.0},
+  doi          = {10.5281/zenodo.3463676},
+  url          = {https://doi.org/10.5281/zenodo.3463676}
 }
 
 
-
-@techreport{Tokimatsu.Seed:1984,
-  title={Simplified procedures for the evaluation of settlements in clean sands},
-  author={Tokimatsu, K. and Seed, H. B.},
-  year={1984},
-  number={{CB/EERC-84/16}},  
-  institution={{Earthquake Engineering Research Center, University of California}}
+@misc{BRAILS,
+  author       = {Charles Wang and
+                  Qian Yu and
+                  Frank McKenna and
+                  Barbaros Cetiner and
+                  Stella X. Yu and
+                  Ertugrul Taciroglu and
+                  Kincho H. Law},
+  title        = {NHERI-SimCenter/BRAILS: v1.0.1},
+  month        = oct,
+  year         = 2019,
+  publisher    = {Zenodo},
+  version      = {v1.0.1},
+  doi          = {10.5281/zenodo.3483208},
+  url          = {https://doi.org/10.5281/zenodo.3483208}
 }
 
-@article{Tokimatsu.Seed:1987,
-  title={Evaluation of settlements in sands due to earthquake shaking},
-  author={Tokimatsu, K. and Seed, H. B.},
-  journal={Journal of Geotechnical Engineering},
-  volume={113},
-  number={8},
-  pages={861--878},
-  year={1987},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Trask.Rolston:1951,
-  title={{Engineering geology of San Francisco Bay, California}},
-  author={Trask, P. D and Rolston, J. W.},
-  journal={Geological Society of America Bulletin},
-  volume={62},
-  number={9},
-  pages={1079--1110},
-  year={1951},
-  publisher={Geological Society of America}
-}
-
-@article{Tsukamoto.etal:2004,
-  title={Settlement of silty sand deposits following liquefaction during earthquakes},
-  author={Tsukamoto, Y. and Ishihara, K. and Sawada, S.},
-  journal={Soils and Foundations},
-  volume={44},
-  number={5},
-  pages={135--148},
-  year={2004}
-}
-
-@article{Tsukamoto.Ishihara:2010,
-  title={Analysis on settlement of soil deposits following liquefaction during earthquakes},
-  author={Tsukamoto, Y. and Ishihara, K.},
-  journal={Soils and Foundations},
-  volume={50},
-  number={3},
-  pages={399--411},
-  year={2010}
-}
-
-@article{Ueng.etal:2010,
-  title={Settlements of saturated clean sand deposits in shaking table tests},
-  author={Ueng, T. S. and Wu, C. W. and Cheng, H. W. and Chen, C. H.},
-  journal={Soil Dynamics and Earthquake Engineering},
-  volume={30},
-  number={1},
-  pages={50--60},
-  year={2010},
-  publisher={Elsevier}
-}
-
-@article{Uzielli.etal:2005,
-  title={Random field characterisation of stress-nomalised cone penetration testing parameters},
-  author={Uzielli, M. and Vannucchi, G. and Phoon, K. K.},
-  journal={G\'eotechnique},
-  volume={55},
-  number={1},
-  pages={3--20},
-  year={2005},
-  publisher={Thomas Telford}
-}
-
-
-@Misc{USGS:2008,
-  author={U.S. Geological Survey},
-  howpublished={\href{http://geohazards.usgs.gov/deaggint/2008/}{http://geohazards.usgs.gov/deaggint/2008/}},
-  title={{USGS National Seismic Hazard Maps}},
-  year={2008}
-}
-
-@Misc{USGS:2014,
-  author={{USGS}},
-  howpublished={\href{http://earthquake.usgs.gov/hazards/products/conterminous/2014/data/}{http://earthquake.usgs.gov/hazards/products/conterminous/2014/data/}},
-  title={{U.S. Geological Survey National Seismic Hazard Maps}},
-  year={2014}
-}
-
-@Misc{USGS:2015,
-  author={{USGS}},
-  howpublished={\href{http://earthquake.usgs.gov/research/cpt/}{http://earthquake.usgs.gov/research/cpt/}},
-  title={{U.S. Geological Survey Hazards Program CPT database}},
-  year={2015}
-}
-
-@article{Valverde.etal:2014,
-  title={Simplified empirical method for predicting earthquake-induced settlements and its application to a large area in Spain},
-  author={{Valverde-Palacios, I and Vidal, F and Valverde-Espinosa, I and Mart{\'\i}n-Morales, M}},
-  journal={Engineering Geology},
-  volume={181},
-  pages={58--70},
-  year={2014},
-  publisher={Elsevier}
-}
-
-@article{vanBallegooy.etal:2015,
-  title={{Evaluation of CPT-based liquefaction procedures at regional scale}},
-  author={van Ballegooy, S. and Wentz, F. and Boulanger, R. W.},
-  journal={{Soil Dynamics and Earthquake Engineering}},
-  volume={79},
-  pages={315--334},
-  year={2015},
-  publisher={Elsevier}
-}
-
-@book{Vanmarcke:2010,
+@book{vanmarcke2010random,
   title={Random fields: analysis and synthesis},
-  author={Vanmarcke, E.},
+  author={Vanmarcke, Erik},
   year={2010},
   publisher={World Scientific}
 }
 
-@article{Vivek.Raychowdhury:2014,
-  title={{Probabilistic and spatial liquefaction analysis using CPT data: a case study for Alameda County site}},
-  author={Vivek, B. and Raychowdhury, P.},
-  journal={Natural Hazards},
-  volume={71},
-  number={3},
-  pages={1715--1732},
+@misc{wael_elhaddad_2018_1442914,
+  author       = {Wael Elhaddad and
+                  Frank McKenna and
+                  John B. Lowe and
+                  Mats Rynge},
+  title        = {{NHERI-SimCenter/WorkflowRegionalEarthquake: 
+                   Regional Earthquake Loss Estimation Workflow}},
+  month        = oct,
+  year         = 2018,
+  doi          = {10.5281/zenodo.1442914},
+  url          = {https://doi.org/10.5281/zenodo.1442914}
+}
+
+@article{lawrence1997face,
+  title={Face recognition: A convolutional neural-network approach},
+  author={Lawrence, Steve and Giles, C Lee and Tsoi, Ah Chung and Back, Andrew D},
+  journal={IEEE transactions on neural networks},
+  volume={8},
+  number={1},
+  pages={98--113},
+  year={1997},
+  publisher={IEEE}
+}
+
+@inproceedings{krizhevsky2012imagenet,
+  title={Imagenet classification with deep convolutional neural networks},
+  author={Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E},
+  booktitle={Advances in neural information processing systems},
+  pages={1097--1105},
+  year={2012}
+}
+
+@inproceedings{naik2014streetscore,
+  title={Streetscore-predicting the perceived safety of one million streetscapes},
+  author={Naik, Nikhil and Philipoom, Jade and Raskar, Ramesh and Hidalgo, C{\'e}sar},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops},
+  year={2014}
+}
+
+@article{law2018take,
+  title={Take a look around: using street view and satellite images to estimate house prices},
+  author={Law, Stephen and Paige, Brooks and Russell, Chris},
+  journal={arXiv preprint arXiv:1807.07155},
+  year={2018}
+}
+
+@article{gebru2017using,
+  title={Using deep learning and Google Street View to estimate the demographic makeup of neighborhoods across the United States},
+  author={Gebru, Timnit and Krause, Jonathan and Wang, Yilun and Chen, Duyun and Deng, Jia and Aiden, Erez Lieberman and Fei-Fei, Li},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={114},
+  number={50},
+  pages={13108--13113},
+  year={2017},
+  publisher={National Acad Sciences}
+}
+
+@article{kang2018building,
+  title={Building instance classification using street view images},
+  author={Kang, Jian and K{\"o}rner, Marco and Wang, Yuanyuan and Taubenb{\"o}ck, Hannes and Zhu, Xiao Xiang},
+  journal={ISPRS Iournal of Photogrammetry and Remote Sensing},
+  volume={145},
+  pages={44--59},
+  year={2018},
+  publisher={Elsevier}
+}
+
+@misc{stateoftheart2019,
+  author       = {Deierlein, Gregory and
+                  Zsarnóczay, Adam, and et al},
+  title        = {{State-of-Art in Computational Simulation for 
+                   Natural Hazards Engineering}},
+  month        = feb,
+  year         = 2019,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.2579582},
+  url          = {https://doi.org/10.5281/zenodo.2579582}
+}
+
+@misc{openaddress,
+  author       = {OpenAddress},
+  title        = {{OpenAddress}},
+  month        = oct,
+  year         = 2018,
+  url          = {https://openaddresses.io/}
+}
+
+@misc{msfootprint,
+  author       = {Microsoft},
+  title        = {{US Building Footprints}},
+  url          = {https://github.com/microsoft/USBuildingFootprints}
+}
+
+@misc{mapquest,
+  author       = {MapQuest},
+  title        = {{MapQuest Geocoding API}},
+  url          = {https://developer.mapquest.com/documentation/geocoding-api/}
+}
+
+@misc{googlegeociding,
+  author       = {Google},
+  title        = {{Google Geocoding API}},
+  url          = {https://developers.google.com/maps/documentation/geocoding/start}
+}
+
+@article{volk2014building,
+  title={Building Information Modeling (BIM) for existing buildings—Literature review and future needs},
+  author={Volk, Rebekka and Stengel, Julian and Schultmann, Frank},
+  journal={Automation in construction},
+  volume={38},
+  pages={109--127},
   year={2014},
-  publisher={Springer}
-}
-
-@article{Wang.Takada:2005,
-  title={Macrospatial correlation model of seismic ground motions},
-  author={Wang, M. and Takada, T},
-  journal={Earthquake Spectra},
-  volume={21},
-  number={4},
-  pages={1137--1156},
-  year={2005}
-}
-
-@techreport{WGCEP:1999,
-  title={{Earthquake probabilities in the San Francisco Bay region 2000–2030: A summary of findings}},
-  author={{WGCEP}},
-  year={1999},
-  number={{U.S. Geol. Surv. Open-File Rep. 99-517,36pp}},
-  institution={{United States Geological Survey}}
-}
-
-@techreport{WGCEP:2003,
-  title={{Earthquake probabilities in the San Francisco Bay region 2002–2031: A summary of findings}},
-  author={{WGCEP}},
-  year={2003},
-  number={{U.S. Geol. Surv. Open-File Rep. 03-214}},
-  institution={{United States Geological Survey}}
-}
-
-@inproceedings{Wu.Seed:2004,
-  title={Estimation of liquefaction-induced ground settlement (case studies)},
-  author={Wu, J. and Seed, R. B.},
-  booktitle={Proceedings of the 5th International Conference on Case Histories in Geotechnical Engineering},
-  note={Paper 6},
-  year={2004},
-  publisher={Springer}  
-}
-
-@article{Yoshimine.etal:2006,
-  title={Flow deformation of liquefied sand under constant shear load and its application to analysis of flow slide of infinite slope},
-  author={Yoshimine, M. and Nishizaki, H. and Amano, K. and Hosono, Y.},
-  journal={{Soil Dynamics and Earthquake Engineering}},
-  volume={26},
-  number={2},
-  pages={253--264},
-  year={2006},
   publisher={Elsevier}
 }
 
-@book{Youd.Idriss:1997,
-  title={Proceeding of the {NCEER} workshop on evaluation of liquefaction resistance of soils},
-  author={Youd, T. L. and Idriss, I. M.},
-  booktitle={Technical report {NCEER}},
-  volume={97},
-  year={1997},
-  publisher={{US National Center for Earthquaake Engineering Research (NCEER)}}
+@misc{ISO29481-1,
+  title={ISO 29481-1: 2016 (E): Building Information Modeling—Information Delivery Manual—Part 1: Methodology and Format},
+  author={Standard, ISO},
+  year={2016},
+  publisher={ISO, Geneva, Switzerland,}
 }
 
-@incollection{Youd.Noble:1997,
-  title={Liquefaction criteria based on statistical and probabilistic analyses},
-  author={Youd, T. L. and Noble, S. K},
-  booktitle={{Technical Report NCEER}},
-  volume={97},
-  pages={201--15},
-  year={1997},
-  publisher={{US National Center for Earthquake Engineering Research (NCEER)}}
-}
-
-@article{Youd.etal:2001,
-  title={{Liquefaction resistance of soils: summary report from the 1996 {NCEER} and 1998 {NCEER/NSF} workshops on evaluation of liquefaction resistance of soils}},
-  author={Youd, T. L. and Idriss, I. M. and Andrus, R. D. and Arango, I. and Castro, G. and Christian, J.T. and Dobry, R. and Finn, D. W. L. and Harder Jr, L. F. and Hynes, M. E. and Ishihara, K. and Koester, J. and Liao, S. and Marcuson, W. III. and Martin, G. and Mitchell, J. and Moriwaki, Y. and Power, M. and Robertson, P. and Seed, R. and Stokoe, K. II.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={127},
-  number={4},
-  pages={297--313},  
-  year={2001},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Zhang.Shi:1995,
-  title={{Liquefaction prediction based on qc and D50}},
-  author={Zhang, R.  and Shi, Z.},
-  journal={Earthquake Eng. Eng. Vibration},
-  volume={151},
-  pages={100--110},
-  year={1995}
-}
-
-@article{Zhang.etal:2002,
-  title={Estimating liquefaction-induced ground settlements from {CPT} for level ground},
-  author={Zhang, G. and Robertson, P. K. and Brachman, R. WI.},
-  journal={Canadian Geotechnical Journal},
-  volume={39},
-  number={5},
-  pages={1168--1180},
-  year={2002},
-  publisher={{NRC Research Press}}
-}
-
-@inproceedings{Ohtomo.Shinozuka:1990,
-  title={Two-dimensional spatial severity of liquefaction},
-  author={Ohtomo, K. and Shinozuka, M.},
-  booktitle={Proceedings of the 8th Japan Earthquake Engineering Symposium, Tokyo},
-  year={1990}
-}
-
-@article{Koutsourelakis.etal:2002,
-  title={Risk assessment of an interacting structure--soil system due to liquefaction},
-  author={Koutsourelakis, S. and Prevost, J. H. and Deodatis, G.},
-  journal={Earthquake Engineering \& Structural Dynamics},
-  volume={31},
-  number={4},
-  pages={851--879},
-  year={2002},
-  publisher={Wiley Online Library}
-}
-
-
-@misc{Hecht:1990,
-  title={Neurocomputing},
-  author={{Hecht-Nielsen, R.}},
-  year={1990},
-  publisher={{Addison-Wesley}}
-}
-
-@book{Zurada:1992,
-  title={Introduction to artificial neural systems},
-  author={Zurada, J. M.},
-  volume={8},
-  year={1992},
-  publisher={{West Publishing Company St. Paul}}
-}
-
-@book{Fausett:1994,
-  title={Fundamentals of neural networks: architectures, algorithms, and applications},
-  author={Fausett, L.},
-  year={1994},
-  publisher={{Prentice-Hall International}}
-}
-
-@article{Lee.etal:2003,
-  title={Landslide susceptibility analysis using GIS and artificial neural network},
-  author={Lee, Saro and Ryu, Joo-Hyung and Min, Kyungduck and Won, Joong-Sun},
-  journal={Earth Surface Processes and Landforms},
-  volume={28},
-  number={12},
-  pages={1361--1376},
-  year={2003},
-  publisher={Wiley Online Library}
-}
-
-@inproceedings{Oommen.Baise:2008,
-  title={A new approach to liquefaction potential mapping using satellite remote sensing and support vector machine algorithm},
-  author={Oommen, Thomas and Baise, Laurie G},
-  booktitle={{Geoscience and Remote Sensing Symposium, 2008. IGARSS 2008. IEEE International}},
-  volume={3},
-  pages={{III--51}},
-  year={2008},
-  organization={{IEEE}}
-}
-
-@article{Sitharam.etal:2008,
-  title={Spatial variability of rock depth in Bangalore using geostatistical, neural network and support vector machine models},
-  author={Sitharam, TG and Samui, Pijush and Anbazhagan, P},
-  journal={Geotechnical and Geological Engineering},
-  volume={26},
-  number={5},
-  pages={503--517},
-  year={2008},
-  publisher={Springer}
-}
-
-@article{Moysey.etal:2003,
-  title={Stochastic estimation of facies using ground penetrating radar data},
-  author={Moysey, S and Caers, J and Knight, R and Allen-King, RM},
-  journal={Stochastic Environmental Research and Risk Assessment},
-  volume={17},
-  number={5},
-  pages={306--318},
-  year={2003},
-  publisher={Springer}
-}
-
-@book{Malmgren.etal:2012,
-  title={{Artificial Neural Networks in Medicine and Biology: Proceedings of the ANNIMAB-1 Conference, G{\"o}teborg, Sweden, 13--16 May 2000}},
-  author={Malmgren, Helge and Borga, Magnus and Niklasson, Lars},
-  year={2012},
-  publisher={Springer Science \& Business Media}
-}
-
-@article{Jayalakshmi.Santhakumaran:2011,
-  title={Statistical Normalization and Back Propagationfor Classification},
-  author={Jayalakshmi, T and Santhakumaran, A},
-  journal={International Journal of Computer Theory and Engineering},
-  volume={3},
-  number={1},
-  pages={89},
-  year={2011},
-  publisher={{IACSIT Press}}
-}
-
-@book{Bishop:1995,
-  title={Neural networks for pattern recognition},
-  author={Bishop, Christopher M},
-  year={1995},
-  publisher={Oxford University Press}
-}
-
-@article{Yang.etal:2000,
-  title={Recognition and classification of crop and weeds},
-  author={Yang, C. C. and Prasher, S. O. and Landry, J. A. and Ramaswam, H. S. and Ditommaso, A.},
-  journal={Canadian Agricultural Engineering},
-  volume={42},
-  number={3},
-  year={2000}
-}
-
-@article{Amini:2008,
-  title={{Optimum learning rate in back-propagation neural network for classification of satellite images (IRS-1D)}},
-  author={Amini, J},
-  journal={Scientia Iranica},
-  volume={15},
-  number={6},
-  pages={558--567},
-  year={2008}
-}
-
-@article{Shahin.etal:2008,
-  title={State of the art of artificial neural networks in geotechnical engineering},
-  author={Shahin, Mohamed A and Jaksa, Mark B and Maier, Holger R},
-  journal={Electronic Journal of Geotechnical Engineering},
-  volume={8},
-  pages={1--26},
-  year={2008},
-  publisher={Citeseer}
-}
-
-@article{Johnson.Rogers:1998,
-  title={Using artificial neural networks and the genetic algorithm to optimize well field design: phase I final report},
-  author={Johnson, VM and Rogers, LL},
-  journal={Lawrence Livermore National Laboratory, Livermore},
-  year={1998}
-}
-
-@article{Lou.Brunn:1998,
-  title={An offset error compensation method for improving ANN accuracy when used for position control of precision machinery},
-  author={Lou, YF and Brunn, P},
-  journal={Neural Computing \& Applications},
-  volume={7},
-  number={1},
-  pages={90--95},
-  year={1998},
-  publisher={Springer}
-}
-
-@article{Yanar:2007,
-  title={{Artificial neural networks as a tool for site selection within GIS}},
-  author={Yanar, TA and Aky{\"u}re, Z},
-  journal={Geodetic and Geographic Information Technologies, Natural and Applied Sciences},
-  volume={6531},
-  year={2007}
-}
-
-@article{Zemouri.etal:2010,
-  title={Improving the prediction accuracy of recurrent neural network by a PID controller.},
-  author={Zemouri, Ryad and Gouriveau, Rafael and Patic, Paul Ciprian},
-  journal={International Journal of Systems Applications, Engineering \& Development.},
-  volume={4},
-  number={2},
-  pages={19--34},
-  year={2010}
-}
-
-
-@phdthesis{Dechpichai:2010,
-  author       = {Dechpichai, Porntip}, 
-  title        = {Nonlinear neural network for conditional mean and variance forecasts},
-  school       = {University of Wollongong},
-  year         = 2010,
-  address      = {New Zealand},
-  month        = 9,
-}
-
-@article{Tu:1996,
-  title={Advantages and disadvantages of using artificial neural networks versus logistic regression for predicting medical outcomes},
-  author={Tu, Jack V},
-  journal={Journal of Clinical Epidemiology},
-  volume={49},
-  number={11},
-  pages={1225--1231},
-  year={1996},
-  publisher={Elsevier}
-}
-
-@article{Gangopadhyay.etal:1999,
-  title={Subsurface characterization using artificial neural network and GIS},
-  author={Gangopadhyay, Subhrendu and Gautam, Tirtha Raj and Gupta, Ashim Das},
-  journal={Journal of Computing in Civil Engineering},
-  volume={13},
-  number={3},
-  pages={153--161},
-  year={1999},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{vanLeeuwen.etal:2008,
-  title={Development of an integrated ANN—GIS framework for inland excess water monitoring},
-  author={Van Leeuwen, B and Tobak, Z and Szatm{\'a}ri, J},
-  journal={Journal of Environmental Geography},
-  volume={1},
-  pages={1--6},
-  year={2008}
-}
-
-@article{Prasomphan.Mase:2013,
-  title={Generating Prediction Map for Geostatistical Data Based on an Adaptive Neural Network Using only Nearest Neighbors},
-  author={Prasomphan, Sathit and Mase, Shigeru},
-  journal={International Journal of Machine Learning and Computing},
-  volume={3},
-  number={1},
-  pages={98},
+@article{mill2013combined,
+  title={Combined 3D building surveying techniques--terrestrial laser scanning (TLS) and total station surveying for BIM data management purposes},
+  author={Mill, Tarvo and Alt, Aivars and Liias, Roode},
+  journal={Journal of Civil Engineering and Management},
+  volume={19},
+  number={sup1},
+  pages={S23--S32},
   year={2013},
-  publisher={{IACSIT Press}}
-}
-
-@article{Demyanov.etal:1998,
-  title={Neural network residual kriging application for climatic data},
-  author={Demyanov, V and Kanevsky, M and Chernov, S and Savelieva, E and Timonin, V},
-  journal={Journal of Geographic Information and Decision Analysis},
-  volume={2},
-  number={2},
-  pages={215--232},
-  year={1998},
-  publisher={Citeseer}
-}
-
-@inproceedings{Liu.etal:2009,
-  title={Application of generalized regression neural network residual kriging for terrain surface interpolation},
-  author={Liu, Fucheng and He, Xuezhao and Zhou, Li},
-  booktitle={International Symposium on Spatial Analysis, Spatial-temporal Data Modeling, and Data Mining},
-  pages={74925F--74925F},
-  year={2009},
-  organization={International Society for Optics and Photonics}
-}
-
-@article{Rizzo.Dougherty:1994,
-  title={Characterization of aquifer properties using artificial neural networks: Neural kriging},
-  author={Rizzo, Donna M and Dougherty, David E},
-  journal={Water Resources Research},
-  volume={30},
-  number={2},
-  pages={483--497},
-  year={1994},
-  publisher={Wiley Online Library}
-}
-
-@inproceedings{Youd.Hoose:1977,
-  title={Liquefaction susceptibility and geologic setting},
-  author={Youd, T Leslie and Hoose, SN},
-  booktitle={Proc., 6th World Conf. on Earthquake Engineering},
-  volume={6},
-  pages={37--42},
-  year={1977},
-  organization={Indian Society of Earthquake Technology Roorkee, India}
-}
-
-@article{Heidari.Ronald:2010,
-  title={Mapping liquefaction potential of aged soil deposits in Mount Pleasant, South Carolina},
-  author={Heidari, Tahereh and Andrus, Ronald D},
-  journal={Engineering Geology},
-  volume={112},
-  number={1},
-  pages={1--12},
-  year={2010},
-  publisher={Elsevier}
-}
-
-@article{Youd.Perkins:1987,
-  title={Mapping of liquefaction severity index},
-  author={Youd, T Leslie and Perkins, David M},
-  journal={Journal of Geotechnical Engineering},
-  volume={113},
-  number={11},
-  pages={1374--1392},
-  year={1987},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Rix.Romero:2006,
-  title={Liquefaction potential mapping in memphis and Shelby County, Tennessee},
-  author={Rix, Glenn J and Romero-Hudock, Salome},
-  journal={Engineering Geology},
-  volume={27},
-  year={2006}
-}
-
-@article{Vubrinovski.etal:2012,
-  title={Lateral spreading and its impacts in urban areas in the 2010--2011 Christchurch earthquakes},
-  author={Cubrinovski, M and Robinson, K and Taylor, M and Hughes, M and Orense, R},
-  journal={New Zealand Journal of Geology and Geophysics},
-  volume={55},
-  number={3},
-  pages={255--269},
-  year={2012},
   publisher={Taylor \& Francis}
 }
-
-@article{Rauch.Martin:2000,
-  title={EPOLLS model for predicting average displacements on lateral spreads},
-  author={{Rauch, Alan F and Martin III, James R}},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={126},
+@article{watson2011digital,
+  title={Digital buildings--Challenges and opportunities},
+  author={Watson, Alastair},
+  journal={Advanced engineering informatics},
+  volume={25},
   number={4},
-  pages={360--371},
-  year={2000},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Youd.etal:2002,
-  title={Revised multilinear regression equations for prediction of lateral spread displacement},
-  author={Youd, T Leslie and Hansen, Corbett M and Bartlett, Steven F},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={128},
-  number={12},
-  pages={1007--1017},
-  year={2002},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Zhang.etal:2004,
-  title={Estimating liquefaction-induced lateral displacements using the standard penetration test or cone penetration test},
-  author={{Zhang, G and Robertson, Peter K and Brachman, RWI}},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={130},
-  number={8},
-  pages={861--871},
-  year={2004},
-  publisher={American Society of Civil Engineers}
-}
-
-@inproceedings{Faris.etal:2006,
-  title={A semi-empirical model for the estimation of maximum horizontal displacement due to liquefaction-induced lateral spreading},
-  author={Faris, Allison T and Seed, Raymond B and Kayen, Robert E and Wu, Jiaer},
-  booktitle={{Proc. 8th US Conference on Earthquake Engineering}},
-  volume={3},
-  pages={1584--1593},
-  year={2006}
-}
-
-@article{Gillins:2014,
-  title={Considering Topography when Mapping Liquefaction Hazard with the Liquefaction Potential Index},
-  author={Gillins, Daniel T},
-  year={2014}
-}
-
-@article{Andrade.Borja:2006,
-  title={Capturing strain localization in dense sands with random density},
-  author={Andrade, Jos{\'e} E and Borja, Ronaldo I},
-  journal={International Journal for Numerical Methods in Engineering},
-  volume={67},
-  number={11},
-  pages={1531--1564},
-  year={2006},
-  publisher={{John Wiley \& Sons, Baffins Lane Chichester W. Sussex PO 19 1 UD UK,}}
-}
-
-@article{Borja.Andrade:2006,
-  title={Critical state plasticity. Part VI: Meso-scale finite element simulation of strain localization in discrete granular materials},
-  author={Borja, Ronaldo I and Andrade, Jos{\'e} E},
-  journal={Computer Methods in Applied Mechanics and Engineering},
-  volume={195},
-  number={37},
-  pages={5115--5140},
-  year={2006},
+  pages={573--581},
+  year={2011},
   publisher={Elsevier}
 }
 
-@article{Borja:2006,
-  title={Condition for liquefaction instability in fluid-saturated granular soils},
-  author={Borja, Ronaldo I},
-  journal={Acta Geotechnica},
-  volume={1},
+
+
+@article{li2019semantic,
+  title={Semantic segmentation-based building footprint extraction using very high-resolution satellite images and multi-source GIS data},
+  author={Li, Weijia and He, Conghui and Fang, Jiarui and Zheng, Juepeng and Fu, Haohuan and Yu, Le},
+  journal={Remote Sensing},
+  volume={11},
   number={4},
-  pages={211--224},
-  year={2006},
-  publisher={Springer}
+  pages={403},
+  year={2019},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+@article{zhao2018building,
+  title={Building Extraction From Satellite Images Using Mask R-CNN With Building Boundary Regularization.},
+  author={Zhao, Kang and Kang, Jungwon and Jung, Jaewook and Sohn, Gunho},
+  journal={CVPR Workshops},
+  pages={247--251},
+  year={2018}
 }
 
-@article{Hill:1958,
-  title={A general theory of uniqueness and stability in elastic-plastic solids},
-  author={Hill, R1},
-  journal={Journal of the Mechanics and Physics of Solids},
-  volume={6},
-  number={3},
-  pages={236--249},
-  year={1958},
-  publisher={Elsevier}
+@article{bischke2019multi,
+  title={Multi-task learning for segmentation of building footprints with deep neural networks},
+  author={Bischke, Benjamin and Helber, Patrick and Folz, Joachim and Borth, Damian and Dengel, Andreas},
+  journal={2019 IEEE International Conference on Image Processing (ICIP)},
+  pages={1480--1484},
+  year={2019},
+  organization={IEEE}
 }
 
-@article{Verdugo.Ishihara:1996,
-  title={The steady state of sandy soils},
-  author={Verdugo, Ramon and Ishihara,	K},
-  journal={Soils and Foundations},
-  volume={33},
-  pages={81--92},
-  year={1996},
-}
 
-@inproceedings{Andrade.etal:2013,
-  title={Micromechanical origin of static and dynamic liquefaction in granular soils},
-  author={Andrade, JE and Mital, U and Mohammadnejad, T},
-  booktitle={Poromechanics V sProceedings of the Fifth Biot Conference on Poromechanics},
-  pages={527--532},
-  year={2013},
-  organization={{ASCE}}
-}
-
-@article{Bardet.etal:2002,
-  title={Regional modeling of liquefaction-induced ground deformation},
-  author={Bardet, Jean-Pierre and Tobita, Tetsuo and Mace, Nicholas and Hu, Jianping},
-  journal={Earthquake Spectra},
-  volume={18},
-  number={1},
-  pages={19--46},
-  year={2002}
-}
-
-@inproceedings{Sasaki.etal:1991,
-  title={Shake table tests on lateral ground flow induced by soil liquefaction},
-  author={Sasaki, Yasushi and Tokida, Ken-ichi and Matsumoto, H and Saya, S},
-  booktitle={{Proc., 3rd Japan-US Workshop on Earthquake Resistant Design of Lifeline Facilities and Countermeasures for Soil Liquefaction, San Francisco, CA}},
-  pages={371--385},
-  year={1991},
-  organization={{National Center for Earthquake Engineering Research, SUNY-Buffalo, Buffalo, NY}}
-}
-
-@book{Abdoun:1997,
-  title={Modeling of seismically induced lateral spreading of multi-layered soil and its effect on pile foundations},
-  author={Abdoun, Tarek Hassan},
+@book{goovaerts1997geostatistics,
+  title={Geostatistics for natural resources evaluation},
+  author={Goovaerts, Pierre},
   year={1997},
-  publisher={Rensselaer Polytechnic Institute}
+  publisher={Oxford University Press on Demand}
 }
 
-@article{Seed:1979,
-  title={Soil liquefaction and cyclic mobility evaluation for level ground during earthquakes},
-  author={Seed, H Bolton},
-  journal={Journal of the Geotechnical Engineering Division},
-  volume={105},
-  number={2},
-  pages={201--255},
-  year={1979},
-  publisher={{ASCE}}
+@article{szegedy2016rethinking,
+  title={Rethinking the inception architecture for computer vision},
+  author={Szegedy, Christian and Vanhoucke, Vincent and Ioffe, Sergey and Shlens, Jon and Wojna, Zbigniew},
+  journal={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={2818--2826},
+  year={2016}
 }
 
-@inproceedings{Hansen.Franks:1991,
-  title={Characterisation and Mapping of Earthquake Triggered Landslides for Seismic Zonation},
-  author={Hansen, A. and Franks, C.A.M},
-  booktitle={Proceedings of the Fourth International Conference on Seismic Zonation, Stanford, California},
-  volume={1},
-  pages={149-195},
-  year={1991}
-}
-
-@article{Seed:1968,
-  title={Landslides During Earthquakes Due to Soil Liquefaction},
-  author={Seed, H Bolton},
-  journal={Journal of the Soil Mechanics and Foundations Division},
-  volume={94},
-  pages={1053--1122},
-  year={1968},
-  publisher={{ASCE}}
-}
-
-@inproceedings{Lee.etal:1978,
-  title={Research needs and priorities for geotechnical earthquake engineering applications},
-  author={Lee, Kenneth L and Marcuson, WF and Stoke, KH and Yokel, FY},
-  booktitle={{Conf. held at Texas Univ., Austin, 2-3 Jun. 1977}},
-  volume={1},
-  pages={2--3},
-  year={1978}
-}
-
-@article{Keefer:2002,
-  title={Investigating landslides caused by earthquakes--a historical review},
-  author={Keefer, David K},
-  journal={Surveys in Geophysics},
-  volume={23},
-  number={6},
-  pages={473--510},
-  year={2002},
-  publisher={Springer}
-}
-
-@article{Plafker.etal:1971,
-  title={Geological aspects of the May 31, 1970, Peru earthquake},
-  author={Plafker, George and Ericksen, George E and Concha, Jaime Fern{\'a}ndez},
-  journal={Bulletin of the Seismological Society of America},
-  volume={61},
-  number={3},
-  pages={543--578},
-  year={1971},
-  publisher={Seismological Society of America}
-}
-
-@article{Andrus.Stokoe:2000,
-  title={Liquefaction resistance of soils from shear-wave velocity},
-  author={Andrus, Ronald D and Stokoe II, Kenneth H},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={126},
-  number={11},
-  pages={1015--1025},
-  year={2000},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Sitharam.etal:2009,
-  title={Post-liquefaction undrained monotonic behaviour of sands: experiments and DEM simulations},
-  author={Sitharam, TG and Vinod, JS and Ravishankar, BV},
-  journal={G{\'e}otechnique},
-  volume={59},
-  number={9},
-  pages={739--749},
-  year={2009},
-  publisher={Thomas Telford Ltd}
-}
-
-@article{Shafipour.Soroush:2008,
-  title={Fluid coupled-DEM modelling of undrained behavior of granular media},
-  author={Shafipour, R and Soroush, A},
-  journal={Computers and Geotechnics},
-  volume={35},
-  number={5},
-  pages={673--685},
-  year={2008},
-  publisher={Elsevier}
-}
-
-@inproceedings{Hakuno.Tarumi:1988,
-  title={Sand liquefaction analysis by granular assembly simulation},
-  author={Hakuno, Motohiko and Tarumi, Yuji},
-  booktitle={Proceedings of Ninth World Conference on Earthquake Engineering},
-  volume={8},
-  pages={231--236},
-  year={1988}
-}
-
-@article{Nakase.etal:1999,
-  title={A simulation study on liquefaction using DEM},
-  author={Nakase, Hitoshi and Takeda, Tomoyoshi and Oda, Masanobu},
-  journal={Earthquake geotechnical engineering. Balkema, Rotterdam},
-  pages={637--642},
-  year={1999}
-}
-
-@article{Gong.Zha:2012,
-  title={{DEM simulation of liquefaction for cohesionless media at grain scale}},
-  author={Gong, Guo-bin and Zha, Xiao-xiong},
-  journal={Journal of Central South University},
-  volume={19},
-  pages={2643--2649},
-  year={2012},
-  publisher={Springer}
-}
-
-@inproceedings{Michallet.etal:2012,
-  title={Physical and numerical modelling of sand liquefaction in waves interacting with a vertical wall},
-  author={Michallet, Herv{\'e} and Catalano, Emanuele and Berni, C{\'e}line and Chareyre, Bruno and Rameliarison, Val{\'e}rie and Barthelemy, Eric},
-  booktitle={{ICSE-6}},
-  pages={274},
-  year={2012}
-}
-
-@article{Kuhn.etal:2014,
-  title={Investigation of cyclic liquefaction with discrete element simulations},
-  author={Kuhn, Matthew R and Renken, Hannah E and Mixsell, Austin D and Kramer, Steven L},
-  journal={Journal of Geotechnical and Geoenvironmental Engineering},
-  volume={140},
-  number={12},
-  pages={04014075},
-  year={2014},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Nitka.etal:2011,
-  title={{Two-scale modeling of granular materials: a DEM-FEM approach}},
-  author={Nitka, Micha{\l} and Combe, Ga{\"e}l and Dascalu, Cristian and Desrues, Jacques},
-  journal={Granular Matter},
-  volume={13},
-  number={3},
-  pages={277--281},
-  year={2011},
-  publisher={Springer}
-}
-
-@article{Guo.Zhao:2014,
-  title={{A coupled FEM/DEM approach for hierarchical multiscale modelling of granular media}},
-  author={Guo, Ning and Zhao, Jidong},
-  journal={International Journal for Numerical Methods in Engineering},
-  volume={99},
-  number={11},
-  pages={789--818},
-  year={2014},
-  publisher={Wiley Online Library}
-}
-
-@article{Nguyen.etal:2014,
-  title={{FEM$\times$ DEM modelling of cohesive granular materials: Numerical homogenisation and multi-scale simulations}},
-  author={Nguyen, Trung and Combe, Ga{\"e}l and Caillerie, Denis and Desrues, Jacques},
-  journal={Acta Geophysica},
-  volume={62},
-  number={5},
-  pages={1109--1126},
-  year={2014}
-}
-
-@article{Morris.etal:2006,
-  title={{Simulations of fracture and fragmentation of geologic materials using combined FEM/DEM analysis}},
-  author={Morris, Joseph P and Rubin, MB and Block, GI and Bonner, MP},
-  journal={International Journal of Impact Engineering},
-  volume={33},
-  number={1},
-  pages={463--473},
-  year={2006},
-  publisher={Elsevier}
-}
-
-@article{Latham.etal:2008,
-  title={{Three-dimensional particle shape acquisition and use of shape library for DEM and FEM/DEM simulation}},
-  author={Latham, John-Paul and Munjiza, Antonio and Garcia, Xavier and Xiang, Jiansheng and Guises, Romain},
-  journal={Minerals Engineering},
-  volume={21},
-  number={11},
-  pages={797--805},
-  year={2008},
-  publisher={Elsevier}
-}
-
-@article{Shahin.etal:2016,
-  title={{A study of the influence of REV variability in double scale FEM$\times$ DEM analysis}},
-  author={Shahin, Ghassan and Desrues, Jacques and Dal Pont, Stefano and Combe, Ga{\"e}l and Argilaga, Albert},
-  journal={International Journal for Numerical Methods in Engineering},
-  year={2016},
-  publisher={Wiley Online Library}
-}
-
-@incollection{Li.etal:2016,
-  title={Advances in Multiscale Modeling of Granular Materials},
-  author={Li, Xikui and Liang, Yuanbo and Du, Youyao and Schrefler, Bernhard},
-  booktitle={Materials with Internal Structure},
-  pages={63--73},
-  year={2016},
-  publisher={Springer}
-}
-
-@article{Guo.Zhao:2016,
-  title={{3D multiscale modeling of strain localization in granular media}},
-  author={Guo, Ning and Zhao, Jidong},
-  journal={Computers and Geotechnics},
-  year={2016},
-  publisher={Elsevier}
-}
-
-
-@article{Divider:2016,
-  title={Down is for Compre. tex LPIMapping.bib},
-  author={Divider, Ning and Zhao, Jidong},
-  journal={Computers and Geotechnics},
-  year={2016},
-  publisher={Elsevier}
-}
-
-
-@article{Baise.etal:2008,
-  title={{Discussion of ``mapping liquefaction potential considering spatial correlations of CPT measurements'' by Chia-Nan Liu and Chien-Hsun Chen}},
-  author={Baise, L. G. and Lenz, J. A. and Thompson, E. M.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={134},
-  number={2},
-  pages={262--263},   
-  year={2008},
-  publisher={American Society of Civil Engineers}
-}
-
-
-
-
-@article{Bardet.etal:1993,
-  title={Liquefaction sand boils in {San Francisco} during 1989 Loma Prieta earthquake},
-  author={Bardet, J. P. and Kapuskar, M.},
-  journal={{Journal of Geotechnical Engineering}},
-  volume={119},
-  number={3},
-  pages={543--562},  
-  year={1993},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Beavan.etal:2012,
-  title={Ground displacements and dilatational strains caused by the 2010--2011 Canterbury earthquakes},
-  author={Beavan, J. and Levick, S. and Lee, J. and Jones, K.},
-  journal={{GNS Science Consultancy Report}},
-  volume={67},
-  pages={59},
-  year={2012}
-}
-
-
-
-@article{Boulanger.Idriss:2014,
-  title={CPT and SPT based liquefaction triggering procedures},
-  author={Boulanger, R. W. and Idriss, I. M.},
-  journal={{Center for Geotechnical Modeling, Department of Civil and Environmental Engineering, University of California, Davis, CA. Report No. UCD/CGM-14/01}},
-  year={2014}
-}
-
-@incollection{Bradley.Hughes:2012,
-  title={Conditional peak ground accelerations in the Canterbury earthquakes for conventional liquefaction assessment},
-  author={Bradley, B. A. and Hughes, M.},
-  booktitle={Technical Report for the Ministry of Business, Innovation and Employment, New Zealand},
-  year={2012}
-}
-
-@misc{Brown.Weeber:1992,
-  title={Geology of the Christchurch urban area, Institute of Geological and Nuclear Sciences 1:25,000 Geological Map 1},
-  author={Brown, L.J. and Weeber, J. H.},
-  year={1992},
-  publisher={Institute of Geological and Nuclear Sciences Limited Lower Hutt, New Zealand}
-}
-
-
-
-@book{Deutsch.Journel:1992,
-  title={{GSLIB: Geostatistical Software Library and User's Guide}},
-  author={Deutsch, C. V. and Journel, A. G.},
-  publisher={{Oxford University Press, New York}},
-  year={1992}
-}
-
-
-
-@article{Fenton:1999a,
-  title={Random field modeling of CPT data},
-  author={Fenton, Gordon A},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={125},
-  number={6},
-  pages={486--498},
-  year={1999},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Fenton:1999b,
-  title={Estimation for stochastic soil models},
-  author={Fenton, G. A.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  year={1999},
-  publisher={American Society of Civil Engineers}
-}
-
-
-
-
-@book{Idriss.Boulanger:2008,
-  title={Soil liquefaction during earthquakes},
-  author={Idriss, I.M. and Boulanger, R. W.},
-  year={2008},
-  publisher={Earthquake engineering research institute}
-}
-
-
-
-@article{Khoshnevisan.etal:2015,
-  title={{Probabilistic assessment of liquefaction-induced lateral spreads using CPT—focusing on the 2010--2011 Canterbury earthquake sequence}},
-  author={Khoshnevisan, S. and Juang, H. and Zhou, Y. G. and Gong, W.},
-  journal={Engineering Geology},
-  volume={192},
-  pages={113--128},
-  year={2015},
-  publisher={Elsevier}
-}
-
-
-
-@article{Ku.etal:2011,
-  title={Probabilistic version of the Robertson and Wride method for liquefaction evaluation: development and application},
-  author={Ku, C. S. and Juang, C. H. and Chang, C. W. and Ching, J.},
-  journal={{Canadian Geotechnical Journal}},
-  volume={49},
-  number={1},
-  pages={27--44},
-  year={2011},
-  publisher={{NRC Research Press}}
-}
-
-
-@book{Leuangthong.etal:2011,
-  title={{Solved Problems in Geostatistics}},
-  author={Leuangthong, O. and Khan, K. D. and Deutsch, C. V.},
-  year={2011},
-  publisher={{John Wiley \& Sons, Inc., Hoboken, New Jersey}}
-}
-
-@article{Liu.Chen:2006,
-  title={Mapping liquefaction potential considering spatial correlations of {CPT} measurements},
-  author={Liu, C. N. and Chen, C. H.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={132},
-  number={9},
-  pages={1178--1187},
-  year={2006},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Luna.Frost:1998,
-  title={Spatial liquefaction analysis system},
-  author={Luna, R. and Frost, J. D.},
-  journal={{Journal of Computing in Civil Engineering}},
-  volume={12},
-  number={1},
-  pages={48--56},
-  year={1998},
-  publisher={American Society of Civil Engineers}
-}
-
-@article{Maurer.etal:2015,
-  title={Assessment of CPT-based methods for liquefaction evaluation in a liquefaction potential index framework},
-  author={Maurer, B. W. and Green, R. A. and Cubrinovski, M. and Bradley, B. A.},
-  year={2015},
-  journal={{G\'{e}otechnique}},
-  volume={65},
-  number={5},
-  pages={328--336},  
-  publisher={Thomas Telford}
-}
-
-@article{Moss.etal:2009,
-  title={Reinvestigation of liquefaction and nonliquefaction case histories from the 1976 Tangshan earthquake},
-  author={Moss, R. E. and Kayen, R. and Tong, L. and Liu, S. and Cai, G. and Wu, J.},
-  journal={{Pacific Earthquake Engineering Research Center Report 2009/102}},
-  year={2009}
-}
-
-@book{NRC:1985,
-  title={{Liquefaction of Soils During Earthquakes}},
-  author={{National Research Council (NRC) Committee on Earthquake Engineering Research}},
-  year={1985},
-  publisher={National Academies}
-}
-
-@article{Pokhrel.etal:2013,
-  title={A kriging method of interpolation used to map liquefaction potential over alluvial ground},
-  author={Pokhrel, R. M. and Kuwano, J. and Tachibana, S.},
-  journal={{Engineering Geology}},
-  volume={152},
-  number={1},
-  pages={26--37},
-  year={2013},
-  publisher={Elsevier}
-}
-
-@article{Popescu.etal:1997,
-  title={Effects of spatial variability on soil liquefaction: some design recommendations},
-  author={Popescu, R. and Pr{\'e}vost, J. H. and Deodatis, G.},
-  journal={{G{\'e}otechnique}},
-  volume={47},
-  number={5},
-  pages={1019--1036},
-  year={1997},
-  publisher={Thomas Telford Ltd}
-}
-
-@article{Popescu.etal:2005,
-  title={{3D} effects in seismic liquefaction of stochastically variable soil deposits},
-  author={Popescu, R. and Prevost, J. H. and Deodatis, G.},
-  journal={{G{\'e}otechnique}},
-  volume={55},
-  number={1},
-  pages={21--31},
-  year={2005},
-  publisher={Thomas Telford}
-}
-
-@book{Remy.etal:2009,
-  title={{Applied Geostatistics with SGeMS: a User's Guide}},
-  author={Remy, N. and Boucher, A. and Wu, J},
-  year={2009},
-  publisher={Cambridge University Press, New York}
-}
-
-@article{Robertson:2009,
-  title={Performance based earthquake design using the {CPT}},
-  author={Robertson, P. K.},
-  journal={Proc. IS-Tokyo},
-  pages={3--20},
-  year={2009}
-}
-
-@article{Robertson.Wride:1998,
-  title={Evaluating cyclic liquefaction potential using the cone penetration test},
-  author={Robertson, P. K. and Wride, C. E.},
-  journal={{Canadian Geotechnical Journal}},
-  volume={35},
-  number={3},
-  pages={442--459},
-  year={1998},
-  publisher={{NRC Research Press}}
-}
-
-@article{Seed.etal:1985,
-  title={Influence of {SPT} procedures in soil liquefaction resistance evaluations},
-  author={Seed, B. H. and Tokimatsu, K. and Harder, L. F. and Chung, R. M.},
-  journal={{Journal of Geotechnical Engineering}},
-  volume={111},
-  number={12},
-  pages={1425--1445},
-  year={1985},
-  publisher={American Society of Civil Engineers}
-}
-
-
-
-
-
-@article{Toprak.Holzer:2003,
-  title={Liquefaction potential index: field assessment},
-  author={Toprak, S. and Holzer, T. L.},
-  journal={{Journal of Geotechnical and Geoenvironmental Engineering}},
-  volume={129},
-  number={4},
-  pages={315--322},
-  year={2003},
-  publisher={American Society of Civil Engineers}
+@misc{charles_wang_2019_3521067,
+  author       = {Charles Wang},
+  title        = {Random satellite images of buildings},
+  month        = oct,
+  year         = 2019,
+  publisher    = {Zenodo},
+  version      = {v1.0},
+  doi          = {10.5281/zenodo.3521067},
+  url          = {https://doi.org/10.5281/zenodo.3521067},
 }
