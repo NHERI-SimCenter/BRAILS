@@ -1,53 +1,4 @@
-# Understanding NJDEP Building Inventory
-There are 472,322 (453,361+18,961) buildings in this database (including 81,418 condos).
-
-## Tables
-
-### [BuildingFootprints_Master](BuildingFootprints_Master.md)
-* BldgUniqueID : Building id. The first four characters will be “NJBF,” followed by a 9-digit zero-padded number.
-* SourceCit: Source citation
-* Shape_Length : Longest edge (need to confirm with Tracy)
-* Shape_Area : Area
-* AttributeSourceCit : Attribute source citation
-
-### [TBL_Basic_Attributes](TBL_Basic_Attributes.md)
-* BldgUniqueID : Building id. The first four characters will be “NJBF,” followed by a 9-digit zero-padded number.
-* HAG : Highest Adjacent Grade elevation 
-* LAG : Lowest Adjacent Grade elevation 
-* AreaSqFt : Area in square feet
-* PamsPIN : Parcel ID from the MOD-IV
-* CentroidY : Latitude
-* CentroidX : Longitude 
-* BldgNum : Building number
-* BldgType : Building type
-* Elevation : Elevation
-* ElevUnits : Elevation units
-* County : County code
-* Municipality : Municipality 
-* MunicipalityCode : Municipality code 
-* BasicSourceCit : Basic attribute source citation
-
-### [TBL_SubstantialDamageEstimator](TBL_SubstantialDamageEstimator.md)
-* BldgUniqueID : Building id. The first four characters will be “NJBF,” followed by a 9-digit zero-padded number.
-* StructureType : Structure Type Code (Residential or Non-Residential.) (MOD-IV: BLDG_DESC, PROP_CLASS, & PROP_USE) Not complete.
-* ResidenceType : Residence Type Code (Residential Type Only: Single Family Residence, Town or Row House, Manufactured House.) (MOD-IV: BLDG_DESC, PROP_CLASS, & PROP_USE) Not complete.
-* StructureUse : Structure Use Code (Non-Residential Type Only: Apartments, Commercial Retail, Mini-Warehouse, etc.) (MOD-IV: BLDG_DESC, PROP_CLASS, & PROP_USE) Not complete.
-* FoundationType : Residential Type Only: Select from domain. Not complete.
-* SuperStructure : Residential Type Only: Select from domain. Not complete.
-* ExteriorFinish : Residential Type Only: Select from domain. Not complete.
-* ElevationLowestFloor : Typically assessor attribute. Not complete (empty).
-* Story : Select from domain. Not complete.
-* RoofCovering : Select from domain. Not complete.
-* HVACSystem : Empty
-* Quality : Empty
-* NFIPCommunityID : Typically assessor attribute. 
-* NFIPCommunityName : Typically assessor attribute. 
-* YearConstruction : Typically assessor attribute. 
-* SDESourceCit : Source citation details. 
-* FloodZone : From FIRM. 
-* FIRMPanelID : FIRM Panel number from S_FIRM_PAN. 
-
-### [TBL_UDF_Hazus](TBL_UDF_Hazus.md)
+### TBL_UDF_Hazus
 
 * BldgUniqueID    :  Building unique ID. The first four characters will be “NJBF,” followed by a 9-digit zero-padded number.
 * Tract           :  (Complete) Value for Census Tract or an area roughly equal to a neighborhood established by the Census Bureau.
@@ -80,13 +31,3 @@ There are 472,322 (453,361+18,961) buildings in this database (including 81,418 
 * ZipCode         :  Typically assessor field for property location – Zip Code.
 * Contact         :  (Empty) Typically assessor attribute for owner.
 * Comment         :  String.
-
-
-
-
-
-
-### [CondoParcels](CondoParcels.md)
-CONDOMINIUM PARCELS ATTRIBUTION
-* BldgUniqueID : Building unique ID. The first four characters will be “NJBF,” followed by a 9-digit zero-padded number.
-* PamsPIN : Municipality Code, Block, Lot, Qualifier (A qualification code that provides additional information about the parcel (parcel type, for example). Only qualifiers for condo parcels are included as part of the PamsPIN.)
