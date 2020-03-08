@@ -4,7 +4,7 @@
 
 ## 1. NJDEP Building Dataset  -- [Guide](NJDEP-Buildings.md)
 
-## 2. Image Download -- [Guide](imageDownload.md)
+## 2. Image Download -- [Guide](DownloadImage.md)
 
 ## 3. Find Labels on OpenStreetMap -- [Guide](OSM.md)
 

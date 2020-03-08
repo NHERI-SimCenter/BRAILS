@@ -2,7 +2,7 @@
 
   - [Home](README.md)
   - [NJDEP](NJDEP-Buildings.md)
-  - [Image Download](imageDownload.md)
+  - [Image Download](DownloadImage.md)
   - [OpenStreetMap](OSM.md)
 
 
