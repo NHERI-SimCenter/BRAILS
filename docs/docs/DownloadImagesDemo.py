@@ -10,13 +10,9 @@
 
 
 import os
-import sys
-import time
-import json
 import requests 
 import random
 import pandas as pd
-import numpy as np
 from multiprocessing.dummy import Pool as ThreadPool
 
 
