@@ -22,7 +22,7 @@ outputDir = "./images"
 
 # APIs. notice: you can change pitch and fov to get best capture of the building from the street view. 
 #               zoom and sizes can also be changed.
-baseurl_streetview = "https://maps.googleapis.com/maps/api/streetview?size=600x400&location={lat},{lon}&pitch=0&fov=30&key="+GoogleMapAPIKey
+baseurl_streetview = "https://maps.googleapis.com/maps/api/streetview?size=512x512&location={lat},{lon}&pitch=0&fov=30&key="+GoogleMapAPIKey
 baseurl_satellite = "https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom=20&scale=1&size=256x256&maptype=satellite&key="+GoogleMapAPIKey+"&format=png&visual_refresh=true"
 
 
@@ -41,6 +41,7 @@ def download(urls):
 
         roofPicName = outputDir + '/{BldgID}-{prefix}.png'.format(BldgID=BldgID,prefix='TopView')
         if not os.path.exists(roofPicName):
+            print(urlTop)
             r = requests.get(urlTop)
             f = open(roofPicName, 'wb')
             f.write(r.content)
@@ -48,6 +49,7 @@ def download(urls):
 
         streetPicName = outputDir + '/{BldgID}-{prefix}.png'.format(BldgID=BldgID,prefix='StreetView')
         if not os.path.exists(streetPicName):
+            print(urlStreet)
             r = requests.get(urlStreet)
             f = open(streetPicName, 'wb')
             f.write(r.content)

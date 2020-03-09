@@ -1,10 +1,10 @@
 # Image Download
 
-Please follow the tutorial in [DownloadImagesDemo.py](https://github.com/NHERI-SimCenter/BRAILS/blob/master/docs/docs/DownloadImagesDemo.py)
+Please follow the tutorial in [DownloadImagesDemo.py](https://github.com/NHERI-SimCenter/BRAILS/blob/master/docs/datacollection/DownloadImagesDemo.py)
 
 You'll have to register your own account on Google Cloud and get your Google Maps API key.
 
-Put this key in [DownloadImagesDemo.py](https://github.com/NHERI-SimCenter/BRAILS/blob/master/docs/docs/DownloadImagesDemo.py)
+Put this key in [DownloadImagesDemo.py](https://github.com/NHERI-SimCenter/BRAILS/blob/master/docs/datacollection/DownloadImagesDemo.py)
 
 Note that calling Google API costs money. 
 

@@ -1,6 +1,14 @@
 # Understanding NJDEP Building Inventory
-There are 472,322 (453,361+18,961) buildings in this database (including 81,418 condos). This database is provided as an Arcgis gdb, which can also be opened by the opensource software [QGIS](https://www.qgis.org/en/site/).
-Once the database is been loaded, you'll see several tables.
+There are 472,322 (453,361+18,961) buildings in this database (including 81,418 condos). This database is provided as an Arcgis gdb, 
+which can also be opened by the opensource software [QGIS](https://www.qgis.org/en/site/).
+Once the database is loaded in QGIS, you'll see several layers (tables). 
+You can right click on each layer and export as your favorite format (json/csv/others). 
+
+The columns in each table have been list below. 
+Click on table name will lead to more details of that table, including 
+* the explanation of each column
+* categories of each column
+* statistics of categories (numbers noted in parentheses)
 
 ## Tables
 
