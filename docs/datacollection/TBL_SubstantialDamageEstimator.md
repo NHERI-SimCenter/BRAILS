@@ -61,11 +61,11 @@ The number in the parentheses means the number of labels found in NJDEP data set
     - 5804 : None - common brick, structural   (551)
 
 * Story : Not complete.
-    - 5201 : One Story-Residential
-    - 5202 : Two or More Stories-Residential
-    - 5301 : 1 Story-Non-Residential
-    - 5302 : 2 thru 4-Non-Residential
-    - 5303 : 5 or more-Non-Residential
+    - 5201 : One Story-Residential             (49,751)
+    - 5202 : Two or More Stories-Residential   (194,808)
+    - 5301 : 1 Story-Non-Residential           (21,011)
+    - 5302 : 2 thru 4-Non-Residential          (13,567)
+    - 5303 : 5 or more-Non-Residential         (277)
 
 * FoundationType : Residential Type Only. Not complete.
     - 5001 : Countinuous Wall w/Slab (346)
