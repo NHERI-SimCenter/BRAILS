@@ -68,12 +68,12 @@ The number in the parentheses means the number of labels found in NJDEP data set
     - 5303 : 5 or more-Non-Residential         (277)
 
 * FoundationType : Residential Type Only. Not complete.
-    - 5001 : Countinuous Wall w/Slab (346)
-    - 5002 : Basement (47,136)
-    - 5003 : Crawlspace (110,153)
-    - 5004 : Piles (3,967)
-    - 5005 : Slab - on - Grade (86,074)
-    - 5006 : Piers and Posts (3,325)
+    - 5001 : Countinuous Wall w/Slab         (346)
+    - 5002 : Basement                        (47,136)
+    - 5003 : Crawlspace                      (110,153)
+    - 5004 : Piles                           (3,967)
+    - 5005 : Slab - on - Grade               (86,074)
+    - 5006 : Piers and Posts                 (3,325)
 
 * FloodZone : From FIRM. 
     - 6101 : VE - RIVERINE FLOODWAY SHOWN IN COASTAL ZONE

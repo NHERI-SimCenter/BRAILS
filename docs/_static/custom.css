@@ -1,8 +1,30 @@
-div.wy-side-scroll{
-	background:#cb463f;
+wy-nav-content {
+    max-width: none;
 }
 
-span.caption-text{
+
+.math {
+    text-align: left;
+}
+
+.eqno {
+    float: right;
+}
+
+
+#div.wy-side-scroll{
+#	background:#cb463f;
+#}
+
+div.wy-menu.wy-menu-vertical > .caption {
+	 color: #cb463f;
+}
+
+# LIGHT BLUE  background:#0099ff
+# BLUE: background:#0B619C
+# ADAM RED: background:#cb463f;
+
+span.caption.caption-text{
 	color: #000000;
 }
 
@@ -10,12 +32,11 @@ td{
 	white-space: normal !important;
 }
 
-.align-center {
-    text-align: center;
+div.wy-side-nav-search {
+    background: #F2F2F2
 }
 
-.borderless {
-    border-collapse: collapse;
-    border: 0px solid white;
-    background-color: white;
+div.wy-nav-content {
+    max-width: 100%
 }
+
