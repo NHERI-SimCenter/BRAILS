@@ -7,4 +7,5 @@ Tutorial
 
    preparedata
    train
+   predict
    enhance

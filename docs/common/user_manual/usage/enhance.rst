@@ -1,6 +1,6 @@
 .. _lbl-enhance:
 
-Enhance data
+Enhance the data
 ================
 
 .. figure:: ../../../images/enhance.gif

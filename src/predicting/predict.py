@@ -29,7 +29,7 @@ if img_list is None:
     else:
         img_list = glob(os.path.join(img_dir, "*.png"))
 
-model = load_model(model_path)
+model = load_model(os.path.join(model_path, "classifier.h5"))
 
 
 predictions = []
