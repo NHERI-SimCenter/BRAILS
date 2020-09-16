@@ -3,8 +3,8 @@ numpy
 geopandas
 scipy
 matplotlib
-selenium
 tensorflow
-
 seaborn
+
+
 

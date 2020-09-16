@@ -17,7 +17,6 @@ import requests
 import random
 import numpy as np
 import geopandas as gpd
-from selenium import webdriver
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 sys.path.append("../.")
