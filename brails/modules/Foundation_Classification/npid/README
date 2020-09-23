@@ -1,0 +1,17 @@
+The implementation in this folder is based on the work "Unsupervised Feature Learning via Non-Parametric Instance Discrimination" (2018) by 
+
+Zhirong Wu,
+Yuanjun Xiong,
+Stella Yu,
+Lin Dahua
+
+More information can be found in their arXiv paper:
+https://arxiv.org/pdf/1805.01978.pdf
+
+The original code can be found at:
+https://github.com/zhirongw/lemniscate.pytorch
+
+For questions about the adaptation reach out to:
+sascha.hornauer@uni-oldenburg.de
+
+For questions about the original code, please see the GitHub page of the creators for contact information.
