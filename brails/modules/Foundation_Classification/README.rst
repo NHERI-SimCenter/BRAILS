@@ -70,7 +70,7 @@ take more time and use more GPU memory.
 
 ::
 
-    detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask_buildings --load_masks
+    python detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask_buildings --load_masks
 
 The result will be a comma separated value file *<IMG_FOLDER>_prediction_results.csv* which contains in each row a filename for each image and a 1 if the building is higher than 8ft or 0 otherwise.
 
@@ -85,7 +85,7 @@ This step can take up some time so for re-training of the model, it is suggested
 to pre-compute the masks with this command:
 ::
 
-    save_masked_images.py --image-path <IMG_FOLDER or IMAGE PATH>
+    python save_masked_images.py --image-path <IMG_FOLDER or IMAGE PATH>
 
 Masks of images will be saved and expected at the same folder as the original images.
 
