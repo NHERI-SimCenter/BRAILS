@@ -49,7 +49,9 @@ BSD 3-Caluse license
 Installation
 ---------------------------
 The following commands clone the BRAILS repository and enter the foundation classification module.
-Requirements are installed using pip and weights of all used models are downloaded. This
+Requirements are installed using pip and weights of all used models are downloaded. This will download
+approximately 300 mb in required model weight files.
+
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
@@ -75,7 +77,7 @@ take more time and use more GPU memory.
 
 ::
 
-    python3 detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask_buildings --load_masks
+    python3 detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask-buildings --load-masks
 
 The result will be a comma separated value file *<IMG_FOLDER>_prediction_results.csv* which contains in each row a filename for each image and a 1 if the building is higher than 8ft or 0 otherwise.
 

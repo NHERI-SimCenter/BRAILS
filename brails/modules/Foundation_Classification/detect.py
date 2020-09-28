@@ -12,7 +12,7 @@ from utils.Datasets import Foundation_Type_Testset
 parser = argparse.ArgumentParser(description='Detect Foundation Type')
 
 parser.add_argument('--image-path',help='Path to one image or a folder containing images.',required=True)
-parser.add_argument('--checkpoint', default='checkpoints/model_best.pth.tar',type=str,
+parser.add_argument('--checkpoint', default='checkpoints/best_masked.pkl',type=str,
                     help='Path to checkpoint. Defaults to best pretrained version.')
 parser.add_argument('--only-cpu', action='store_true', help='Use CPU only, disregard GPU.')
 parser.add_argument('--mask-buildings', action='store_true')
