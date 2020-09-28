@@ -6,5 +6,5 @@ Modules
 .. toctree::
 
    generalImageClassifier
-   foundationClassifier
+   foundationElevationClassifier
    
