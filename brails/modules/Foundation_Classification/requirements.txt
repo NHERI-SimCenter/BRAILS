@@ -10,3 +10,4 @@ seaborn
 Pillow
 scikit_learn
 tensorboard
+wget

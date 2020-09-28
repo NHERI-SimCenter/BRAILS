@@ -5,6 +5,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import os
 import csv
+import wget
 
 from models.resnet_applied import resnet50
 from utils.Datasets import Foundation_Type_Testset
@@ -17,6 +18,10 @@ parser.add_argument('--checkpoint', default='checkpoints/best_masked.pkl',type=s
 parser.add_argument('--only-cpu', action='store_true', help='Use CPU only, disregard GPU.')
 parser.add_argument('--mask-buildings', action='store_true')
 parser.add_argument('--load-masks', action='store_true')
+
+parser.add_argument('--model',help='Pretrained model, options ["foundation_v0.1"]', type=str)
+
+
 
 args = parser.parse_args()
 
@@ -48,6 +53,18 @@ def main():
         state_dict = torch.load(args.checkpoint, map_location=torch.device('cpu'))
     else:
         state_dict = torch.load(args.checkpoint)
+
+    
+    if args.checkpoint: modelfile = args.checkpoint
+    if args.model == "foundation_v0.1": 
+        modelfile = "tmp/foundation_v0.1.pkl"
+        if not os.path.exists(modelfile): wget.download('https://zenodo.org/record/4044228/files/best_masked.pkl',out=modelfile)
+
+    #state_dict = torch.load(modelfile)
+    if not torch.cuda.is_available():
+        state_dict = torch.load(modelfile, map_location=torch.device('cpu'))
+    else:
+        state_dict = torch.load(modelfile)
 
 
     missing, unexpected = model.load_state_dict(state_dict,
