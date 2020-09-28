@@ -13,6 +13,7 @@ Copyright
 ::
 
     Copyright (c) 2018, The Regents of the University of California
+    Contact: Sascha Hornauer  - sascha.hornauer@uni-oldenburg.de
 
 
 BSD 3-Caluse license
@@ -47,11 +48,15 @@ BSD 3-Caluse license
 
 Installation
 ---------------------------
+The following commands clone the BRAILS repository and enter the foundation classification module.
+Requirements are installed using pip and weights of all used models are downloaded. This
 ::
 
-    git clone https://github.com/SaschaHornauer/Foundation_Detection_Release
-    cd Foundation_Detection_Release
-    python -m pip install -r requirements.txt
+    git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
+    cd BRAILS/brails/modules/Foundation_Classification
+    python3 -m pip install -r requirements.txt
+    chmod u+x get_model_weights.sh
+    ./get_model_weights.sh
 
 How to use
 ---------------------------
@@ -70,7 +75,7 @@ take more time and use more GPU memory.
 
 ::
 
-    detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask_buildings --load_masks
+    python3 detect.py --image-path <IMG_FOLDER or IMAGE PATH> --mask_buildings --load_masks
 
 The result will be a comma separated value file *<IMG_FOLDER>_prediction_results.csv* which contains in each row a filename for each image and a 1 if the building is higher than 8ft or 0 otherwise.
 
@@ -85,7 +90,7 @@ This step can take up some time so for re-training of the model, it is suggested
 to pre-compute the masks with this command:
 ::
 
-    save_masked_images.py --image-path <IMG_FOLDER or IMAGE PATH>
+    python3 save_masked_images.py --image-path <IMG_FOLDER or IMAGE PATH>
 
 Masks of images will be saved and expected at the same folder as the original images.
 
@@ -158,7 +163,7 @@ Further parameters can be seen by just parsing the -h parameter. The command to 
 
 ::
 
-    python npid/main.py
+    python3 npid/main.py
         --train-data <TRAINING IMAGE FOLDER>
         --val-data <VALIDATION IMAGE FOLDER>
         --resume <CHECKPOINT TO LOAD>
@@ -202,7 +207,7 @@ Further parameters can be seen by just parsing the -h parameter. The command to 
 
 ::
 
-    python train.py
+    python3 train.py
         --train-data <TRAINING IMAGE FOLDER>
         --val-data <VALIDATION IMAGE FOLDER>
         --exp-name <NAME FOR LOGFILES AND CHECKPOINTS>

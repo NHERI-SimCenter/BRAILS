@@ -28,25 +28,25 @@ parser = argparse.ArgumentParser(description='Train Residual Attention')
 parser.add_argument('--workers', type=int, default=8)
 parser.add_argument('--epochs', default=500, type=int,
                     help='Train for n epochs')
-parser.add_argument('--start_epoch', default=0, type=int,
+parser.add_argument('--start-epoch', default=0, type=int,
                     help='Start epoch')
 parser.add_argument('--lr', default=0.001, type=float,
                     help='Learning rate')
-parser.add_argument('--batch_size', default=4, type=int,
+parser.add_argument('--batch-size', default=4, type=int,
                     help='Size of mini batch')
-parser.add_argument('--train_data', type=str,
+parser.add_argument('--train-data', type=str,
                     help='Training csv file with image names and labels')
-parser.add_argument('--val_data', type=str,
+parser.add_argument('--val-data', type=str,
                     help='Validation  csv file with image names and labels')
-parser.add_argument('--test_data', type=str,
+parser.add_argument('--test-data', type=str,
                     help='Test csv file with image names and labels')
 parser.add_argument('--eval', action='store_true',
                     help='Only do evaluation')
-parser.add_argument('--exp_name', default='noname', type=str, help='Name of this experiment to add to path name of log')
+parser.add_argument('--exp-name', default='noname', type=str, help='Name of this experiment to add to path name of log')
 parser.add_argument('--checkpoint', type=str,
                     help='Path to checkpoint for evaluation or pretraining')
-parser.add_argument('--mask_buildings', action='store_true')
-parser.add_argument('--freeze_layers', action='store_true')
+parser.add_argument('--mask-buildings', action='store_true')
+parser.add_argument('--freeze-layers', action='store_true')
 parser.add_argument('--pretrained', action='store_true', help='Use pretrained model.')
 
 args = parser.parse_args()
