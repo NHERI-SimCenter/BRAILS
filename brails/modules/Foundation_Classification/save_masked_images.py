@@ -15,10 +15,15 @@ parser.add_argument('--image-path',help='Path to one image or a folder containin
 parser.add_argument('--only-cpu', action='store_true')
 args = parser.parse_args()
 
+if args.only_cpu:
+    device='cpu'
+else:
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 def main(folder):
     if not args.only_cpu:
         print ('Will try to use available GPU.')
-    mask_module = MaskBuilding(not args.only_cpu)
+    mask_module = MaskBuilding(device)
 
     for root, _, fnames in sorted(os.walk(folder, followlinks=True)):
         for fname in sorted(fnames):

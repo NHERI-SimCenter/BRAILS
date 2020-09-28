@@ -72,7 +72,7 @@ a folder which will be searched for images. One way of improving detection is to
 of the image which are not a building. That is done with --mask-buildings.
 Please see `Pre-Saving Masked Images` about how to create masks. If masks should not be used remove the
 --mask-buildings flag from the command line.
-If masks should be generated on the fly remove the --load_masks flag, however this will
+If masks should be generated on the fly remove the --load-masks flag, however this will
 take more time and use more GPU memory.
 
 ::
