@@ -9,3 +9,4 @@ numpy
 seaborn
 Pillow
 scikit_learn
+tensorboard

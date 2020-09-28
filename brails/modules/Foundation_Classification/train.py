@@ -152,12 +152,13 @@ def main():
         for epoch in range(args.start_epoch, args.epochs):
             model.train()
 
+            print('Training epoch: {}'.format(epoch))
             y_train_pred, y_train_gt, avg_train_loss = parse(model, train_loader, criterion, optimizer, 'train', epoch)
             scheduler.step()
             evaluate(summary_writer, 'Train', y_train_gt, y_train_pred, avg_train_loss,
                      train_loader.dataset.classes, epoch)
 
-            print('Validation:')
+            print('Validation epoch: {}'.format(epoch))
             with torch.no_grad():
                 y_val_pred, y_val_gt, avg_val_loss = parse(model, val_loader, criterion, None, 'val', epoch)
 
