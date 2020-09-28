@@ -9,7 +9,7 @@ import csv
 from models.resnet_applied import resnet50
 from utils.Datasets import Foundation_Type_Testset
 
-parser = argparse.ArgumentParser(description='Detect Foundataion Type')
+parser = argparse.ArgumentParser(description='Detect Foundation Type')
 
 parser.add_argument('--image_path',help='Path to one image or a folder containing images.',required=True)
 parser.add_argument('--checkpoint', default='checkpoints/model_best.pth.tar',type=str,
@@ -44,8 +44,11 @@ def main():
 
     test_loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     model = resnet50(low_dim=1)
+    if not torch.cuda.is_available():
+        state_dict = torch.load(args.checkpoint, map_location=torch.device('cpu'))
+    else:
+        state_dict = torch.load(args.checkpoint)
 
-    state_dict = torch.load(args.checkpoint)
 
     missing, unexpected = model.load_state_dict(state_dict,
                                                 strict=False)
