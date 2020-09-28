@@ -50,7 +50,8 @@ Installation
 ---------------------------
 The following commands clone the BRAILS repository and enter the foundation classification module.
 Requirements are installed using pip and weights of all used models are downloaded. This will download
-approximately 300 mb in required model weight files.
+approximately 300 mb in required model weight files. The final command adds the current folder to the PYTHONPATH
+environment variable which is necessary to train.
 
 ::
 
@@ -59,6 +60,7 @@ approximately 300 mb in required model weight files.
     python3 -m pip install -r requirements.txt
     chmod u+x get_model_weights.sh
     ./get_model_weights.sh
+    export PYTHONPATH=$PYTHONPATH:`pwd`
 
 How to use
 ---------------------------
