@@ -39,6 +39,7 @@ For example, there are pretrained convolutional neural networks shipped with |br
    common/license
    common/user_manual/installation/installation
    common/user_manual/usage/tutorial
+   common/user_manual/modules/modules
    common/user_manual/bugs
    
 
