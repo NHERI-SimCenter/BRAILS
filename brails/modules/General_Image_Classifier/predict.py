@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+/*------------------------------------------------------*
+|                         BRAILS                        |
+|                                                       |
+| Author: Charles Wang,  UC Berkeley, c_w@berkeley.edu  |
+|                                                       |
+| Date:    10/15/2020                                   |
+*------------------------------------------------------*/
+"""
 
 import argparse
 import os

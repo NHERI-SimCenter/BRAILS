@@ -3,8 +3,8 @@
 
 
 ```bash
-git clone https://github.com/charlesxwang/Image_Classifier.git
-cd Image_Classifier
+git clone https://github.com/NHERI-SimCenter/BRAILS.git
+cd BRAILS/brails/modules/General_Image_Classifier
 pip install -r requirements.txt
 ```
 
