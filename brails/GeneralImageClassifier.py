@@ -64,8 +64,8 @@ class ImageClassifier:
             print("Image :  {}     Class : {}".format(img, pred)) 
 
         df = pd.DataFrame(list(zip(imagePathList, predictions)), columns =['image', 'prediction']) 
-        df.to_csv(resultFile, index=False)
-        print('Results written in file {}'.format(resultFile))
+        df.to_csv(self.resultFile, index=False)
+        print('Results written in file {}'.format(self.resultFile))
 
         return predictions
     
