@@ -46,7 +46,7 @@ class ImageClassifier:
         prediction = np.argmax(prediction[0])
         if self.classNames: prediction = self.classNames[prediction]
         
-        print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, prob)) 
+        print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(prob*100,2))) 
 
         return prediction
 
@@ -64,7 +64,7 @@ class ImageClassifier:
             predictions.append(prediction)
 
         for img, pred, prob in zip(imagePathList, predictions, probs): 
-            print("Image :  {}     Class : {} ({}%)".format(img, pred, prob)) 
+            print("Image :  {}     Class : {} ({}%)".format(img, pred, str(round(prob*100,2))) 
 
         df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
         df.to_csv(self.resultFile, index=False)
