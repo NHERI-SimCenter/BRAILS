@@ -67,17 +67,17 @@ predictions = ssModel.predict(imgs)
 
 The predictions look like this:
 ```
-Image :  image_examples/Roof/gabled/76.png     Class : gabled
-Image :  image_examples/Roof/hipped/54.png     Class : hipped
-Image :  image_examples/Roof/flat/94.png     Class : flat
+Image :  image_examples/Roof/gabled/76.png     Class : gabled (83.21%)
+Image :  image_examples/Roof/hipped/54.png     Class : hipped (100.0%)
+Image :  image_examples/Roof/flat/94.png     Class : flat (97.68%)
 Results written in file roofType_preds.csv
 
-Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1
-Image :  image_examples/Occupancy/RES3/65883.png     Class : RES3
+Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (99.99%)
+Image :  image_examples/Occupancy/RES3/65883.png     Class : RES3 (98.67%)
 Results written in file occupancy_preds.csv
 
-Image :  image_examples/Softstory/Others/3110.jpg     Class : others
-Image :  image_examples/Softstory/Softstory/901.jpg     Class : softstory
+Image :  image_examples/Softstory/Others/3110.jpg     Class : others (96.13%)
+Image :  image_examples/Softstory/Softstory/901.jpg     Class : softstory (96.31%)
 Results written in file softstory_preds.csv
 ```
 
