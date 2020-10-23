@@ -36,34 +36,37 @@ class ImageClassifier:
         else:
             print('Model file {} doesn\'t exist.'.format(modelFile))
 
-
     def predictOne(self,imagePath):
+
         img = image.load_img(imagePath, target_size=(256, 256))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         prediction = self.model.predict(x)
+        prob = max(prediction[0])
         prediction = np.argmax(prediction[0])
         if self.classNames: prediction = self.classNames[prediction]
         
-        print("Image :  {}     Class : {}".format(imagePath, prediction)) 
+        print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, prob)) 
 
         return prediction
 
     def predictMulti(self,imagePathList):
         predictions = []
+        probs = []
         for imagePath in imagePathList:
             img = image.load_img(imagePath, target_size=(256, 256))
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
             prediction = self.model.predict(x)
+            probs.append(max(prediction[0]))
             prediction = np.argmax(prediction[0])
             if self.classNames: prediction = self.classNames[prediction]
             predictions.append(prediction)
 
-        for img, pred in zip(imagePathList, predictions): 
-            print("Image :  {}     Class : {}".format(img, pred)) 
+        for img, pred, prob in zip(imagePathList, predictions, probs): 
+            print("Image :  {}     Class : {} ({}%)".format(img, pred, prob)) 
 
-        df = pd.DataFrame(list(zip(imagePathList, predictions)), columns =['image', 'prediction']) 
+        df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
         df.to_csv(self.resultFile, index=False)
         print('Results written in file {}'.format(self.resultFile))
 
