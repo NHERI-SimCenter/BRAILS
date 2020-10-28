@@ -56,9 +56,9 @@ def main():
 
     
     if args.checkpoint: modelfile = args.checkpoint
-    if args.model == "foundation_v0.1": 
-        modelfile = "tmp/foundation_v0.1.pkl"
-        if not os.path.exists(modelfile): wget.download('https://zenodo.org/record/4044228/files/best_masked.pkl',out=modelfile)
+    if args.model == "foundation_v0.2": 
+        modelfile = "tmp/foundation_v0.2.pkl"
+        if not os.path.exists(modelfile): wget.download('https://zenodo.org/record/4145934/files/best_masked.pkl',out=modelfile)
 
     #state_dict = torch.load(modelfile)
     if not torch.cuda.is_available():
