@@ -16,6 +16,7 @@ author = 'Charles Wang'
 release = '1.0'
 
 rst_prolog = """
+.. |app| replace:: *BRAILS*
 .. |appName| replace:: *BRAILS*
 .. |s3harkName| replace:: *SURF*
 .. |surfName| replace:: *SURF*

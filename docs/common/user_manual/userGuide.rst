@@ -1,6 +1,6 @@
 .. _lbl-tutorial:
 
-Tutorial
+User Guide
 ================
 
 .. toctree::
@@ -9,3 +9,4 @@ Tutorial
    train
    predict
    enhance
+   modules/modules
