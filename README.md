@@ -32,13 +32,13 @@ from brails.RoofTypeClassifier import RoofClassifier
 from brails.OccupancyClassClassifier import OccupancyClassifier
 from brails.SoftstoryClassifier import SoftstoryClassifier
 
-# initilize a roof classifier
+# initialize a roof classifier
 roofModel = RoofClassifier()
 
-# initilize an occupancy classifier
+# initialize an occupancy classifier
 occupancyModel = OccupancyClassifier()
 
-# initilize a soft-story classifier
+# initialize a soft-story classifier
 ssModel = SoftstoryClassifier()
 
 # use the roof classifier 
