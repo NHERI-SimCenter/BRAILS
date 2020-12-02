@@ -1,0 +1,8 @@
+.. _softstoryTheory:
+
+Soft-story
+==========================
+
+
+
+   
