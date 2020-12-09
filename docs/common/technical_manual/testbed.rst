@@ -132,4 +132,3 @@ when it comes to regional loss estimation of natural hazards, such as hurricanes
 
 
 
-.. bibliography:: references.bib 

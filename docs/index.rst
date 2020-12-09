@@ -68,3 +68,8 @@ Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul T
 Contact
 ---------------------------
 Charles Wang, NHERI SimCenter, University of California, Berkeley, c_w@berkeley.edu 
+
+References
+---------------------------
+
+.. bibliography:: common/technical_manual/references.bib 

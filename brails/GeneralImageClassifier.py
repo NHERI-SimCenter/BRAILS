@@ -33,6 +33,7 @@ class ImageClassifier:
         self.resultFile = resultFile
         if os.path.exists(modelFile):
             self.model = load_model(modelFile)
+            print('Model found: {} '.format(modelFile))
         else:
             print('Model file {} doesn\'t exist.'.format(modelFile))
 

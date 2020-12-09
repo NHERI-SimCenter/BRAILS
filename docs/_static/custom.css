@@ -13,16 +13,17 @@ wy-nav-content {
 
 
 #div.wy-side-scroll{
-#	background:#cb463f;
-#}
+/*	background:#cb463f;*/}
 
 div.wy-menu.wy-menu-vertical > .caption {
 	 color: #cb463f;
 }
 
+/* 
 # LIGHT BLUE  background:#0099ff
 # BLUE: background:#0B619C
 # ADAM RED: background:#cb463f;
+*/
 
 span.caption.caption-text{
 	color: #000000;
@@ -37,6 +38,6 @@ div.wy-side-nav-search {
 }
 
 div.wy-nav-content {
-    max-width: 100%
+    max-width: 50%
 }
 

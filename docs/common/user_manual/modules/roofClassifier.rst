@@ -22,7 +22,7 @@ The first time you initialize this model, it will download the model from the in
 .. code-block:: none 
 
     # import the module
-    from brails.SoftstoryClassifier import SoftstoryClassifier
+    from brails.RoofTypeClassifier import RoofClassifier
 
     # initialize a roof classifier
     roofModel = RoofClassifier()
@@ -63,3 +63,8 @@ The images used in this example are:
 
 
 
+.. note:: 
+
+   The classifier takes an image as the input and will always produce a prediction. 
+   Since the classifier is trained to classify only a specific category of images, 
+   its prediction is meaningful only if the input image belongs to the category the model is trained for.
