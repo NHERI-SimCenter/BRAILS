@@ -1,0 +1,11 @@
+torch
+numpy
+torchvision
+argparse
+python-csv
+Pillow
+sklearn
+pandas
+seaborn
+scipy
+matplotlib
