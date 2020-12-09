@@ -88,6 +88,7 @@ def main():
     val_transforms = transforms.Compose(val_transforms)
 
     if not args.eval:
+        
         train_dataset = Foundation_Type_Binary(args.train_data,
                                                transform=train_transforms,
                                                mask_buildings=args.mask_buildings, load_masks=True)
@@ -95,9 +96,14 @@ def main():
         val_dataset = Foundation_Type_Binary(args.val_data,
                                              transform=val_transforms,
                                              mask_buildings=args.mask_buildings, load_masks=True)
+        
+        train_weights = np.array(train_dataset.train_weights)
+        train_sampler = torch.utils.data.WeightedRandomSampler(train_weights, len(train_weights),
+                                                                   replacement=True)
+    
 
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers,
-                                  drop_last=False)
+        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, num_workers=args.workers,
+                                  drop_last=False, sampler=train_sampler)
         val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers,
                                 drop_last=False)
 

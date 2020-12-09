@@ -117,8 +117,13 @@ class Foundation_Type_Binary(Dataset):
         for class_id in ['5004', '5006']: # Piles Piers and Posts
             idx = np.where(np.array(labels) == class_id)[0]
             self.train_labels[idx] = 1
-
-
+        
+        # Train weights for optional weighted sampling    
+        self.train_weights = np.ones(len(self.train_labels))
+        self.train_weights[self.train_labels == 0] = np.sum(self.train_labels == 0) / len(self.train_labels)
+        self.train_weights[self.train_labels == 1] = np.sum(self.train_labels == 1) / len(self.train_labels)
+        self.train_weights = 1-self.train_weights
+        
     def __len__(self):
         return len(self.img_paths)
 

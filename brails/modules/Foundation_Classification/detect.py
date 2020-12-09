@@ -5,7 +5,6 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import os
 import csv
-import wget
 
 from models.resnet_applied import resnet50
 from utils.Datasets import Foundation_Type_Testset
@@ -13,13 +12,13 @@ from utils.Datasets import Foundation_Type_Testset
 parser = argparse.ArgumentParser(description='Detect Foundation Type')
 
 parser.add_argument('--image-path',help='Path to one image or a folder containing images.',required=True)
-parser.add_argument('--checkpoint', default='checkpoints/best_masked.pkl',type=str,
+parser.add_argument('--checkpoint', default=None,type=str,
                     help='Path to checkpoint. Defaults to best pretrained version.')
 parser.add_argument('--only-cpu', action='store_true', help='Use CPU only, disregard GPU.')
 parser.add_argument('--mask-buildings', action='store_true')
 parser.add_argument('--load-masks', action='store_true')
-
-parser.add_argument('--model',help='Pretrained model, options ["foundation_v0.1"]', type=str)
+# This is no longer used 
+#parser.add_argument('--model',help='Pretrained model, options ["foundation_v0.1"]', type=str)
 
 
 
@@ -49,22 +48,20 @@ def main():
 
     test_loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     model = resnet50(low_dim=1)
-    if not torch.cuda.is_available():
-        state_dict = torch.load(args.checkpoint, map_location=torch.device('cpu'))
-    else:
-        state_dict = torch.load(args.checkpoint)
-
     
-    if args.checkpoint: modelfile = args.checkpoint
-    if args.model == "foundation_v0.2": 
-        modelfile = "tmp/foundation_v0.2.pkl"
-        if not os.path.exists(modelfile): wget.download('https://zenodo.org/record/4145934/files/best_masked.pkl',out=modelfile)
-
-    #state_dict = torch.load(modelfile)
-    if not torch.cuda.is_available():
-        state_dict = torch.load(modelfile, map_location=torch.device('cpu'))
+    if args.checkpoint is not None:
+        model_file = args.checkpoint
     else:
-        state_dict = torch.load(modelfile)
+        weight_file_path = os.path.join('checkpoints','best_model_weights.pth')
+        if not os.path.isfile(weight_file_path):
+            print('Loading remote model file to the weights folder..')
+            torch.hub.download_url_to_file('https://zenodo.org/record/4145934/files/best_masked.pkl', weight_file_path)
+        model_file = weight_file_path
+
+    if not torch.cuda.is_available():
+        state_dict = torch.load(model_file, map_location=torch.device('cpu'))
+    else:
+        state_dict = torch.load(model_file)
 
 
     missing, unexpected = model.load_state_dict(state_dict,
