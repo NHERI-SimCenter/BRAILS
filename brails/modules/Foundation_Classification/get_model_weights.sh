@@ -1,5 +1,5 @@
 #!/bin/bash
-wget -O ./checkpoints/best_masked.pkl https://zenodo.org/record/4044228/files/best_masked.pkl
+wget -O ./checkpoints/best_masked.pkl https://zenodo.org/record/4145934/files/best_masked.pkl
 
 MODEL_NAME=ade20k-resnet50dilated-ppm_deepsup
 MODEL_PATH=csail_segmentation_tool/csail_seg/$MODEL_NAME
