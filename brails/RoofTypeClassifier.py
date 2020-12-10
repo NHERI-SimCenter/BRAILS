@@ -14,32 +14,36 @@ from GeneralImageClassifier import *
 import wget 
 import os
 
-class RoofClassifier:
+class RoofClassifier(ImageClassifier):
     """ Roof Image Classifier. """
 
 
-    def __init__(self, resultFile='roofType_preds.csv'):
+    def __init__(self, modelName=None, classNames=None, resultFile='roofType_preds.csv', workDir='tmp'):
         '''
         modelFile: path to the model
         classNames: a list of classnames
         '''
 
-        modelDir = 'tmp'
-        if not os.path.exists(modelDir): os.makedirs(modelDir)
+        if not os.path.exists(workDir): os.makedirs(workDir)
 
-        modelFile = os.path.join(modelDir,'roof_classifier_v0.1.h5')
-        
         fileURL = zoo['roofType']['fileURL']
-        classNames = zoo['roofType']['classNames']
+        
+        if not classNames:
+            classNames = zoo['roofType']['classNames']
+
+        if not modelName:
+            modelName = 'roof_classifier_v0.1'
+            print('A default roof type model will be used {}.'.format(modelName))
+
+        modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
+
 
         if not os.path.exists(modelFile): # download
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
- 
 
-        roofClassifier = ImageClassifier(modelFile, classNames=classNames, resultFile=resultFile)
 
-        self.predict = roofClassifier.predict
+        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile)
 
 
 
