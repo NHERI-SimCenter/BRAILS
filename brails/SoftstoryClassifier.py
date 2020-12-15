@@ -14,37 +14,41 @@ from GeneralImageClassifier import *
 import wget 
 import os
 
-class SoftstoryClassifier:
+class SoftstoryClassifier(ImageClassifier):
     """ Softstory Image Classifier. """
 
 
-    def __init__(self, resultFile='softstory_preds.csv'):
+    def __init__(self, modelName=None, classNames=None, resultFile='softstory_preds.csv', workDir='tmp'):
         '''
         modelFile: path to the model
         classNames: a list of classnames
         '''
 
-        modelDir = 'tmp'
-        if not os.path.exists(modelDir): os.makedirs(modelDir)
+        if not os.path.exists(workDir): os.makedirs(workDir)
 
-        modelFile = os.path.join(modelDir,'softstory-80-81-87.5-v0.1.h5')
-        
         fileURL = zoo['softstory']['fileURL']
-        classNames = zoo['softstory']['classNames']
+        
+        if not classNames:
+            classNames = zoo['softstory']['classNames']
+
+        if not modelName:
+            modelName = 'softstory-80-81-87.5-v0.1'
+            print('A default softstory model will be used: {}.'.format(modelName))
+
+        modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
+
 
         if not os.path.exists(modelFile): # download
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
- 
 
-        roofClassifier = ImageClassifier(modelFile, classNames=classNames, resultFile=resultFile)
-
-        self.predict = roofClassifier.predict
+        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile)
 
 
 
 if __name__ == '__main__':
     main()
+
 
 
 

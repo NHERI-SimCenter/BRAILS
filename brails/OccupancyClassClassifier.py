@@ -15,37 +15,43 @@ from GeneralImageClassifier import *
 import wget 
 import os
 
-class OccupancyClassifier:
+class OccupancyClassifier(ImageClassifier):
     """ Occupancy Class Classifier. """
 
 
-    def __init__(self, resultFile='occupancy_preds.csv'):
+    def __init__(self, modelName=None, classNames=None, resultFile='occupancy_preds.csv', workDir='tmp'):
         '''
         modelFile: path to the model
         classNames: a list of classnames
         '''
 
-        modelDir = 'tmp'
-        if not os.path.exists(modelDir): os.makedirs(modelDir)
+        if not os.path.exists(workDir): os.makedirs(workDir)
 
-        modelFile = os.path.join(modelDir,'occupancy-78-78-79.h5')
-        
         fileURL = zoo['residentialOccupancyClass']['fileURL']
-        classNames = zoo['residentialOccupancyClass']['classNames']
+        
+        if not classNames:
+            classNames = zoo['residentialOccupancyClass']['classNames']
+
+        if not modelName:
+            modelName = 'occupancy-78-78-79'
+            print('A default occupancy model will be used: {}.'.format(modelName))
+
+        modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
+
 
         if not os.path.exists(modelFile): # download
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
- 
 
-        roofClassifier = ImageClassifier(modelFile, classNames=classNames, resultFile=resultFile)
-
-        self.predict = roofClassifier.predict
+        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile)
 
 
 
 if __name__ == '__main__':
     main()
+
+
+
 
 
 

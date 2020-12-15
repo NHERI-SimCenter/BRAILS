@@ -33,7 +33,7 @@ class RoofClassifier(ImageClassifier):
 
         if not modelName:
             modelName = 'roof_classifier_v0.1'
-            print('A default roof type model will be used {}.'.format(modelName))
+            print('A default roof type model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
 
@@ -41,7 +41,6 @@ class RoofClassifier(ImageClassifier):
         if not os.path.exists(modelFile): # download
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
-
 
         ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile)
 
@@ -52,5 +51,8 @@ if __name__ == '__main__':
 
 
 
-
+'''
+Potential errors:
+https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+'''
 

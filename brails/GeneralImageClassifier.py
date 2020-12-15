@@ -40,6 +40,7 @@ class ImageClassifier:
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
 
+        self.workDir = workDir
         self.modelFile = modelFile
         self.classNames = classNames
         self.resultFile = resultFile
@@ -93,7 +94,7 @@ class ImageClassifier:
 
     def loadData(self, imgDir, randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
-        print('* First split the data with 8:2.')
+        #print('* First split the data with 8:2.')
         self.train_ds = image_dataset_from_directory(imgDir,
         validation_split=split[0],
         subset="training",
@@ -121,7 +122,8 @@ class ImageClassifier:
 
         if self.classNames == None:
             self.classNames = newClassNames
-            print('The names of the classes are: ', class_names)
+        print('The names of the classes are: ', newClassNames)
+
         if newClassNames != self.classNames:
             print('Error. Folder names {} mismatch predefined classNames: {}'.format(newClassNames, self.classNames))
             return
@@ -143,7 +145,13 @@ class ImageClassifier:
         ### Train the model
         history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
 
-
+    def save(self, newModelName=None):
+        if newModelName != None: 
+            newFileName = os.path.join(self.workDir,'{}.h5'.format(newModelName))
+        else:
+            newFileName = self.modelFile
+        self.model.save(newFileName) 
+        print('Model saved at ', newFileName)
 
 
 
