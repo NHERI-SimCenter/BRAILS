@@ -3,7 +3,7 @@
 Enhance the data
 ================
 
-.. figure:: ../../../images/enhance.gif
+.. figure:: ../../images/enhance.gif
   :width: 700
   :alt: BRAILS
 
@@ -33,7 +33,7 @@ The missing values in the initial database are now filled with predicted values.
 
 The following figures show the prediction errors for four building properties: year built, number of stories, structure type, occupancy.
 
-.. figure:: ../../../images/yearBuilt-prediction-error.png
+.. figure:: ../../images/yearBuilt-prediction-error.png
   :width: 700
   :align: center
   :figclass: align-center
@@ -43,7 +43,7 @@ The following figures show the prediction errors for four building properties: y
 
 
 
-.. figure:: ../../../images/stories_Predictions_classification_error.png
+.. figure:: ../../images/stories_Predictions_classification_error.png
   :width: 700
   :align: center
   :figclass: align-center
@@ -52,7 +52,7 @@ The following figures show the prediction errors for four building properties: y
 
 
 
-.. figure:: ../../../images/structureType_Predictions_classification_error.png
+.. figure:: ../../images/structureType_Predictions_classification_error.png
   :width: 700
   :align: center
   :figclass: align-center
@@ -63,7 +63,7 @@ The following figures show the prediction errors for four building properties: y
 
 
 
-.. figure:: ../../../images/occupancy_Predictions_classification_error.png 
+.. figure:: ../../images/occupancy_Predictions_classification_error.png 
   :width: 700
   :align: center
   :figclass: align-center

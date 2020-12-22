@@ -24,7 +24,7 @@ For example, Atlantic_Cities_Addrs.csv looks like :numref:`address_list`.
 
 .. _address_list:
 
-.. figure:: ../../../images/addressList.png
+.. figure:: ../../images/addressList.png
 	:align: center
 	:figclass: align-center
 
