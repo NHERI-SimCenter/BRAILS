@@ -8,7 +8,7 @@ The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_r
 
 .. _fig_confusion_roof:
 .. figure:: ../../images/technical/confusion_roof.png
-  :width: 60%
+  :width: 40%
   :alt: Confusion matrix roof
 
   Confusion matrix - Roof type classifier

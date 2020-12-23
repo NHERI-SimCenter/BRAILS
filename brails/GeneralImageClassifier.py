@@ -63,7 +63,7 @@ class ImageClassifier:
         
         print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(prob*100,2)))) 
 
-        return prediction
+        return [imagePath,prediction,prob]
 
     def predictMulti(self,imagePathList):
         predictions = []
@@ -85,12 +85,15 @@ class ImageClassifier:
         df.to_csv(self.resultFile, index=False)
         print('Results written in file {}'.format(self.resultFile))
 
-        return predictions
+        return df
     
     def predict(self,image):
-        if type(image) is list: self.predictMulti(image)
-        elif type(image) is str: self.predictOne(image)
-        else: print("The parameter of this function should be string or list.")
+        if type(image) is list: pred = self.predictMulti(image)
+        elif type(image) is str: pred = self.predictOne(image)
+        else: 
+            print("The parameter of this function should be string or list.")
+            pred = []
+        return pred
 
     def loadData(self, imgDir, randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
