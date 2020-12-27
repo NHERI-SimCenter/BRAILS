@@ -16,6 +16,7 @@ author = 'Charles Wang'
 release = '1.0'
 
 rst_prolog = """
+.. |app| replace:: *BRAILS*
 .. |appName| replace:: *BRAILS*
 .. |s3harkName| replace:: *SURF*
 .. |surfName| replace:: *SURF*
@@ -115,7 +116,7 @@ html_theme_options = {
 	'style_nav_header_background': '#F2F2F2', #64B5F6 #607D8B
 }
 
-html_logo = 'images/logo/SimCenter_BRAILS_logo.png'
+html_logo = 'images/logo/SimCenter_BRAILS_logo_solo.png'
 
 numfig = True
 numfig_secnum_depth = 2
@@ -129,3 +130,4 @@ html_js_files = [
     #'custom.js',
 	#'https://sidecar.gitter.im/dist/sidecar.v1.js'
 ]
+
