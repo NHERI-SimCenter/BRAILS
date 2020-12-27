@@ -49,7 +49,7 @@ BSD 3-Caluse license
 Installation
 ---------------------------
 The following commands clone the BRAILS repository and enter the foundation classification module.
-Requirements are installed using pip and weights of all used models are downloaded. The final 
+Requirements are installed using pip. The final 
 command adds the current folder to the PYTHONPATH environment variable which is necessary to train.
 
 ::
