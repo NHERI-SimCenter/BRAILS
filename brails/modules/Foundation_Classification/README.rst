@@ -49,17 +49,14 @@ BSD 3-Caluse license
 Installation
 ---------------------------
 The following commands clone the BRAILS repository and enter the foundation classification module.
-Requirements are installed using pip and weights of all used models are downloaded. This will download
-approximately 300 mb in required model weight files. The final command adds the current folder to the PYTHONPATH
-environment variable which is necessary to train.
+Requirements are installed using pip and weights of all used models are downloaded. The final 
+command adds the current folder to the PYTHONPATH environment variable which is necessary to train.
 
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
     cd BRAILS/brails/modules/Foundation_Classification
     python3 -m pip install -r requirements.txt
-    chmod u+x get_model_weights.sh
-    ./get_model_weights.sh
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
 How to use
@@ -68,6 +65,7 @@ How to use
 Execute with pretrained model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The detect code will download approximately 300 mb in required model weight files on its first start. 
 Detection on a single image or all images in a folder is started in the same way. The default classifier
 with the provided checkpoint expects as input, given with --image-path, either a single image or
 a folder which will be searched for images. One way of improving detection is to mask the parts
