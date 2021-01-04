@@ -1,0 +1,11 @@
+torch
+numpy
+torchvision
+argparse
+Pillow
+sklearn
+pandas
+seaborn
+scipy
+matplotlib
+tensorboardX
