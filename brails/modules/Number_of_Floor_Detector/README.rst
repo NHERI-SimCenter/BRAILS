@@ -1,10 +1,11 @@
-=================================================
 Number of Floor Detector
 =================================================
 
 Purpose of the Module
 ------------------------------------------
-This module enables automated detection of number of floors in a building based on image input.
+This module enables automated detection of number of floors in a building from image input.
+
+.. image:: images/modelOutput.jpg
 
 Copyright
 ~~~~~~~~~
@@ -53,8 +54,7 @@ Requirements are installed using pip and weights of all used models are download
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
     cd BRAILS/brails/modules/NumberOfFloorDetection
-    git clone https://github.com/Tessellate-Imaging/Monk_Object_Detection.git
-    cd Monk_Object_Detection/10_pytorch_efficientdet/installation && cat requirements_colab.txt | xargs -n 1 -L 1 pip install
+	python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
 Program 
@@ -64,7 +64,7 @@ Input Data Format for Training and Testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Training, validation, and test folders should be separate. All three folders must be stored in the COCO format and follow the convention defined below.
-For model training, training, validation, and annotations folders must exist. Bounding box annotations for the training and validation folders shall be placed under the annotations folder.
+For training a model using custom dataset, training, validation, and annotations folders must exist. Bounding box annotations for the training and validation folders shall be placed under the annotations folder.
 The current version of the module only takes horizontal bounding box input. 
 ::
 
