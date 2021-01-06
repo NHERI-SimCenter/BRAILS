@@ -20,7 +20,9 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.applications.inception_v3 import preprocess_input
-
+from ModelZoo import zoo
+import matplotlib.pyplot as plt
+import json
 
 class ImageClassifier:
     """ A General Image Classifier. """
@@ -39,17 +41,28 @@ class ImageClassifier:
             print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
+        modelDetailFile = os.path.join(workDir,'{}.json'.format(modelName))
 
         self.workDir = workDir
         self.modelFile = modelFile
         self.classNames = classNames
         self.resultFile = resultFile
+        self.modelName = modelName
+        self.modelDetailFile = modelDetailFile
 
         if os.path.exists(modelFile):
             self.model = load_model(modelFile)
             print('Model found locally: {} '.format(modelFile))
+            
+            # check if a local definition of the model exists.
+            if os.path.exists(self.modelDetailFile):
+                with open(self.modelDetailFile) as f:
+                    self.classNames = json.load(f)['classNames']
+                    print('Class names found in the detail file: {} '.format(self.classNames))
+
         else:
             print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
+
 
     def predictOne(self,imagePath):
 
@@ -116,6 +129,9 @@ class ImageClassifier:
             label_mode='categorical'
         )
 
+        self.image_size = image_size
+        self.batch_size = batch_size
+
         newClassNames = self.train_ds.class_names
 
         # Configure the dataset for performance 
@@ -130,6 +146,204 @@ class ImageClassifier:
         if newClassNames != self.classNames:
             print('Error. Folder names {} mismatch predefined classNames: {}'.format(newClassNames, self.classNames))
             return
+
+    def train(self,baseModel='InceptionV3',lr1=0.0001,initial_epochs=10,
+                    fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,
+                    horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,plot=True):
+        
+        ## 1. Model zoo
+         
+        modelDict = {
+            'Xception': tf.keras.applications.Xception	,
+            'VGG16': tf.keras.applications.VGG16	    ,
+            'VGG19': tf.keras.applications.VGG19	    ,
+            'ResNet50': tf.keras.applications.ResNet50	,
+            'ResNet101': tf.keras.applications.ResNet101	,
+            'ResNet152': tf.keras.applications.ResNet152	,
+            'ResNet50V2': tf.keras.applications.ResNet50V2	,
+            'ResNet101V2': tf.keras.applications.ResNet101V2,	
+            'ResNet152V2': tf.keras.applications.ResNet152V2,	
+            'InceptionV3': tf.keras.applications.InceptionV3,	
+            'InceptionResNetV2': tf.keras.applications.InceptionResNetV2,
+            'MobileNet': tf.keras.applications.MobileNet	,
+            'MobileNetV2': tf.keras.applications.MobileNetV2,	
+            'DenseNet121': tf.keras.applications.DenseNet121,	
+            'DenseNet169': tf.keras.applications.DenseNet169,	
+            'DenseNet201': tf.keras.applications.DenseNet201,	
+            'NASNetMobile': tf.keras.applications.NASNetMobile	,
+            'NASNetLarge': tf.keras.applications.NASNetLarge,	
+            'EfficientNetB0': tf.keras.applications.EfficientNetB0,	
+            'EfficientNetB1': tf.keras.applications.EfficientNetB1,	
+            'EfficientNetB2': tf.keras.applications.EfficientNetB2,	
+            'EfficientNetB3': tf.keras.applications.EfficientNetB3,	
+            'EfficientNetB4': tf.keras.applications.EfficientNetB4,	
+            'EfficientNetB5': tf.keras.applications.EfficientNetB5,	
+            'EfficientNetB6': tf.keras.applications.EfficientNetB6,	
+            'EfficientNetB7': tf.keras.applications.EfficientNetB7
+            }
+
+        ## 2. Create model
+
+        ### 2.1 Load the pre-trained base model
+
+        if baseModel not in modelDict.keys():
+            print('{} is not found or not supported. \n Choose from {}'.format(baseModel, modelDict.keys()))
+            return
+
+        # Load InceptionV3 model pre-trained on imagenet
+        base_model = modelDict[baseModel](input_shape=self.image_size + (3,), # self.image_size is defined in loadData
+                                                       include_top=False,
+                                                       weights='imagenet')
+        # Freeze the base model
+        base_model.trainable = False
+
+        ### 2.2 Add preprocessing layers and a classification head to build the model
+
+        # Augmentation
+        aug_list = []
+        if horizontalFlip: 
+            aug_list.append(tf.keras.layers.experimental.preprocessing.RandomFlip('horizontal'))
+            print('Horizontal flip applied')
+        if verticalFlip: 
+            aug_list.append(tf.keras.layers.experimental.preprocessing.RandomFlip('vertical'))
+            print('Vertical flip applied')
+        if randomRotation>0.0: 
+            aug_list.append(tf.keras.layers.experimental.preprocessing.RandomRotation(randomRotation))
+            print('Random rotation = {} applied'.format(randomRotation))
+        if len(aug_list)>0: data_augmentation = tf.keras.Sequential(aug_list)
+
+        # Pre-processing layer
+        inputs = tf.keras.Input(shape=self.image_size + (3,))
+        if len(aug_list)>0: 
+            x = data_augmentation(inputs) # augment
+            x = preprocess_input(x) 
+        else: x = preprocess_input(inputs) 
+
+
+        # Then go into the backbone model
+        x = base_model(x)
+
+        # Then go into the classification header
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dropout(dropout)(x) # You can change the dropout rate 
+        prediction_layer = tf.keras.layers.Dense(len(self.classNames), activation='softmax')
+        outputs = prediction_layer(x)
+
+        # Put them together
+        self.model = tf.keras.Model(inputs, outputs)
+
+        ### Compile the model
+        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr1),
+              loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+        self.model.summary()
+
+        ### 3. Train the model
+        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
+
+
+        # Plot learning curves
+
+        acc = history.history['accuracy']
+        val_acc = history.history['val_accuracy']
+
+        loss = history.history['loss']
+        val_loss = history.history['val_loss']
+
+        if plot:
+            plt.figure(figsize=(8, 8))
+            plt.subplot(2, 1, 1)
+            plt.plot(acc, label='Training Accuracy')
+            plt.plot(val_acc, label='Validation Accuracy')
+            plt.legend(loc='lower right')
+            plt.ylabel('Accuracy')
+            plt.ylim([min(plt.ylim()),1])
+            plt.title('Training and Validation Accuracy')
+
+            plt.subplot(2, 1, 2)
+            plt.plot(loss, label='Training Loss')
+            plt.plot(val_loss, label='Validation Loss')
+            plt.legend(loc='upper right')
+            plt.ylabel('Cross Entropy')
+            plt.ylim([0,1.0])
+            plt.title('Training and Validation Loss')
+            plt.xlabel('epoch')
+            plt.show()
+
+        ## 4. Fine tuning
+
+        ### 4.1 Un-freeze the top layers of the model
+
+        # Un-freeze the whole base model
+        base_model.trainable = True
+
+        # Fine-tune from this layer onwards
+        fine_tune_at = 300 # There are a total of 311 layer
+
+        # Freeze all the layers before the `fine_tune_at` layer
+        for layer in base_model.layers[:fine_tune_at]:
+          layer.trainable =  False
+
+        ### 4.2 Compile the model
+
+        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr2),
+                      loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
+                      metrics=['accuracy'])
+        #model.summary()
+
+        ### 4.3 Continue training the model
+
+        total_epochs =  initial_epochs + fine_tune_epochs
+        history_fine = self.model.fit(self.train_ds, epochs=total_epochs, initial_epoch=history.epoch[-1], validation_data=self.val_ds)
+
+        # Plot learning curves
+
+        acc += history_fine.history['accuracy']
+        val_acc += history_fine.history['val_accuracy']
+
+        loss += history_fine.history['loss']
+        val_loss += history_fine.history['val_loss']
+
+        if plot:
+            plt.figure(figsize=(8, 8))
+            plt.subplot(2, 1, 1)
+            plt.plot(acc, label='Training Accuracy')
+            plt.plot(val_acc, label='Validation Accuracy')
+            plt.ylim([0.8, 1])
+            plt.plot([initial_epochs-1,initial_epochs-1],
+                      plt.ylim(), label='Start Fine Tuning')
+            plt.legend(loc='lower right')
+            plt.title('Training and Validation Accuracy')
+
+            plt.subplot(2, 1, 2)
+            plt.plot(loss, label='Training Loss')
+            plt.plot(val_loss, label='Validation Loss')
+            plt.ylim([0, 1.0])
+            plt.plot([initial_epochs-1,initial_epochs-1],
+                     plt.ylim(), label='Start Fine Tuning')
+            plt.legend(loc='upper right')
+            plt.title('Training and Validation Loss')
+            plt.xlabel('epoch')
+            plt.show()
+
+        ## Evaluate the performance of the model
+        # Evaluate the overall performance on the test set
+        #loss, accuracy = self.model.evaluate(self.test_ds)
+        #print('Test accuracy :', accuracy)
+
+        ## 5. Save model
+
+        # Save the model in the current folder 
+        self.model.save(self.modelFile) 
+        print('Model saved at ', self.modelFile)
+
+        modelDetails = {
+                'modelName' : self.modelName,
+                'classNames' : self.classNames
+            }
+        with open(self.modelDetailFile, 'w') as outfile:
+            json.dump(modelDetails, outfile)
+        print('Model details saved in ', self.modelDetailFile)
 
 
     def retrain(self,lr1=0.0001,initial_epochs=10):
