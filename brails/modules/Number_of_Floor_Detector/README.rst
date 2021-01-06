@@ -5,7 +5,7 @@ Purpose of the Module
 ------------------------------------------
 This module enables automated detection of number of floors in a building from image input.
 
-.. image:: images/modelOutput.jpg
+.. image:: images/sampleModelOutputs.gif
 
 Copyright
 ~~~~~~~~~
@@ -54,7 +54,7 @@ Requirements are installed using pip and weights of all used models are download
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
     cd BRAILS/brails/modules/NumberOfFloorDetection
-	python3 -m pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
 Program 
