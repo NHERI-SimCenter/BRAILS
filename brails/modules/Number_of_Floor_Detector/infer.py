@@ -15,15 +15,15 @@ warnings.filterwarnings("ignore")
 
 def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based number of floor detection model')
-    parser.add_argument('--im_path', type=str, default="VOC/valid/",
+    parser.add_argument('--im_path', type=str, default="VOC/test/",
                         help='Path for the building images')
     parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_trained.pth",
                         help='Path for the pretrained inference model.' 
-                             'Do NOT define this argument if the pretrained model for the module will be used')
+                             'Do NOT define this argument if the pretrained model bundled with the module will be used')
     parser.add_argument('--gpu_enabled', type=boolean_string, default=True,
-                        help='Enable GPU processing (Enter False for CPU-based training)')    
+                        help='Enable GPU processing (Enter False for CPU-based inference)')    
     parser.add_argument('--csv_out', type=str, default="nFloorPredict.csv",
-                        help='Name of the CSV file containing the model inference results')
+                        help='Name of the CSV output file where the inference results will be written')
 
     args = parser.parse_args()
     return args

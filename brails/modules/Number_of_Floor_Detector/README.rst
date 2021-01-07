@@ -47,8 +47,7 @@ BSD 3-Caluse license
 
 Installation
 ---------------------------
-The following commands clone the BRAILS repository and install the number of floor detection module.
-Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
+The following commands clone the BRAILS repository and install the number of floor detection module. Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
 
 ::
 
@@ -89,12 +88,35 @@ Training, validation, and test folders should be separate. All three folders mus
 Running the Module Using the Pretrained Floor Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The module is bundled with a pretrained model, trained on 80,000 training samples. This model can be called out-of-the-box via ``infer.py``, a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+
+::
+
+    python3 infer.py
+	--im_path "/path/to/images"
+        --gpu_enabled True
+
+Using the command line option ``--model_path``, ``infer.py`` can be called with a custom model trained by the user. For a brief description of all the options built into ``infer.py``, please use the ``infer.py --help`` syntax. Below is a complete list of these options.
+
+.. parsed-literal::
+
+    --im_path (default: "VOC/test/") Path for the building images that will be inferred by module 
+
+    --model_path (default: "models/efficientdet-d4_trained.pth") Path for the pretrained inference model.
+                                                                 Do NOT define this argument if the pretrained model bundled with the module will be used
+
+    --gpu_enabled (default: True) Enable GPU processing (Enter False for CPU-based inference)
+
+    --csv_out (default: "nFloorPredict.csv") Name of the CSV output file where the inference results will be written
+
 
 Model Training
 ~~~~~~~~~~~~~~~
 
 If the user wishes to further train the pretrained model that is bundled with this module, or train a separate model from scratch, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
-</train.py>`_. Following is an exhaustive list of the available command line parameters. The user can also use the ``train.py --help`` syntax to view a brief version of the list below.
+<brails/modules/Number_of_Floor_Detector/train.py>`_. 
+
+Following is an comprehensive list of the available command line parameters. The user may also use the ``train.py --help`` syntax to view a brief version of the list below.
 
 .. parsed-literal::
 
@@ -102,11 +124,13 @@ If the user wishes to further train the pretrained model that is bundled with th
 
     -n (default: 0) Number of loader processes to use with Pytorch DataLoader
 
-    --top_only (default: False) True if desired to finetune the regressor and the classifier (head) only. False if desired to finetune the entire network
+    --top_only (default: False) True if desired to finetune the regressor and the classifier (head) only. 
+                                False if desired to finetune the entire network
 
     --num_gpus (default: 1) Number of GPUs available for training. Enter 0 for CPU-based training
 
-    --optim (default: adamw) Optimizer used for training. Available options: AdamW and SGD. Use of AdamW until the last stage of training then switching to SGD recommended
+    --optim (default: "adamw") Optimizer used for training. Available options: AdamW and SGD. 
+                               Use of AdamW until the last stage of training then switching to SGD recommended
 
     --lr (default: 0.0001) Optimizer learning rate
 
@@ -114,7 +138,7 @@ If the user wishes to further train the pretrained model that is bundled with th
 
     --num_epochs (default: 25) Number of training epochs
 
-    --data_path (default: datasets/) Path for the root folder of dataset
+    --data_path (default: "datasets/") Path for the root folder of dataset
 
     --val_interval (default: 1) Number of epoches between model validating. Enter 1 for validating at the end of each epoch
 
@@ -122,9 +146,12 @@ If the user wishes to further train the pretrained model that is bundled with th
 
     --es_min_delta (default: 0.0) Early stopping parameter: Minimum change in loss to qualify as an improvement
 
-    --es_patience (default: 0) Number of epochs with no improvement after which training will be stopped. Set to 0 to disable early stopping
+    --es_patience (default: 0) Number of epochs with no improvement after which training will be stopped. 
+                               Set to 0 to disable early stopping
 
-    --customModel_path (default: models/efficientdet-d4_trained.pth) Path for the custom pretrained model desired to be used in training. This option is meant for continued training of a existing model and can be used for models trained on an EfficientDet backbone
+    --customModel_path (default: "models/efficientdet-d4_trained.pth") Path for the custom pretrained model desired to be used in training. 
+                               This option is meant for continued training of an existing model. 
+                               It can be used for models trained on an EfficientDet backbone only
 
 For example, the command to train a floor detection model **on CPU** by **fine-tuning the full EfficientDet-D4 backbone trained on COCO dataset** for **25 epochs** using a **learning rate of 0.0001**:
 
