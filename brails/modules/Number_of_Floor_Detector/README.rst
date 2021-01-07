@@ -63,9 +63,7 @@ Program
 Input Data Format for Training and Testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Training, validation, and test folders should be separate. All three folders must be stored in the COCO format and follow the convention defined below.
-For training a model using custom dataset, training, validation, and annotations folders must exist. Bounding box annotations for the training and validation folders shall be placed under the annotations folder.
-The current version of the module only takes horizontal bounding box input. 
+Training, validation, and test folders should be separate. All three folders must be stored in the COCO format and follow the convention defined below. For training a model using a custom dataset, training, validation, and annotations folders must exist. Bounding box annotations for the training and validation folders shall be placed under the annotations folder. The current version of the module only takes horizontal bounding box input. 
 ::
 
 
@@ -87,34 +85,53 @@ The current version of the module only takes horizontal bounding box input.
         ├── instances_valid.json
         └── classes.txt
 
+
+Running the Module Using the Pretrained Floor Detection Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 Model Training
 ~~~~~~~~~~~~~~~
 
-The model can be trained on existing data. The folder structure shown in `Input Data Format for Training and Testing`
-has to be observed so the right labels are assigned. The most important command line parameters are:
+If the user wishes to further train the pretrained model that is bundled with this module, or train a separate model from scratch, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
+</train.py>`_. Following is an exhaustive list of the available command line parameters. The user can also use the ``train.py --help`` syntax to view a brief version of the list below.
 
 .. parsed-literal::
 
-    --num_epochs Number of epochs to train
+    -c (default: 4) Compund coefficient for the EfficientDet backbone, e.g., enter 7 for EfficientDet-D7 
 
-    --train-data, --val-data, --test-data for setting the folders in which images are kept for training and validation.
-    No overlapping imnagery between these folders is permitted. --test-data is only needed in combination with the --eval flag to
-    check the performance on the test data.
+    -n (default: 0) Number of loader processes to use with Pytorch DataLoader
 
-    --eval Evaluate the trained model on the test set. A model should be loaded with the --checkpoint flag.
+    --top_only (default: False) True if desired to finetune the regressor and the classifier (head) only. False if desired to finetune the entire network
 
-    --checkpoint Load a checkpoint to continue training or evaluate the performance on the test set.
+    --num_gpus (default: 1) Number of GPUs available for training. Enter 0 for CPU-based training
 
-    --freeze-layers When loading from a checkpoint, all layers apart from the final fully connected layer can be frozen
-    for finetuning.
+    --optim (default: adamw) Optimizer used for training. Available options: AdamW and SGD. Use of AdamW until the last stage of training then switching to SGD recommended
 
+    --lr (default: 0.0001) Optimizer learning rate
 
-For example, the command to train a model for 25 epochs on CPU is:
+    --batch_size (default: 2) The number of images used per training step
+
+    --num_epochs (default: 25) Number of training epochs
+
+    --data_path (default: datasets/) Path for the root folder of dataset
+
+    --val_interval (default: 1) Number of epoches between model validating. Enter 1 for validating at the end of each epoch
+
+    --save_interval (default: 5) Number of epoches between model saving. Enter 1 for saving at the end of each epoch
+
+    --es_min_delta (default: 0.0) Early stopping parameter: Minimum change in loss to qualify as an improvement
+
+    --es_patience (default: 0) Number of epochs with no improvement after which training will be stopped. Set to 0 to disable early stopping
+
+    --customModel_path (default: models/efficientdet-d4_trained.pth) Path for the custom pretrained model desired to be used in training. This option is meant for continued training of a existing model and can be used for models trained on an EfficientDet backbone
+
+For example, the command to train a floor detection model **on CPU** by **fine-tuning the full EfficientDet-D4 backbone trained on COCO dataset** for **25 epochs** using a **learning rate of 0.0001**:
 
 ::
 
     python3 train.py
-        --num_epochs 25
-        --head_only False
-	--lr 0.0001
 	--num_gpus 0
+        --head_only False
+        --num_epochs 25
+	--lr 0.0001
