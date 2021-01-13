@@ -162,3 +162,34 @@ For example, the command to train a floor detection model **on CPU** by **fine-t
         --head_only False
         --num_epochs 25
 	--lr 0.0001
+
+Pretrained Model 
+---------------------------
+Model Architecture
+~~~~~~~~~~~~~~~~~~~~~~
+.. figure:: images/EfficientDetArchitecture.PNG
+   :scale: 70 %
+   :alt: Model architecture
+   :name: modelArch
+
+.. figure:: images/EfficientDetPerfComp.PNG
+   :scale: 70 %
+   :alt: Detection performance
+   :name: detPerf
+
+Model Validation
+~~~~~~~~~~~~~~~~~~~~~~
+On a randomly selected set of in-the-wild building images from New Jersey's Bergen, Middlesex, and Moris Counties, the model attains an F1-score of 86%. Here, in-the-wild building images are defined as street-level photos that may contain multiple buildings and are captured with random camera properties. 
+
+If the test images are constrained such that a single building exists in each image and the images are captured such that the image plane is nearly parallel to the frontal plane of the building facade, the F1-score of the model is determined as 94.2%.
+
+Following is the confusion matrix  in :numref:`confmat`
+
+.. figure:: images/confusionMatrix.png
+   :scale: 70 %
+   :alt: Confusion matrix
+   :name: confmat
+
+   Confusion matrix of the pretrained model on the in-the-wild test set.
+
+

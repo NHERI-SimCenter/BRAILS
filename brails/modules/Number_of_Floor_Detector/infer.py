@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 
 def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based number of floor detection model')
-    parser.add_argument('--im_path', type=str, default="VOC/test/",
+    parser.add_argument('--im_path', type=str, default="datasets/test/",
                         help='Path for the building images')
     parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_trained.pth",
                         help='Path for the pretrained inference model.' 
