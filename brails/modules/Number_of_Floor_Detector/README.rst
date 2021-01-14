@@ -93,7 +93,7 @@ Running the Module Using the Pretrained Floor Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The module is bundled with a pretrained floor detection model, trained on 80,000 training samples. This model can be called out-of-the-box via `infer.py
-</infer.py>`_., a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+<infer.py>`_., a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
@@ -120,7 +120,7 @@ Model Training
 
 If the user wishes to further train the pretrained floor detection model that is bundled with this module, or train a separate model by finetuning an EfficientDet model already trained on COCO 2017 detection
 datasets, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
-</train.py>`_. 
+<train.py>`_. 
 
 Following is an comprehensive list of the available command line parameters. The user may also use the ``train.py --help`` syntax to view a brief version of the list below.
 
@@ -196,7 +196,7 @@ Remarkable performance gains can be attained in image classification by jointly 
 As shown in Figure 3, at the time this work was published, EfficientDet object detection algorithms attained the state-of-the-art performance on the COCO dataset. Also suggested in Figure 3 is the more complex the network architecture is, the higher the detection performance will be. From a practical standpoint, however, architecture selection will depend on the availability of computational resources. For example, to train a model on an architecture with a compound coefficient higher than 4, a GPU with a memory of more than 11 GB will almost always be required.
 
 .. figure:: images/EfficientDetPerfComp.PNG
-   :scale: 50 %
+   :scale: 40 %
    :alt: Detection performance
    :name: detPerf
 
