@@ -5,7 +5,11 @@ Purpose of the Module
 ------------------------------------------
 This module enables automated detection of number of floors in a building from image input.
 
-.. image:: images/sampleModelOutputs.gif
+.. figure:: images/sampleModelOutputs.gif
+   :scale: 70 %
+   :alt: Sample model floor detections
+
+   Figure 1: Sample floor detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
 
 Copyright
 ~~~~~~~~~
@@ -88,7 +92,8 @@ Training, validation, and test folders should be separate. All three folders mus
 Running the Module Using the Pretrained Floor Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The module is bundled with a pretrained model, trained on 80,000 training samples. This model can be called out-of-the-box via ``infer.py``, a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+The module is bundled with a pretrained floor detection model, trained on 80,000 training samples. This model can be called out-of-the-box via `infer.py
+</infer.py>`_., a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
@@ -113,8 +118,9 @@ Using the command line option ``--model_path``, ``infer.py`` can be called with 
 Model Training
 ~~~~~~~~~~~~~~~
 
-If the user wishes to further train the pretrained model that is bundled with this module, or train a separate model from scratch, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
-<brails/modules/Number_of_Floor_Detector/train.py>`_. 
+If the user wishes to further train the pretrained floor detection model that is bundled with this module, or train a separate model by finetuning an EfficientDet model already trained on COCO 2017 detection
+datasets, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
+</train.py>`_. 
 
 Following is an comprehensive list of the available command line parameters. The user may also use the ``train.py --help`` syntax to view a brief version of the list below.
 
@@ -167,29 +173,51 @@ Pretrained Model
 ---------------------------
 Model Architecture
 ~~~~~~~~~~~~~~~~~~~~~~
+
+In general, all modern object detectors can be said to consist of three main components: 
+
+1. A backbone network that extracts features from the given image at different scales,
+2. A feature network that receives multiple levels of features from the backbone and returns a list of fused features that identify the dominant features of the image,
+3. A class and box network that takes the fused features as input to predict the class and location of each object, respectively.
+
+EfficientDet models use EfficientNets pretrained on ImageNet for their backbone network. For the feature network, EfficienDet models use a novel bidirectional feature pyramid network (BiFPN), which takes level 3 through 7 features from the backbone network and repeatedly fuses these features in top-down and bottom-up directions. Both BiFPN layers and class/box layers are repeated multiple times with the number of repetations depending on the compund coefficient of the architecture. Figure 2 provides and overview of the described structure. For further details please see the seminal work by `Tan, Pang, and Le
+<https://arxiv.org/abs/1911.09070>`_.
+
 .. figure:: images/EfficientDetArchitecture.PNG
-   :scale: 70 %
+   :scale: 50 %
    :alt: Model architecture
    :name: modelArch
 
+   Figure 2: A high-level representation of the EfficientDet architecture
+
+Remarkable performance gains can be attained in image classification by jointly scaling up all dimensions of neural network width, depth, and input resolution, as noted in the study by `Tan and Le
+<https://arxiv.org/abs/1905.11946>`_. Inspired by this work, EfficienDet utilizes a new compound scaling method for object detection that jointly increases all dimensions of the backbone network, BiFPN, class/box network, and input image resolution, using a simple compound coefficient, φ. A total of 8 compounding levels are defined for EffcienDet, i.e., φ = 0 to 8, with EfficientDet-D0 being the simplest and EfficientDet-D8 being the most complex of the network architectures. 
+
+As shown in Figure 3, at the time this work was published, EfficientDet object detection algorithms attained the state-of-the-art performance on the COCO dataset. Also suggested in Figure 3 is the more complex the network architecture is, the higher the detection performance will be. From a practical standpoint, however, architecture selection will depend on the availability of computational resources. For example, to train a model on an architecture with a compound coefficient higher than 4, a GPU with a memory of more than 11 GB will almost always be required.
+
 .. figure:: images/EfficientDetPerfComp.PNG
-   :scale: 70 %
+   :scale: 50 %
    :alt: Detection performance
    :name: detPerf
 
+   Figure 3: A comparison of the performance and accuracy levels of EfficienDet models over other popular object detection architectures on the COCO dataset
+
 Model Validation
 ~~~~~~~~~~~~~~~~~~~~~~
-On a randomly selected set of in-the-wild building images from New Jersey's Bergen, Middlesex, and Moris Counties, the model attains an F1-score of 86%. Here, in-the-wild building images are defined as street-level photos that may contain multiple buildings and are captured with random camera properties. 
 
-If the test images are constrained such that a single building exists in each image and the images are captured such that the image plane is nearly parallel to the frontal plane of the building facade, the F1-score of the model is determined as 94.2%.
+On a randomly selected set of in-the-wild building images from New Jersey's Bergen, Middlesex, and Moris Counties, the model attains an F1-score of 86%. Here, in-the-wild building images are defined as street-level photos that may contain multiple buildings and are captured with random camera properties. Figure 4 is the confusion matrix of the model inferences on the aforementioned in-the-wild test set.
 
-Following is the confusion matrix  in :numref:`confmat`
-
-.. figure:: images/confusionMatrix.png
+.. figure:: images/confusionMatrixWild.png
    :scale: 70 %
-   :alt: Confusion matrix
-   :name: confmat
+   :alt: Confusion matrix (in-the-wild dataset)
 
-   Confusion matrix of the pretrained model on the in-the-wild test set.
+   Figure 4: Confusion matrix of the pretrained model on the in-the-wild test set
 
 
+If the test images are constrained such that a single building exists in each image and the images are captured such that the image plane is nearly parallel to the frontal plane of the building facade, the F1-score of the model is determined as 94.7%. Figure 5 shows the confusion matrix for the pretrained model on a test set generated according to these constraints.
+
+.. figure:: images/confusionMatrixClean.png
+   :scale: 70 %
+   :alt: Confusion matrix (clean dataset)
+
+   Figure 5: Confusion matrix of the pretrained model on the dataset containing lightly distorted/obstructed images of individual buildings
