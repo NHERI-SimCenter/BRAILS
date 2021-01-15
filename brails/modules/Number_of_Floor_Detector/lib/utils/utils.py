@@ -12,7 +12,7 @@ from torchvision.ops.boxes import batched_nms
 from typing import Union
 import uuid
 
-from utils.sync_batchnorm import SynchronizedBatchNorm2d
+from lib.utils.sync_batchnorm import SynchronizedBatchNorm2d
 
 from torch.nn.init import _calculate_fan_in_and_fan_out, _no_grad_normal_
 import math

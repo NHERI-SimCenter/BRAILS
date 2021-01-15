@@ -3,12 +3,12 @@ import torch
 from torch.backends import cudnn
 from matplotlib import colors
 
-from backbone import EfficientDetBackbone
+from lib.backbone import EfficientDetBackbone
 import cv2
 import numpy as np
 
-from efficientdet.utils import BBoxTransform, ClipBoxes
-from utils.utils import preprocess, invert_affine, postprocess, STANDARD_COLORS, standard_to_bgr, get_index_label, plot_one_box
+from lib.efficientdet.utils import BBoxTransform, ClipBoxes
+from lib.utils.utils import preprocess, invert_affine, postprocess, STANDARD_COLORS, standard_to_bgr, get_index_label, plot_one_box
 
 
 class Infer():
@@ -79,7 +79,11 @@ class Infer():
                                              ratios=self.system_dict["params"]["anchor_ratios"], 
                                              scales=self.system_dict["params"]["anchor_scales"])
         
-        self.system_dict["local"]["model"].load_state_dict(torch.load(self.system_dict["params"]["weights_file"]))
+        if self.system_dict["params"]["use_cuda"]:
+            self.system_dict["local"]["model"].load_state_dict(torch.load(self.system_dict["params"]["weights_file"]))
+        else:
+            self.system_dict["local"]["model"].load_state_dict(torch.load(self.system_dict["params"]["weights_file"], map_location =torch.device('cpu')))
+        
         self.system_dict["local"]["model"].requires_grad_(False)
         self.system_dict["local"]["model"] = self.system_dict["local"]["model"].eval()
 

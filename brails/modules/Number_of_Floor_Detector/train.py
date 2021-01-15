@@ -4,7 +4,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based number of floor detection model')
     parser.add_argument('-c', '--compound_coef', type=int, default=4,
-                        help='Coefficients of  
+                        help='Compund coefficient for the EfficientDet backbone, e.g., enter 7 for EfficientDet-D7') 
     parser.add_argument('-n', '--num_workers', type=int, default=0,
                         help='Number of workers of Dataloader')
     parser.add_argument('--top_only', type=boolean_string, default=False,

@@ -56,7 +56,7 @@ The following commands clone the BRAILS repository and install the number of flo
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
-    cd BRAILS/brails/modules/NumberOfFloorDetection
+    cd BRAILS/brails/modules/Number_of_Floor_Detector
     python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
@@ -92,20 +92,19 @@ Training, validation, and test folders should be separate. All three folders mus
 Running the Module Using the Pretrained Floor Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The module is bundled with a pretrained floor detection model, trained on 80,000 training samples. This model can be called out-of-the-box via `infer.py
-<infer.py>`_., a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+The module is bundled with a pretrained floor detection model, trained on 80,000 training samples. This model can be called out-of-the-box via ``infer.py``., a powerful post-processor custom-tailored to convert bounding box detections to floor counts. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
     python3 infer.py
-	--im_path "/path/to/images"
+	--im_path "/path/to/images/"
         --gpu_enabled True
 
 Using the command line option ``--model_path``, ``infer.py`` can be called with a custom model trained by the user. For a brief description of all the options built into ``infer.py``, please use the ``infer.py --help`` syntax. Below is a complete list of these options.
 
 .. parsed-literal::
 
-    --im_path (default: "VOC/test/") Path for the building images that will be inferred by module 
+    --im_path (default: "datasets/test/") Path for the building images that will be inferred by module. Must end with backward slash.
 
     --model_path (default: "models/efficientdet-d4_trained.pth") Path for the pretrained inference model.
                                                                  Do NOT define this argument if the pretrained model bundled with the module will be used
@@ -119,8 +118,7 @@ Model Training
 ~~~~~~~~~~~~~~~
 
 If the user wishes to further train the pretrained floor detection model that is bundled with this module, or train a separate model by finetuning an EfficientDet model already trained on COCO 2017 detection
-datasets, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using `train.py
-<train.py>`_. 
+datasets, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using ``train.py``. 
 
 Following is an comprehensive list of the available command line parameters. The user may also use the ``train.py --help`` syntax to view a brief version of the list below.
 
@@ -144,7 +142,7 @@ Following is an comprehensive list of the available command line parameters. The
 
     --num_epochs (default: 25) Number of training epochs
 
-    --data_path (default: "datasets/") Path for the root folder of dataset
+    --data_path (default: "datasets/") Path for the root folder of dataset. Must end with backward slash.
 
     --val_interval (default: 1) Number of epoches between model validating. Enter 1 for validating at the end of each epoch
 
