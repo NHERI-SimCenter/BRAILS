@@ -1,6 +1,11 @@
 matplotlib
 tensorflow
 numpy
-glob3
 argparse
 pandas
+requests
+geopandas
+scipy
+seaborn
+wget
+shapely

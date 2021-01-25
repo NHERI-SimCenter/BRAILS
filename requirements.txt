@@ -8,3 +8,4 @@ geopandas
 scipy
 seaborn
 wget
+shapely
