@@ -10,7 +10,7 @@
 """
 
 from ModelZoo import zoo
-from GeneralImageClassifier import *
+from GenericImageClassifier import *
 import wget 
 import os
 

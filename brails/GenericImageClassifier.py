@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import json
 
 class ImageClassifier:
-    """ A General Image Classifier. """
+    """ A Generic Image Classifier. """
 
     def __init__(self, modelName=None, classNames=None, resultFile='preds.csv', workDir='tmp'):
         '''

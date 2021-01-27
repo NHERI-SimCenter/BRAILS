@@ -1,9 +1,9 @@
-.. _lbl-generalImageClassifier:
+.. _lbl-genericImageClassifier:
 
-General Image Classifier
+Generic Image Classifier
 ========================
 
-The General Image Classifier is a module that can be used for creating user defined classifier.
+The Generic Image Classifier is a module that can be used for creating user defined classifier.
 
 The user provides categorized images to this module. 
 
@@ -47,7 +47,7 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.GeneralImageClassifier import ImageClassifier
+    from brails.GenericImageClassifier import ImageClassifier
 
     # initialize the classifier, give it a name
     materialClassifier = ImageClassifier(modelName='materialClassifierV0.1')
@@ -83,7 +83,7 @@ Now you can use the trained model to predict on given images.
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.GeneralImageClassifier import ImageClassifier
+    from brails.GenericImageClassifier import ImageClassifier
     materialClassifier = ImageClassifier(modelName='materialClassifierV0.1')
                                             
     # define the paths of images in a list

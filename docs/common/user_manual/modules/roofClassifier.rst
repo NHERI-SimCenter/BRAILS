@@ -3,7 +3,7 @@
 Roof Classifier
 ========================
 
-The Roof Classifier is a module that wraps the :ref:`lbl-generalImageClassifier`. 
+The Roof Classifier is a module that wraps the :ref:`lbl-genericImageClassifier`. 
 
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 

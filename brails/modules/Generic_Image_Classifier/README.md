@@ -4,7 +4,7 @@
 
 ```bash
 git clone https://github.com/NHERI-SimCenter/BRAILS.git
-cd BRAILS/brails/modules/General_Image_Classifier
+cd BRAILS/brails/modules/Generic_Image_Classifier
 pip install -r requirements.txt
 ```
 
