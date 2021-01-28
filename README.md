@@ -37,6 +37,8 @@ BIM = cityBuilder.build()
 
 ```
 
+The definitions of the parameters in this example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html). 
+
 The result BIM is a geopandas dataframe:
 ```
 index geometry	                                       ID	roofShape	roofShapeProb	softStory	softStoryProb	occupancy	occupancyProb
@@ -52,6 +54,8 @@ index geometry	                                       ID	roofShape	roofShapeProb
 9	POLYGON ((-93.21001 30.22770, -93.20999 30.227...	9	flat	       0.991286	    others	    0.991286	    RES1	    0.688759
 
 ```
+
+
 
 ### Example 2
 
