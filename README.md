@@ -69,9 +69,8 @@ wget https://zenodo.org/record/4095668/files/image_examples.zip
 
 ```python
 # import modules
-from brails.RoofTypeClassifier import RoofClassifier
-from brails.OccupancyClassClassifier import OccupancyClassifier
-from brails.SoftstoryClassifier import SoftstoryClassifier
+from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier
+
 
 # initialize a roof classifier
 roofModel = RoofClassifier()
@@ -126,15 +125,25 @@ Results written in file softstory_preds.csv
 
 ## Documents
 
-Read the document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
 
-More details in paper: <a href="https://arxiv.org/abs/1910.06391">here</a>.
+
 
 
 ## How to cite
 
-Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
-
+```
+@article{wang2021machine,
+  title={Machine learning-based regional scale intelligent modeling of building information for natural hazard risk management},
+  author={Wang, Chaofeng and Yu, Qian and Law, Kincho H and McKenna, Frank and Stella, X Yu and Taciroglu, Ertugrul and Zsarn{\'o}czay, Adam and Elhaddad, Wael and Cetiner, Barbaros},
+  journal={Automation in Construction},
+  volume={122},
+  pages={103474},
+  year={2021},
+  publisher={Elsevier}
+}
+```
+The pdf is <a href="https://www.researchgate.net/publication/346957248_Machine_Learning-based_Regional_Scale_Intelligent_Modeling_of_Building_Information_for_Natural_Hazard_Risk_Management">here</a>.
 
 ## Acknowledgement
 This material is based upon work supported by the National Science Foundation under Grant No. 1612843.
