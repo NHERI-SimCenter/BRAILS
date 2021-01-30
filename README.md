@@ -140,7 +140,8 @@ Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Docum
   volume={122},
   pages={103474},
   year={2021},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  doi="https://doi.org/10.1016/j.autcon.2020.103474"
 }
 ```
 The pdf is <a href="https://www.researchgate.net/publication/346957248_Machine_Learning-based_Regional_Scale_Intelligent_Modeling_of_Building_Information_for_Natural_Hazard_Risk_Management">here</a>.
