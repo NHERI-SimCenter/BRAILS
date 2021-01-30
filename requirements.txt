@@ -9,3 +9,4 @@ scipy
 seaborn
 wget
 shapely
+osmnx==1.0.1

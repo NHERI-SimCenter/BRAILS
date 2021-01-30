@@ -22,7 +22,7 @@ pip install BRAILS
 ### Example 1
 
 
-The following example can be found in the [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html)
+The following example can be found in [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html)
 
 Example images can be downloaded like this.
 
