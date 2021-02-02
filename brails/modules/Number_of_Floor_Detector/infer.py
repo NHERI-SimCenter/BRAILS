@@ -192,8 +192,11 @@ def infer(opt):
             stack4Address = []
             for k in range(2):
                 if overlapRatio[indKeep[k]]>10: stack4Address.append(indKeep[k])
+            if len(stack4Address)!=0:
+                nFloors = max([len(uniqueStacks[x]) for x in stack4Address])
+            else:
+                nFloors = len(uniqueStacks[0])
                 
-            nFloors = max([len(uniqueStacks[x]) for x in stack4Address])
            
         if nImages!=1: 
                 csvFile.write(os.path.splitext(imgList[imgno])[0] + f", {nFloors}\n")

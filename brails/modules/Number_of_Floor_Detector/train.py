@@ -3,7 +3,7 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based number of floor detection model')
-    parser.add_argument('-c', '--compound_coef', type=int, default=4,
+    parser.add_argument('-c', '--compound_coef', type=int, default=3,
                         help='Compund coefficient for the EfficientDet backbone, e.g., enter 7 for EfficientDet-D7') 
     parser.add_argument('-n', '--num_workers', type=int, default=0,
                         help='Number of workers of Dataloader')
@@ -56,7 +56,7 @@ def train(opt):
     gtf.set_val_dataset(opt.data_path,"","",val_dir)
     
     # Define the Model Architecture
-    modelArchitecture = "efficientdet-d3.pth" ## Figire this out and the customModel_path
+    modelArchitecture = f"efficientdet-d{opt.compound_coef}.pth" ## Figure out the customModel_path
     
     gtf.set_model(model_name=modelArchitecture, num_gpus=opt.num_gpus,
                   freeze_head=opt.top_only)
