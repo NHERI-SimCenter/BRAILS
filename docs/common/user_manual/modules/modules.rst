@@ -12,4 +12,5 @@ The BRAILS framework consists of a series of modules.
    occupancyClassifier
    softstoryClassifier
    foundationElevationClassifier
+   nFloorDetector
    

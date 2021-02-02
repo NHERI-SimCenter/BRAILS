@@ -13,7 +13,7 @@ EfficientDet models use EfficientNets pretrained on ImageNet for their backbone 
 <https://arxiv.org/abs/1911.09070>`_.
 
 .. _fig_modelArch:
-.. figure:: ../../images/technical/EfficientDetArchitecture.png
+.. figure:: ../../images/technical/EfficientDetArch.png
    :width: 40 %
    :alt: Model architecture
 
@@ -25,7 +25,7 @@ Remarkable performance gains can be attained in image classification by jointly 
 As shown in :numref:`fig_EfficientDetPerf`, at the time this work was published, EfficientDet object detection algorithms attained the state-of-the-art performance on the COCO dataset. Also suggested in Figure 3 is the more complex the network architecture is, the higher the detection performance will be. From a practical standpoint, however, architecture selection will depend on the availability of computational resources. For example, to train a model on an architecture with a compound coefficient higher than 4, a GPU with a memory of more than 11 GB will almost always be required.
 
 .. _fig_EfficientDetPerf:
-.. figure:: ../../images/technical/EfficientDetPerfComp.png
+.. figure:: ../../images/technical/EfficientDetPerf.png
    :width: 40 %
    :alt: Detection performance
 
