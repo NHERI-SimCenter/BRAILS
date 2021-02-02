@@ -17,12 +17,12 @@ Use the module
     # Initialize the detector
     nfloorDetector = NFloorDetector()
 
-	# Define the path of the images:
-	imdir = datasets/test/
+    # Define the path of the images:
+    imdir = datasets/test/
     
     # Detect the number of floors in each image inside imPath
     nfloorDetector.infer(imPath=imDir)
 	
     # Train a new detector using EfficientDet-D7 for 50 epochs
     nfloorDetector.load_train_data(rootDir="datasets/")
-	nfloorDetector.train(compCoeff=7,numEpochs=50)
+    nfloorDetector.train(compCoeff=7,numEpochs=50)
