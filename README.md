@@ -99,8 +99,8 @@ Check details of the examples [here](https://nheri-simcenter.github.io/BRAILS-Do
 from brails.CityBuilder import CityBuilder
 
 # Initialize the CityBuilder
-cityBuilder = CityBuilder(attributes=['story','occupancy','roofshape'], 
-                   numBldg=10,random=False, place='lake charles',state='la', 
+cityBuilder = CityBuilder(attributes=['softstory','occupancy','roofshape'], 
+                   numBldg=10,random=False, place='Lake Charles, Louisiana', 
                    GoogleMapAPIKey='put-your-key-here')
 
 # create the city-scale BIM file
