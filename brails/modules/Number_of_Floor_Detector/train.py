@@ -7,7 +7,7 @@ def get_args():
                         help='Compund coefficient for the EfficientDet backbone, e.g., enter 7 for EfficientDet-D7') 
     parser.add_argument('-n', '--num_workers', type=int, default=0,
                         help='Number of workers of Dataloader')
-    parser.add_argument('--top_only', type=boolean_string, default=False,
+    parser.add_argument('--head_only', type=boolean_string, default=False,
                         help='True if desired to finetune the regressor and the classifier only,'
                              'useful in early stage convergence or small/easy dataset')
     parser.add_argument('--num_gpus', type=int, default=1, 
@@ -59,7 +59,7 @@ def train(opt):
     modelArchitecture = f"efficientdet-d{opt.compound_coef}.pth" ## Figure out the customModel_path
     
     gtf.set_model(model_name=modelArchitecture, num_gpus=opt.num_gpus,
-                  freeze_head=opt.top_only)
+                  freeze_head=opt.head_only)
     
     # Set Model Hyperparameters    
     gtf.set_hyperparams(optimizer=opt.optim, lr=opt.lr,

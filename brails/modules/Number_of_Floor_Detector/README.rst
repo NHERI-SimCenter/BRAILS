@@ -128,7 +128,7 @@ Following is an comprehensive list of the available command line parameters. The
 
     -n (default: 0) Number of loader processes to use with Pytorch DataLoader
 
-    --top_only (default: False) True if desired to finetune the regressor and the classifier (head) only. 
+    --head_only (default: False) True if desired to finetune the regressor and the classifier (head) only. 
                                 False if desired to finetune the entire network
 
     --num_gpus (default: 1) Number of GPUs available for training. Enter 0 for CPU-based training
@@ -163,8 +163,8 @@ For example, the command to train a floor detection model **on CPU** by **fine-t
 
     python3 train.py
 	--num_gpus 0
-        --head_only False
-        --num_epochs 25
+	--head_only False
+	--num_epochs 25
 	--lr 0.0001
 
 Pretrained Model 
