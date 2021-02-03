@@ -9,7 +9,6 @@ from lib.infer_detector import Infer
 import torch
 import time
 from tqdm import tqdm
-import warnings
 
 class NFloorDetector():
     def __init__(self):
