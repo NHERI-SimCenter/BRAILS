@@ -446,6 +446,7 @@ class Detector():
         print("");
         print("");
         print("Training complete");
+        #print(f"Model saved to {os.path.join(self.system_dict["params"]["saved_path"], self.system_dict["params"]["compound_coef"]}_trained.pth')}");
 
 
 

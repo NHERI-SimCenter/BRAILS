@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 
 def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based number of floor detection model')
-    parser.add_argument('--im_path', type=str, default="datasets/test/",
+    parser.add_argument('--im_path', type=str, default="datasets/test",
                         help='Path for the building images')
     parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_trained.pth",
                         help='Path for the pretrained inference model.' 
@@ -54,7 +54,10 @@ def create_polygon(bb):
 def intersect_polygons(poly1, poly2):
     if poly1.intersects(poly2):
         polyArea = poly1.intersection(poly2).area
-        overlapRatio = polyArea/poly1.area*100
+        if poly1.area!=0 and poly2.area!=0:
+            overlapRatio = polyArea/poly1.area*100
+        else: 
+            overlapRatio = 0
     else:
         overlapRatio = 0
     return overlapRatio
@@ -68,6 +71,9 @@ def check_threshold_level(boxesPoly):
     else:
         falseDetect = np.zeros(len(boxesPoly))
         for k in range(len(boxesPoly)):
+            #for m in range(len(boxesPoly)):
+            #    overlapRatio = np.array([intersect_polygons(boxesPoly[m], boxesPoly[k])],dtype=float)
+            #    print(f"{m}, {k}")
             overlapRatio = np.array([intersect_polygons(p, boxesPoly[k]) for p in boxesPoly],dtype=float)
             falseDetect[k] = len([idx for idx, val in enumerate(overlapRatio) if val > 75][1:])
         thresholdChange = any(falseDetect>2)
@@ -108,7 +114,7 @@ def infer(opt):
     gtfInfer.load_model(opt.model_path, classes, use_gpu=opt.gpu_enabled)
     for imgno in tqdm(range(nImages)):
         # Perform Iterative Inference
-        imgPath = opt.im_path + imgList[imgno]
+        imgPath = os.path.join(opt.im_path, imgList[imgno])
         img = cv2.imread(imgPath)
         img = cv2.resize(img,(640,640))
         cv2.imwrite("input.jpg",img)
