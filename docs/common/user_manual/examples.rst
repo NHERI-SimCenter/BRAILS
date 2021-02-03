@@ -4,6 +4,9 @@
 Examples
 ********
 
+Example 1: Modules
+===================
+
 The following is an example showing how to call pretrained models to predict on images.
 
 The images used in the example can be downloaded from here: `image_examples.zip <https://zenodo.org/record/4095668/files/image_examples.zip>`_.
@@ -11,9 +14,7 @@ The images used in the example can be downloaded from here: `image_examples.zip 
   .. code-block:: python
 
     # import modules
-    from brails.RoofTypeClassifier import RoofClassifier
-    from brails.OccupancyClassClassifier import OccupancyClassifier
-    from brails.SoftstoryClassifier import SoftstoryClassifier
+    from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier
 
     # initilize a roof classifier
     roofModel = RoofClassifier()
@@ -47,6 +48,90 @@ The images used in the example can be downloaded from here: `image_examples.zip 
     predictions = ssModel.predict(imgs)
 
 
+Example 2: Workflow
+=====================
 
+The following is an example showing how to create a building inventory for a city.
+
+You need to provide the Google maps API key for downloading street view and satellite images.
+
+Instructions on obtaining the API key can be found here: `<https://developers.google.com/maps/documentation/embed/get-api-key>`_.
+
+
+
+  .. code-block:: python
+
+    from brails.CityBuilder import CityBuilder
+
+    cityBuilder = CityBuilder(attributes=['occupancy','roofshape'], 
+                   numBldg=10,random=False, place='Lake Charles, LA', 
+                   GoogleMapAPIKey='put-your-API-key-here',
+                   overwrite=True)
+
+    BIM = cityBuilder.build()
+
+
+:attributes (list):     
+    A list of building attributes, such as ['story', 'occupancy', 'roofshape'], which are available in the current version.
+:numBldg (int):         
+    Number of buildings to generate.
+:random (bool):         
+    Randomly select numBldg buildings from the database if random is True.
+:place (str):           
+    The region of interest, e.g., Berkeley, California.
+:GoogleMapAPIKey (str): 
+    Google API Key.
+:overwrite (bool):      
+    Overwrite existing tmp files. Default value is False.
+
+
+    
+Example 3: Workflow
+======================
+
+The following is an example showing how to create a building inventory for a region defined using a bounding box.
+
+You need to provide the Google maps API key for downloading street view and satellite images.
+
+Instructions on obtaining the API key can be found here: `<https://developers.google.com/maps/documentation/embed/get-api-key>`_.
+
+
+
+  .. code-block:: python
+
+    from brails.CityBuilder import CityBuilder
+
+    cityBuilder = CityBuilder(attributes=['softstory','occupancy','roofshape'], 
+                   numBldg=10,random=False, bbox=[37.872187, -122.282178,37.870629, -122.279765], 
+                   GoogleMapAPIKey='put-your-API-key-here',
+                   overwrite=True)
+
+    BIM = cityBuilder.build()
+
+
+    
+:attributes (list):     
+    A list of building attributes, such as ['story', 'occupancy', 'roofshape'], which are available in the current version.
+:numBldg (int):         
+    Number of buildings to generate.
+:random (bool):         
+    Randomly select numBldg buildings from the database if random is True.
+:bbox (list):           
+    [north, west, south, east], which defines a region of interest.
+:GoogleMapAPIKey (str): 
+    Google API Key.
+:overwrite (bool):      
+    Overwrite existing tmp files. Default value is False.
+
+
+
+    
+
+
+    
+
+
+    
+    
 
 
