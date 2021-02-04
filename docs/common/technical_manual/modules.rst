@@ -8,3 +8,4 @@ Modules
    roof
    occupancy
    softstory
+   nfloor
