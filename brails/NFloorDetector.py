@@ -106,7 +106,10 @@ class NFloorDetector():
         def intersect_polygons(poly1, poly2):
             if poly1.intersects(poly2):
                 polyArea = poly1.intersection(poly2).area
-                overlapRatio = polyArea/poly1.area*100
+                if poly1.area!=0 and poly2.area!=0:
+                    overlapRatio = polyArea/poly1.area*100
+                else: 
+                    overlapRatio = 0
             else:
                 overlapRatio = 0
             return overlapRatio
@@ -159,7 +162,7 @@ class NFloorDetector():
         gtfInfer.load_model(self.system_dict["infer"]["modelPath"], classes, use_gpu=self.system_dict["infer"]["gpuEnabled"])
         for imgno in tqdm(range(6519,nImages)):
             # Perform Iterative Inference
-            imgPath = self.system_dict["infer"]["imPath"] + imgList[imgno]
+            imgPath = os.path.join(self.system_dict["infer"]["imPath"],imgList[imgno])
             img = cv2.imread(imgPath)
             img = cv2.resize(img,(640,640))
             cv2.imwrite("input.jpg",img)

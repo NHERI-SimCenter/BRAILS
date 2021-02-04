@@ -1,4 +1,4 @@
-import time
+# Modified by bacetiner
 import torch
 from torch.backends import cudnn
 from matplotlib import colors
@@ -152,32 +152,3 @@ class Infer():
                 cv2.imwrite('output.jpg', imgs[i])
                  
         return scores, labels, bboxes;                    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        

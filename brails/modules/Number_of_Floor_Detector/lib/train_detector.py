@@ -1,10 +1,9 @@
+# Modified by bacetiner
 import datetime
 import os
-import argparse
 import traceback
 
 import torch
-import yaml
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -18,6 +17,8 @@ from lib.efficientdet.loss import FocalLoss
 from lib.utils.sync_batchnorm import patch_replication_callback
 from lib.utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
 
+
+import urllib
 
 def boolean_string(s):
     if s not in {'False', 'True'}:
@@ -202,55 +203,36 @@ class Detector():
         if(self.system_dict["params"]["compound_coef"] == 0):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth -O " + \
-                            self.system_dict["params"]["load_weights"];
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 1):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 2):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 3):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 4):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 5):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 6):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth", filename=self.system_dict["params"]["load_weights"])
         elif(self.system_dict["params"]["compound_coef"] == 7):
             if(not os.path.isfile(self.system_dict["params"]["load_weights"])):
                 print("Downloading weights");
-                cmd = "wget https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d7.pth -O " + \
-                            self.system_dict["params"]["load_weights"]
-                os.system(cmd);
+                urllib.request.urlretrieve("https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d7.pth", filename=self.system_dict["params"]["load_weights"])        
 
-
-
-        
 
         # load last weights
         if self.system_dict["params"]["load_weights"] is not None:
@@ -446,7 +428,8 @@ class Detector():
         print("");
         print("");
         print("Training complete");
-        #print(f"Model saved to {os.path.join(self.system_dict["params"]["saved_path"], self.system_dict["params"]["compound_coef"]}_trained.pth')}");
+        modelPath = os.path.join(self.system_dict["params"]["saved_path"], f'efficientdet-d{self.system_dict["params"]["compound_coef"]}_trained.pth')
+        print(f"Model saved to {modelPath}")
 
 
 
