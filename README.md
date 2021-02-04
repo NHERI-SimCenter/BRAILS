@@ -22,7 +22,10 @@ pip install BRAILS
 ### Example 1
 
 
-The following example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html).
+The following example shows how to use BRAILS modules. 
+
+The example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
+or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
 
 Example images can be downloaded like this.
 
@@ -91,7 +94,7 @@ This example shows how to create a building inventory by specifying the name of 
 
 You can also specify a bounding box. 
 
-Check details of the examples [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html).
+Check details of this example and more examples [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), or test them in this [notebook](https://colab.research.google.com/drive/1tG6xVRCmDyi6K8TWgoNd_31vV034VcSO?usp=sharing) on Google Colab.
 
 
 ```python
