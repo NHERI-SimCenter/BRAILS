@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2019 The Regents of the University of California
+# Copyright (c) 2019-2021 The Regents of the University of California
 #
 # This file is part of BRAILS.
 #
@@ -33,14 +33,14 @@
 # You should have received a copy of the BSD 3-Clause License along with
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
-# Contributors:
-# "Charles" Chaofeng Wang
+# Author:
+# Chaofeng Wang, c_w@berkeley
 
 from ._version import __version__
 
 
 __author__ = 'Chaofeng Wang'
-__copyright__ = 'Copyright 2019, The Regents of the University of California'
+__copyright__ = 'Copyright 2019-2021, The Regents of the University of California'
 
 __license__ = "BSD 3-Clause License"
 
@@ -49,3 +49,9 @@ import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__)) 
 sys.path.append(current_dir) 
+
+#from . import utils
+#__all__ = ['utils']
+
+
+
