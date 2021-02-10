@@ -20,14 +20,14 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.applications.inception_v3 import preprocess_input
-from ModelZoo import zoo
+from brails.modules.ModelZoo import zoo
 import matplotlib.pyplot as plt
 import json
 
 class ImageClassifier:
     """ A Generic Image Classifier. """
 
-    def __init__(self, modelName=None, classNames=None, resultFile='preds.csv', workDir='tmp'):
+    def __init__(self, modelName=None, classNames=None, resultFile='preds.csv', workDir='tmp', printRes=True):
         '''
         modelFile: path to the model
         classNames: a list of classnames
@@ -49,6 +49,7 @@ class ImageClassifier:
         self.resultFile = resultFile
         self.modelName = modelName
         self.modelDetailFile = modelDetailFile
+        self.printRes = printRes
 
         if os.path.exists(modelFile):
             self.model = load_model(modelFile)
@@ -73,26 +74,49 @@ class ImageClassifier:
         prob = max(prediction[0])
         prediction = np.argmax(prediction[0])
         if self.classNames: prediction = self.classNames[prediction]
-        
-        print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(prob*100,2)))) 
 
-        return [imagePath,prediction,prob]
+        if os.path.getsize(imagePath)/1024 < 9: # small image, likely to be empty
+            #print("{imagePath} is blank. No predictions.")
+            #return [imagePath,None, None]
+            print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(0*100,2)))) 
+            return [imagePath,prediction,0]
+        else:
+            print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(prob*100,2)))) 
+            return [imagePath,prediction,prob]
 
     def predictMulti(self,imagePathList):
         predictions = []
         probs = []
         for imagePath in imagePathList:
+            '''
+            if os.path.getsize(imagePath)/1024 < 9: # small image, likely to be empty
+                probs.append(0)
+                predictions.append(None)
+            else:
+                img = image.load_img(imagePath, target_size=(256, 256))
+                x = image.img_to_array(img)
+                x = np.expand_dims(x, axis=0)
+                prediction = self.model.predict(x)
+                probs.append(max(prediction[0]))
+                prediction = np.argmax(prediction[0])
+                if self.classNames: prediction = self.classNames[prediction]
+                predictions.append(prediction)
+            '''
             img = image.load_img(imagePath, target_size=(256, 256))
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
             prediction = self.model.predict(x)
-            probs.append(max(prediction[0]))
+            if os.path.getsize(imagePath)/1024 < 9: # small image, likely to be empty
+                probs.append(0)
+            else:
+                probs.append(max(prediction[0]))
             prediction = np.argmax(prediction[0])
             if self.classNames: prediction = self.classNames[prediction]
             predictions.append(prediction)
 
-        for img, pred, prob in zip(imagePathList, predictions, probs): 
-            print("Image :  {}     Class : {} ({}%)".format(img, pred, str(round(prob*100,2)))) 
+        if self.printRes:
+            for img, pred, prob in zip(imagePathList, predictions, probs): 
+                print("Image :  {}     Class : {} ({}%)".format(img, pred, str(round(prob*100,2)))) 
 
         df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
         df.to_csv(self.resultFile, index=False)
@@ -240,7 +264,6 @@ class ImageClassifier:
 
         ### 3. Train the model
         history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
-
 
         # Plot learning curves
 

@@ -9,8 +9,8 @@
 *------------------------------------------------------*/
 """
 
-from ModelZoo import zoo
-from GenericImageClassifier import *
+from brails.modules.ModelZoo import zoo
+from brails.modules.GenericImageClassifier.GenericImageClassifier import *
 import wget 
 import os
 
@@ -18,7 +18,7 @@ class SoftstoryClassifier(ImageClassifier):
     """ Softstory Image Classifier. """
 
 
-    def __init__(self, modelName=None, classNames=None, resultFile='softstory_preds.csv', workDir='tmp'):
+    def __init__(self, modelName=None, classNames=None, resultFile='softstory_preds.csv', workDir='tmp', printRes=True):
         '''
         modelFile: path to the model
         classNames: a list of classnames
@@ -42,7 +42,7 @@ class SoftstoryClassifier(ImageClassifier):
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
 
-        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile)
+        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile, printRes=printRes)
 
 
 
