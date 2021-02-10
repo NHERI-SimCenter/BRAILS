@@ -66,11 +66,41 @@ Train the model
 .. code-block:: none 
 
     # train the base model for 50 epochs and then fine tune for 200 epochs
-    materialClassifier.train(initial_epochs=50,fine_tune_epochs=200)
+    materialClassifier.train(baseModel='InceptionV3', initial_epochs=50,fine_tune_epochs=200)
 
 
 It is better to run the above example on a GPU machine.
 
+You can choose from the following options for the baseModel key:
+
+.. code-block:: none 
+
+    'Xception',
+    'VGG16',
+    'VGG19',
+    'ResNet50',
+    'ResNet101',
+    'ResNet152',
+    'ResNet50V2',
+    'ResNet101V2',	
+    'ResNet152V2',	
+    'InceptionV3',	
+    'InceptionResNetV2',
+    'MobileNet',
+    'MobileNetV2',	
+    'DenseNet121',	
+    'DenseNet169',	
+    'DenseNet201',	
+    'NASNetMobile',
+    'NASNetLarge',	
+    'EfficientNetB0',	
+    'EfficientNetB1',	
+    'EfficientNetB2',	
+    'EfficientNetB3',	
+    'EfficientNetB4',	
+    'EfficientNetB5',	
+    'EfficientNetB6',	
+    'EfficientNetB7'
 
 
 

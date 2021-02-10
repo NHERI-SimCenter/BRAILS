@@ -1,0 +1,11 @@
+.. _lbl-1.x-tutorial:
+
+User Guide (1.x Legacy) 
+=======================
+
+.. toctree::
+
+   preparedata
+   train
+   predict
+   enhance

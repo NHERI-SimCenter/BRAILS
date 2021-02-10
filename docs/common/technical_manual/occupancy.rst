@@ -28,7 +28,7 @@ Run the following python script to test on this dataset.
     sfList = glob('occupancy_test/single-family/*.png')
 
     # import the module
-    from brails.OccupancyClassClassifier import OccupancyClassifier
+    from brails.modules import OccupancyClassifier
 
     # initialize a roof classifier
     occupancyModel = OccupancyClassifier()

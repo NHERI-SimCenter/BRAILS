@@ -37,9 +37,9 @@ The InceptionV3 is made up of a series of symmetric and asymmetric building bloc
 including convolutions, average pooling, max pooling, concats, dropouts, and fully connected layers. 
 Batchnorm is used extensively throughout the model and applied to activation inputs. 
 Loss is computed via Softmax. 
-The architecture of the model is shown in :numref:`fig_InceptionV3`.
+The architecture of the model is shown in :numref:`fig_InceptionV3_ss`.
 
-.. _fig_InceptionV3:
+.. _fig_InceptionV3_ss:
 .. figure:: ../../images/technical/inceptionv3.png
   :width: 100%
   :alt: InceptionV3

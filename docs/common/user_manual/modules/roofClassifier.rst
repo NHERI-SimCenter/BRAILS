@@ -3,7 +3,7 @@
 Roof Classifier
 ========================
 
-The Roof Classifier is a module that wraps the :ref:`lbl-genericImageClassifier`. 
+The Roof Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
 
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
@@ -68,3 +68,25 @@ The images used in this example are:
    The classifier takes an image as the input and will always produce a prediction. 
    Since the classifier is trained to classify only a specific category of images, 
    its prediction is meaningful only if the input image belongs to the category the model is trained for.
+
+
+
+Retrain the model
+------------------
+
+You can retrain the existing model with your own data.
+
+.. code-block:: none 
+
+    # Load images from a folder
+    roofModel.loadData('folder-of-images')
+
+    # Re-train it for only 1 epoch for this demo. You can increase it.
+    roofModel.retrain(initial_epochs=1)
+
+    # Test the re-trained model
+    predictions = roofModel.predict(imgs)
+
+    # Save the re-trained model
+    roofModel.save('myCoolNewModelv0.1')
+

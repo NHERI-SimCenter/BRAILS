@@ -3,7 +3,7 @@
 Soft-story Building Classifier
 ===============================
 
-The Soft-story Building Classifier is a module that wraps the :ref:`lbl-genericImageClassifier`. 
+The Soft-story Building Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
 
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
@@ -53,3 +53,23 @@ The images used in this example are:
       - .. figure:: ../../../images/image_examples/Softstory/Softstory/901.jpg 
 
            image_examples/Softstory/Softstory/901.jpg Soft-story Building
+
+
+Retrain the model
+------------------
+
+You can retrain the existing model with your own data.
+
+.. code-block:: none 
+
+    # Load images from a folder
+    ssModel.loadData('folder-of-images')
+
+    # Re-train it for only 1 epoch for this demo. You can increase it.
+    ssModel.retrain(initial_epochs=1)
+
+    # Test the re-trained model
+    predictions = ssModel.predict(imgs)
+
+    # Save the re-trained model
+    ssModel.save('myCoolNewModelv0.1')

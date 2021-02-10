@@ -3,7 +3,7 @@
 Occupancy Classifier
 ========================
 
-The Occupancy Classifier is a module that wraps the :ref:`lbl-genericImageClassifier`. 
+The Occupancy Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
 
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
@@ -54,3 +54,22 @@ The images used in this example are:
 
            images/image_examples/Occupancy/RES3/65883.png Multi-family Building
     
+
+Retrain the model
+------------------
+
+You can retrain the existing model with your own data.
+
+.. code-block:: none 
+
+    # Load images from a folder
+    occupancyModel.loadData('folder-of-images')
+
+    # Re-train it for only 1 epoch for this demo. You can increase it.
+    occupancyModel.retrain(initial_epochs=1)
+
+    # Test the re-trained model
+    predictions = occupancyModel.predict(imgs)
+
+    # Save the re-trained model
+    occupancyModel.save('myCoolNewModelv0.1')

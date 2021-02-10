@@ -7,7 +7,9 @@ Examples
 Example 1: Modules
 ===================
 
-The following is an example showing how to call pretrained models to predict on images.
+The following is an example showing how to call pretrained models to predict on images. 
+
+You can run this example on your computer or in this notebook on `Google Colab <https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing>`_.
 
 The images used in the example can be downloaded from here: `image_examples.zip <https://zenodo.org/record/4095668/files/image_examples.zip>`_.
 
@@ -53,11 +55,13 @@ Example 2: Workflow
 
 The following is an example showing how to create a building inventory for a city.
 
+You can run this example on your computer or in this notebook on `Google Colab <https://colab.research.google.com/drive/1tG6xVRCmDyi6K8TWgoNd_31vV034VcSO?usp=sharing>`_.
+
 You need to provide the Google maps API key for downloading street view and satellite images.
 
 Instructions on obtaining the API key can be found here: `<https://developers.google.com/maps/documentation/embed/get-api-key>`_.
 
-
+Use should limit the number of buildings (numBldg) because of :ref:`this <limitthenumber>`. 
 
   .. code-block:: python
 
@@ -85,17 +89,34 @@ Instructions on obtaining the API key can be found here: `<https://developers.go
     Overwrite existing tmp files. Default value is False.
 
 
+.. figure:: figures/Berkeley.png
+   :name: num_building_city
+   :align: center
+   :figclass: align-center
+   :figwidth: 90%
+
+   Generated Buildings
+
+.. csv-table:: Generated BIM File
+   :name: bldg_inv
+   :file: data/Berkeley.csv
+   :header-rows: 1
+   :align: center
+
+
     
 Example 3: Workflow
 ======================
 
 The following is an example showing how to create a building inventory for a region defined using a bounding box.
 
+You can run this example on your computer or in this notebook on `Google Colab <https://colab.research.google.com/drive/1tG6xVRCmDyi6K8TWgoNd_31vV034VcSO?usp=sharing>`_.
+
 You need to provide the Google maps API key for downloading street view and satellite images.
 
 Instructions on obtaining the API key can be found here: `<https://developers.google.com/maps/documentation/embed/get-api-key>`_.
 
-
+Use should limit the number of buildings (numBldg) because of :ref:`this <limitthenumber>`. 
 
   .. code-block:: python
 
@@ -107,7 +128,6 @@ Instructions on obtaining the API key can be found here: `<https://developers.go
                    overwrite=True)
 
     BIM = cityBuilder.build()
-
 
     
 :attributes (list):     
@@ -123,7 +143,19 @@ Instructions on obtaining the API key can be found here: `<https://developers.go
 :overwrite (bool):      
     Overwrite existing tmp files. Default value is False.
 
+.. figure:: figures/Christchurch.png
+   :name: num_building_city
+   :align: center
+   :figclass: align-center
+   :figwidth: 90%
 
+   Generated Buildings
+
+.. csv-table:: Generated BIM File
+   :name: bldg_inv
+   :file: data/Christchurch.csv
+   :header-rows: 1
+   :align: center
 
     
 
