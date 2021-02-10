@@ -65,7 +65,7 @@ environment variable which is necessary for training.
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
-    cd BRAILS/brails/modules/Year_Built_Classification
+    cd BRAILS/brails/modules/Year_Built_Classifier
     python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
