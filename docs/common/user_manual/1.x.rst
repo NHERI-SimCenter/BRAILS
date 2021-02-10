@@ -4,7 +4,8 @@ User Guide (1.x Legacy)
 =======================
 
 .. toctree::
-
+   :maxdepth: 1
+   
    preparedata
    train
    predict

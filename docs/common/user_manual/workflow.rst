@@ -3,7 +3,7 @@
 Workflow
 ================
 
-The workflow is designed to facilitate the creation of building inventories. 
+The workflow is designed to facilitate the creation of regional building inventories. 
 
 It is implemented in a class, CityBuilder. 
 

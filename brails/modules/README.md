@@ -1,5 +1,3 @@
 ## This folder contains the modules of BRAILS
 
-### Generic_Image_Classifier
-
-### Foundation_Classification
+## Each module should confine all its files in a folder.

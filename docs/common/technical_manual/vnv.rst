@@ -5,5 +5,8 @@ Verification and Validation
 
 .. toctree::
 
-   modules
+   roof
+   occupancy
+   softstory
+   nfloor
    
