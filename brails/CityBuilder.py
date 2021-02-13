@@ -20,7 +20,7 @@ import geopandas as gpd
 import json
 
 
-from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier
+from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier
 
 
 from .workflow.Footprints import getMSFootprintsByPlace, getStateNameByBBox, getOSMFootprints, getMSFootprintsByBbox
@@ -198,6 +198,19 @@ class CityBuilder:
                 softstoryProb = softstory_df['probability'].to_list()
                 self.BIM['softStory'] = self.BIM.apply(lambda x: softstory[x['ID']], axis=1)
                 self.BIM['softStoryProb'] = self.BIM.apply(lambda x: softstoryProb[x['ID']], axis=1)
+
+            elif attr.lower()=='elevated':
+                # initialize a foundation classifier
+                elvModel = FoundationHeightClassifier(workDir=self.workDir, maskBuildings=False)
+
+                # use the classifier 
+                elv_df = elvModel.predict(self.BIM['StreetView'].tolist())
+
+                elv = elv_df['prediction'].to_list()
+                elvProb = elv_df['probability'].to_list()
+                self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
+                self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1)
+                
             
             else:
                 assert False, f"attributes can only contain occupancy, roofshape, softstory. Your {attr} caused an error."

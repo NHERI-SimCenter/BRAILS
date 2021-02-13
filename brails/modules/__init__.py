@@ -34,9 +34,11 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Author:
-# Chaofeng Wang, c_w@berkeley
+# Chaofeng Wang, c_w@berkeley.edu
 
 
 from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClassifier as SoftstoryClassifier
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
+from brails.modules.Foundation_Classification.FoundationClassifier import FoundationHeightClassifier
+
