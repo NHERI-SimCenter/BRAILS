@@ -37,11 +37,11 @@ os.makedirs(model_path,exist_ok=True)
 
 if not os.path.isfile(os.path.join(model_path,'encoder_epoch_20.pth')):
     print('Loading remote model file to the weights folder..')
-    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(encoder),'encoder_epoch_20.pth')
+    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(encoder),os.path.join(model_path,'encoder_epoch_20.pth'))
 
 if not os.path.isfile(os.path.join(model_path,'decoder_epoch_20.pth')):
     print('Loading remote model file to the weights folder..')
-    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(decoder),'decoder_epoch_20.pth')
+    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(decoder),os.path.join(model_path,'decoder_epoch_20.pth'))
 
 args = parser.parse_args()
 

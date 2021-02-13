@@ -20,16 +20,31 @@ class Foundation_Type_Testset(Dataset):
 
         self.mask_buildings = mask_buildings
         self.load_masks = load_masks
-
+        '''
         if not os.path.isdir(image_folder):
             if os.path.isfile(image_folder):
                 # The following format is to be consistent with os.walk output
                 file_list = [[os.path.split(image_folder)[0],'None',[os.path.split(image_folder)[1]]]]
+            elif isinstance(image_folder, list): #a list of images
+                file_list = image_folder
             else:
                 print('Error: Image folder or file {} not found.'.format(image_folder))
                 exit()
-        else:
-            file_list = os.walk(image_folder, followlinks=True)
+        '''
+
+        if isinstance(image_folder, list): #a list of images
+            file_list = [[os.path.split(i)[0],'None',[os.path.split(i)[1]]] for i in image_folder]
+        elif isinstance(image_folder, str): 
+            if not os.path.isdir(image_folder):
+                if os.path.isfile(image_folder):
+                    # The following format is to be consistent with os.walk output
+                    file_list = [[os.path.split(image_folder)[0],'None',[os.path.split(image_folder)[1]]]]
+                else:
+                    print('Error: Image folder or file {} not found.'.format(image_folder))
+                    exit()
+
+            else:# dir
+                file_list = os.walk(image_folder, followlinks=True)
 
         for root, _, fnames in sorted(file_list):
             for fname in sorted(fnames):
@@ -59,7 +74,8 @@ class Foundation_Type_Testset(Dataset):
             idx = idx.tolist()
 
         img_name = self.img_paths[idx]
-        image = Image.open(img_name)
+        #image = Image.open(img_name)
+        image = Image.open(img_name).convert('RGB')
 
         if self.mask_buildings and self.load_masks:
             image = np.array(image)
@@ -70,7 +86,6 @@ class Foundation_Type_Testset(Dataset):
             mask[np.where((mask != 25) & (mask != 1))] = 0
             image[mask == 0, :] = 0
             image = Image.fromarray(np.uint8(image))
-
 
         if (self.transform):
             image = self.transform(image)

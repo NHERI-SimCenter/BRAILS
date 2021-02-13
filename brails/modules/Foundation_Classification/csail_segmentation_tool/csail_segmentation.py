@@ -4,30 +4,41 @@ import torch
 from PIL import Image
 from torchvision import transforms
 import numpy as np
+import os
 
-from csail_segmentation_tool.csail_seg.config import cfg
-from csail_segmentation_tool.csail_seg.models import ModelBuilder
+from .csail_seg.config import cfg
+from .csail_seg.models import ModelBuilder
 from scipy.io import loadmat
-torch.multiprocessing.set_start_method('spawn')
+torch.multiprocessing.set_start_method('spawn', force=True)
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 
+cur_dir_tmp = os.path.dirname(os.path.realpath(__file__))
 
 class MaskBuilding(object):
-    colors = loadmat('./csail_segmentation_tool/csail_seg/data/color150.mat')['colors']
-    config_file = './csail_segmentation_tool/csail_seg/config/ade20k-resnet50dilated-ppm_deepsup.yaml'
+    #colors = loadmat('./csail_segmentation_tool/csail_seg/data/color150.mat')['colors']
+    #config_file = './csail_segmentation_tool/csail_seg/config/ade20k-resnet50dilated-ppm_deepsup.yaml'
+    colors = loadmat(f'{cur_dir_tmp}/csail_seg/data/color150.mat')['colors']
+    config_file = f'{cur_dir_tmp}/csail_seg/config/ade20k-resnet50dilated-ppm_deepsup.yaml'
     cfg.merge_from_file(config_file)
     cfg.MODEL.arch_encoder = cfg.MODEL.arch_encoder.lower()
     cfg.MODEL.arch_decoder = cfg.MODEL.arch_decoder.lower()
-    enc_weights = './csail_segmentation_tool/csail_seg/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth'
-    dec_weights = './csail_segmentation_tool/csail_seg/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth'
+    enc_weights = f'{cur_dir_tmp}/csail_seg/ade20k-resnet50dilated-ppm_deepsup/encoder_epoch_20.pth'
+    dec_weights = f'{cur_dir_tmp}/csail_seg/ade20k-resnet50dilated-ppm_deepsup/decoder_epoch_20.pth'
     cfg.MODEL.weights_encoder = enc_weights
     cfg.MODEL.weights_decoder = dec_weights
 
     def round2nearest_multiple(self, x, p):
         return ((x - 1) // p + 1) * p
 
-    def __init__(self, device):
+    def __init__(self, device, model_dir=''):
+
+        if model_dir!='':
+            enc_weights = f'{model_dir}/encoder_epoch_20.pth'
+            dec_weights = f'{model_dir}/decoder_epoch_20.pth'
+            cfg.MODEL.weights_encoder = enc_weights
+            cfg.MODEL.weights_decoder = dec_weights
+
         self.device = device
         self.net_encoder = ModelBuilder.build_encoder(
             arch=cfg.MODEL.arch_encoder,
