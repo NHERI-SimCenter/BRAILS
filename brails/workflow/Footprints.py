@@ -94,7 +94,7 @@ def getMSFootprintsByPlace(place='',save=True,fileName='',workDir='tmp',GoogleMa
 
     """
 
-    if fileName=='': fileName = Path('{workDir}/{city}_footprints.geojson'.format(workDir = workDir, city=place).replace(' ','_'))
+    if fileName=='': fileName = Path('{workDir}/{city}_footprints_MS.geojson'.format(workDir = workDir, city=place).replace(' ','_').replace(',','_'))
 
     if os.path.exists(fileName) and not overwrite:
         print('{} already exists.'.format(fileName))
@@ -145,7 +145,7 @@ def getMSFootprintsByPlace(place='',save=True,fileName='',workDir='tmp',GoogleMa
 def getStateNameByPlace(place='',workDir='tmp',GoogleMapAPIKey=''):
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={place}&key={GoogleMapAPIKey}"
     r = requests.get(url)
-    place = place.replace(' ','').replace(',','')
+    place = place.replace(' ','_').replace(',','_')
     placeinfo = Path(f'{workDir}/{place}_placeinfo.json')
     f = open(placeinfo, 'wb')
     f.write(r.content)
@@ -281,7 +281,7 @@ def getOSMFootprints(bbox=[],place='',save=True,fileName='',workDir='tmp',overwr
         if len(bbox)>0: 
             fileName = Path(f'{workDir}/{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}_footprints.geojson')
         else:
-            fileName = Path(f'{workDir}/{place}_footprints.geojson'.replace(' ','_').replace(',','_'))
+            fileName = Path(f'{workDir}/{place}_footprints_OSM.geojson'.replace(' ','_').replace(',','_'))
 
 
     if os.path.exists(fileName) and not overwrite:

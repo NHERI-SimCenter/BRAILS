@@ -151,7 +151,16 @@ class CityBuilder:
 
         print('Starting downloading images.')
         imgDir = os.path.join(self.workDir, 'images')
-        imageTypes = ['StreetView','TopView']
+
+        #imageTypes = ['StreetView','TopView']
+        imageTypes = []
+        if 'roofshape' in self.attributes:
+            imageTypes.append('TopView')
+
+        svAttrs = ['occupancy','softstory','elevated']
+        usvAttrs = [x for x in svAttrs if x in set(self.attributes)]
+        if len(usvAttrs)> 0: imageTypes.append('StreetView')
+
         getGoogleImages(self.BIM,GoogleMapAPIKey=self.GoogleMapAPIKey, imageTypes=imageTypes, imgDir=imgDir, ncpu=2,reDownloadImgs=self.reDownloadImgs)
 
         #BIM = allFootprints
