@@ -8,7 +8,7 @@ import numpy as np
 from csail_segmentation_tool.csail_seg.config import cfg
 from csail_segmentation_tool.csail_seg.models import ModelBuilder
 from scipy.io import loadmat
-torch.multiprocessing.set_start_method('spawn')
+torch.multiprocessing.set_start_method('spawn', force=True)
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 

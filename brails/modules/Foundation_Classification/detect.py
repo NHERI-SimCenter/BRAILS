@@ -28,7 +28,7 @@ if not os.path.isfile(weight_file_path):
     torch.hub.download_url_to_file('https://zenodo.org/record/4145934/files/best_masked.pkl', weight_file_path)
     
 model_name='ade20k-resnet50dilated-ppm_deepsup'
-model_path=os.path.join('csail_segmentation_tool','csail_seg',model_name)
+model_path = os.path.join('csail_segmentation_tool','csail_seg',model_name)
 
 encoder='{}/encoder_epoch_20.pth'.format(model_name)
 decoder='{}/decoder_epoch_20.pth'.format(model_name)
@@ -37,11 +37,12 @@ os.makedirs(model_path,exist_ok=True)
 
 if not os.path.isfile(os.path.join(model_path,'encoder_epoch_20.pth')):
     print('Loading remote model file to the weights folder..')
-    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(encoder),'encoder_epoch_20.pth')
+    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(encoder),os.path.join(model_path,'encoder_epoch_20.pth'))
 
 if not os.path.isfile(os.path.join(model_path,'decoder_epoch_20.pth')):
     print('Loading remote model file to the weights folder..')
-    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(decoder),'decoder_epoch_20.pth')
+    torch.hub.download_url_to_file('http://sceneparsing.csail.mit.edu/model/pytorch/{}'.format(decoder),os.path.join(model_path,'decoder_epoch_20.pth'))
+
 
 args = parser.parse_args()
 

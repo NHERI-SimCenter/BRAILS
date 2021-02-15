@@ -59,7 +59,7 @@ class Foundation_Type_Testset(Dataset):
             idx = idx.tolist()
 
         img_name = self.img_paths[idx]
-        image = Image.open(img_name)
+        image = Image.open(img_name).convert('RGB')
 
         if self.mask_buildings and self.load_masks:
             image = np.array(image)
@@ -132,7 +132,7 @@ class Foundation_Type_Binary(Dataset):
             idx = idx.tolist()
 
         img_name = self.img_paths[idx]
-        image = Image.open(img_name)
+        image = Image.open(img_name).convert('RGB')
 
         if self.mask_buildings and self.load_masks:
             image = np.array(image)
