@@ -138,7 +138,7 @@ class CityBuilder:
         else: 
             assert False, f"footPrints must be OSM or Microsoft in CityBuilder. Your value is {self.footPrints}."
 
-    def build(self): 
+    def downloadImgs(self,fov=60,pitch=0): 
 
         if os.path.exists(self.bimFile) and not self.overwrite:
             print('{} already exists.'.format(self.bimFile))
@@ -161,16 +161,28 @@ class CityBuilder:
         usvAttrs = [x for x in svAttrs if x in set(self.attributes)]
         if len(usvAttrs)> 0: imageTypes.append('StreetView')
 
-        getGoogleImages(self.BIM,GoogleMapAPIKey=self.GoogleMapAPIKey, imageTypes=imageTypes, imgDir=imgDir, ncpu=2,reDownloadImgs=self.reDownloadImgs)
+        self.imageTypes = imageTypes
+        self.imgDir = imgDir
+
+        getGoogleImages(self.BIM,GoogleMapAPIKey=self.GoogleMapAPIKey, imageTypes=imageTypes, imgDir=imgDir, ncpu=2,fov=fov,pitch=pitch,reDownloadImgs=self.reDownloadImgs)
+
+
+    def build(self): 
+
+        self.downloadImgs()
+
+        imageTypes = self.imageTypes
+        imgDir = self.imgDir
 
         #BIM = allFootprints
-        self.BIM['Lon'] = self.BIM['geometry'].centroid.x
-        self.BIM['Lat'] = self.BIM['geometry'].centroid.y
+        self.BIM['Lon'] = self.BIM['geometry'].centroid.x.round(decimals=6)
+        self.BIM['Lat'] = self.BIM['geometry'].centroid.y.round(decimals=6)
         for cat in imageTypes:
-            self.BIM[cat] = self.BIM.apply(lambda row: Path(f"{imgDir}/{cat}/{cat}x{row['Lon']}x{row['Lat']}.png"), axis=1)
+            self.BIM[cat] = self.BIM.apply(lambda row: Path(f"{imgDir}/{cat}/{cat}x{'%.6f'%row['Lon']}x{'%.6f'%row['Lat']}.png"), axis=1)
 
         self.BIM.reset_index(inplace = True) 
         self.BIM['ID'] = self.BIM.index
+    
 
         for attr in self.attributes:
             if attr.lower()=='roofshape':
@@ -219,13 +231,15 @@ class CityBuilder:
                 elvProb = elv_df['probability'].to_list()
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
                 self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1)
-                
-            
+
+
             else:
                 assert False, f"attributes can only contain occupancy, roofshape, softstory. Your {attr} caused an error."
 
         # delete columns
-        self.BIM.drop(columns=['Lat','Lon','StreetView','TopView','index'], axis=1, inplace=True)
+        self.BIM.drop(columns=['Lat','Lon','index'], axis=1, inplace=True)
+        for c in imageTypes:
+            self.BIM.drop(columns=[c], axis=1, inplace=True)
 
         # save
         self.BIM.to_file(self.bimFile, driver='GeoJSON')

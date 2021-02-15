@@ -74,7 +74,7 @@ def download(urls):
             break
 
 # construct urls
-def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView','TopView'],imgDir='',ncpu=2,reDownloadImgs=False):
+def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView','TopView'],imgDir='',ncpu=2,fov=60,pitch=0,reDownloadImgs=False):
 
     if footprints is None:
         print('Please provide footprints') 
@@ -90,7 +90,7 @@ def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView'
 
     
     # APIs
-    baseurl_streetview = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location={lat},{lon}&fov=60&pitch=0&key="+GoogleMapAPIKey
+    baseurl_streetview = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location={lat},{lon}&fov={fov}&pitch={pitch}&source=outdoor&key="+GoogleMapAPIKey
     # consider using 256x256 to save disk
     
     baseurl_satellite="https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom=20&scale=1&size=256x256&maptype=satellite&key="+GoogleMapAPIKey+"&format=png&visual_refresh=true"
@@ -100,10 +100,11 @@ def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView'
 
     for ind, row in footprints.iterrows():
         o = row['geometry'].centroid
-        lon, lat = o.x,o.y
+        lon, lat = '%.6f'%o.x, '%.6f'%o.y
+
         # a top view
         urlTop = baseurl_satellite.format(lat=lat,lon=lon)
-        urlStreet = baseurl_streetview.format(lat=lat,lon=lon)
+        urlStreet = baseurl_streetview.format(lat=lat,lon=lon,fov=fov,pitch=pitch)
         cats = imageTypes
         reDownload = 1 if reDownloadImgs else 0
         urls.append([urlTop,urlStreet,lon,lat,cats,imgDir,reDownload])
