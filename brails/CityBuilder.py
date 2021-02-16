@@ -175,8 +175,8 @@ class CityBuilder:
         imgDir = self.imgDir
 
         #BIM = allFootprints
-        self.BIM['Lon'] = self.BIM['geometry'].centroid.x.round(decimals=6)
-        self.BIM['Lat'] = self.BIM['geometry'].centroid.y.round(decimals=6)
+        self.BIM['Lon'] = self.BIM['geometry'].centroid.x#.round(decimals=6)
+        self.BIM['Lat'] = self.BIM['geometry'].centroid.y#.round(decimals=6)
         for cat in imageTypes:
             self.BIM[cat] = self.BIM.apply(lambda row: Path(f"{imgDir}/{cat}/{cat}x{'%.6f'%row['Lon']}x{'%.6f'%row['Lat']}.png"), axis=1)
 
@@ -230,7 +230,7 @@ class CityBuilder:
                 elv = elv_df['prediction'].to_list()
                 elvProb = elv_df['probability'].to_list()
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
-                self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1)
+                self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1) 
 
 
             else:
