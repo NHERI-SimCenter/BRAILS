@@ -118,6 +118,15 @@ command line argument can be set. This will evaluate the performance, using the 
 Therefore, the label structure has to be the same as it was when the checkpoint was trained. It will show
 performance measures after testing all images and save a confusion matrix to show class-wise performance. 
 
+The prediction falls in 6 categories:
+::
+
+    0 : before 1969
+    1 : 1970-1979
+    2 : 1980-1989
+    3 : 1990-1999
+    4 : 2000-2009
+    5 : after 2010
 
 Cleaning the Dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

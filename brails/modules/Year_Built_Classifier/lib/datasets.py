@@ -18,7 +18,7 @@ class YearBuiltFolder(Dataset):
         self.labels = []
         self.calc_perf = calc_perf
         self.soft_labels = soft_labels
-        
+        '''
         if not os.path.isdir(image_folder):
             if os.path.isfile(image_folder):
                 # The following format is to be consistent with os.walk output
@@ -28,6 +28,21 @@ class YearBuiltFolder(Dataset):
                 exit()
         else:
             file_list = os.walk(image_folder, followlinks=True)
+        '''
+
+        if isinstance(image_folder, list): #a list of images
+            file_list = [[os.path.split(i)[0],'None',[os.path.split(i)[1]]] for i in image_folder]
+        elif isinstance(image_folder, str): 
+            if not os.path.isdir(image_folder):
+                if os.path.isfile(image_folder):
+                    # The following format is to be consistent with os.walk output
+                    file_list = [[os.path.split(image_folder)[0],'None',[os.path.split(image_folder)[1]]]]
+                else:
+                    print('Error: Image folder or file {} not found.'.format(image_folder))
+                    exit()
+
+            else:# dir
+                file_list = os.walk(image_folder, followlinks=True)
 
         class_counts = defaultdict(lambda:0) 
 
