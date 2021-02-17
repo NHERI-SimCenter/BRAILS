@@ -108,6 +108,7 @@ def main():
                                 drop_last=False)
 
     else:
+
         test_dataset = Foundation_Type_Binary(args.test_data,
                                              transform=val_transforms,
                                              mask_buildings=args.mask_buildings, load_masks=True)
@@ -115,6 +116,8 @@ def main():
                                 drop_last=False)
 
     model = resnet50(low_dim=1)
+
+    print (model)
 
     # Freeze all layers apart from the final layer
     if args.freeze_layers:

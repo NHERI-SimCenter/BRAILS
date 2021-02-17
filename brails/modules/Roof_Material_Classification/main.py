@@ -186,6 +186,7 @@ def main_worker(gpu, ngpus_per_node, args, writer):
 
     if not torch.cuda.is_available():
         print('using CPU, this will be slow')
+    
     elif args.distributed:
         # For multiprocessing distributed, DistributedDataParallel constructor
         # should always set the single device scope, otherwise,
@@ -215,6 +216,7 @@ def main_worker(gpu, ngpus_per_node, args, writer):
         else:
             model = torch.nn.DataParallel(model).cuda()
 
+
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss(reduction='none').cuda(args.gpu)
     
@@ -227,18 +229,31 @@ def main_worker(gpu, ngpus_per_node, args, writer):
         if os.path.isfile(args.resume):
             print("=> loading checkpoint '{}'".format(args.resume))
             if args.gpu is None:
-                checkpoint = torch.load(args.resume)
+                checkpoint = torch.load(args.resume,map_location=torch.device('cpu'))
+
+                from collections import OrderedDict
+                cpu_state_dict = OrderedDict()
+                for k, v in checkpoint['state_dict'].items():
+                    name = k[7:] # remove module.
+                    cpu_state_dict[name] = v
+
             else:
                 # Map model to be loaded to specified single gpu.
                 loc = 'cuda:{}'.format(args.gpu)
                 checkpoint = torch.load(args.resume, map_location=loc)
+            
             args.start_epoch = checkpoint['epoch']
             best_f1 = checkpoint['best_f1']
             if args.gpu is not None:
                 # best_acc1 may be from a checkpoint from a different GPU
-                best_f1 = best_f1.to(args.gpu)
-            model.load_state_dict(checkpoint['state_dict'])
+                best_f1 = best_f1.to(args.gpu)            
+
+            if args.gpu is None:
+                model.load_state_dict(cpu_state_dict)
+            else:
+                model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
+            
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
         else:
