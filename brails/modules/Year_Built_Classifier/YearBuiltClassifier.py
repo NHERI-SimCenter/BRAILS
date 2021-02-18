@@ -23,6 +23,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from .lib.datasets import YearBuiltFolder
 
+
+sm = nn.Softmax()
+
 class YearBuiltClassifier():
 
     def __init__(self, checkpoint='', onlycpu=False, workDir='tmp', resultFile='YearBuilt.csv'):
@@ -95,9 +98,9 @@ class YearBuiltClassifier():
         for prediction in predictions_data:
             imagePathList.append(str(prediction['filename']))
             predictions.append(prediction['prediction'][0])
-            p = None
+            p = prediction['probability']
             probs.append(p)
-            print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]}")
+            print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]} ({str(round(p*100,2))}%)")
 
         df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
         df.to_csv(self.outFilePath, index=False)
@@ -112,6 +115,8 @@ class YearBuiltClassifier():
 
         predictions = []
 
+        
+
         with torch.no_grad():
             for batch_idx, (inputs, label, filename) in enumerate(testloader):
             
@@ -122,25 +127,20 @@ class YearBuiltClassifier():
                 output_1, output_2, output_3, output_concat= self.model(inputs)
                 outputs_com = output_1 + output_2 + output_3 + output_concat
 
-                #print(outputs_com)
-                #print(outputs_com.data)
-
-                _, predicted_com = torch.max(outputs_com.data, 1)
-
-                #print(predicted_com)
-
-                #m = nn.LogSoftmax(dim=1)
-                #output = m(outputs_com.data)
-                #print(output)
+                
+                output = sm(outputs_com.data)
+                _, predicted_com = torch.max(output, 1)
 
                 y_pred = predicted_com[0].flatten().cpu().numpy()
+
+                p = output[0][y_pred][0].item()
 
                 y_fn = filename[0]
 
                 if self.calc_perf:
-                    predictions.append({'filename':y_fn,'prediction':y_pred, 'ground truth':label.cpu().numpy()})
+                    predictions.append({'filename':y_fn,'prediction':y_pred,'probability':p, 'ground truth':label.cpu().numpy()})
                 else:
-                    predictions.append({'filename':y_fn,'prediction':y_pred})
+                    predictions.append({'filename':y_fn,'prediction':y_pred,'probability':p})
 
 
                 if batch_idx % 50 == 0:
