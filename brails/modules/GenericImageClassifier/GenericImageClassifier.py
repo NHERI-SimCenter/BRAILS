@@ -136,13 +136,14 @@ class ImageClassifier:
 
         #print('* First split the data with 8:2.')
         self.train_ds = image_dataset_from_directory(imgDir,
-        validation_split=split[0],
+        validation_split=split[1],
         subset="training",
         seed=randomseed,
         image_size=image_size,
         batch_size=batch_size,
         label_mode='categorical')
 
+        
         self.val_ds = image_dataset_from_directory(
             imgDir,
             validation_split=split[1],
@@ -152,6 +153,7 @@ class ImageClassifier:
             batch_size=batch_size,
             label_mode='categorical'
         )
+        
 
         self.image_size = image_size
         self.batch_size = batch_size
