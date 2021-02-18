@@ -11,7 +11,7 @@ from torch.utils.data import Dataset
 from torch.autograd.variable import Variable
 import torch.nn as nn
 import sklearn
-from sklearn.metrics.classification import precision_recall_fscore_support
+#from sklearn.metrics.classification import precision_recall_fscore_support
 
 import numpy as np
 import pandas as pd
@@ -146,6 +146,7 @@ class YearBuiltClassifier():
                 if batch_idx % 50 == 0:
                     print('Testing image {} from {}'.format(batch_idx,len(testloader)))
 
+            '''
             if self.calc_perf:
                 y_gt = []
                 y_pred = []
@@ -166,6 +167,7 @@ class YearBuiltClassifier():
                 cm_fig.savefig('result_confusion_matrix.png',dpi=300)
 
                 print('F1 {}, precision, {}, recall, {}'.format(f1,precision,recall))   
+            '''
 
         return predictions
 

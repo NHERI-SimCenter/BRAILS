@@ -37,6 +37,7 @@
 # Chaofeng Wang, c_w@berkeley.edu
 
 
+from brails.modules.GenericImageClassifier.GenericImageClassifier import ImageClassifier
 from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClassifier as SoftstoryClassifier
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
