@@ -303,7 +303,7 @@ class ImageClassifier:
         base_model.trainable = True
 
         # Fine-tune from this layer onwards
-        fine_tune_at = 300 # There are a total of 311 layer
+        #fine_tune_at = 300 # There are a total of 311 layer
 
         # Freeze all the layers before the `fine_tune_at` layer
         for layer in base_model.layers[:fine_tune_at]:
