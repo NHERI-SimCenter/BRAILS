@@ -46,7 +46,7 @@ Run the following python script to test on this dataset.
 
     # Plot results
     class_names = ['softstory','others']
-    from utils.plotUtils import plot_confusion_matrix
+    from brails.utils.plotUtils import plot_confusion_matrix
     from sklearn.metrics import confusion_matrix
     from sklearn.metrics import f1_score,accuracy_score
 

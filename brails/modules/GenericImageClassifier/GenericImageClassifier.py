@@ -24,6 +24,10 @@ from brails.modules.ModelZoo import zoo
 import matplotlib.pyplot as plt
 import json
 
+from brails.utils.plotUtils import plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score, accuracy_score
+
 class ImageClassifier:
     """ A Generic Image Classifier. """
 
@@ -183,13 +187,13 @@ class ImageClassifier:
             'Xception': tf.keras.applications.Xception	,
             'VGG16': tf.keras.applications.VGG16	    ,
             'VGG19': tf.keras.applications.VGG19	    ,
-            'ResNet50': tf.keras.applications.ResNet50	,
-            'ResNet101': tf.keras.applications.ResNet101	,
+            'ResNet50': tf.keras.applications.ResNet50	, # 175
+            'ResNet101': tf.keras.applications.ResNet101	, #345
             'ResNet152': tf.keras.applications.ResNet152	,
             'ResNet50V2': tf.keras.applications.ResNet50V2	,
             'ResNet101V2': tf.keras.applications.ResNet101V2,	
             'ResNet152V2': tf.keras.applications.ResNet152V2,	
-            'InceptionV3': tf.keras.applications.InceptionV3,	
+            'InceptionV3': tf.keras.applications.InceptionV3,	#311
             'InceptionResNetV2': tf.keras.applications.InceptionResNetV2,
             'MobileNet': tf.keras.applications.MobileNet	,
             'MobileNetV2': tf.keras.applications.MobileNetV2,	
@@ -205,7 +209,7 @@ class ImageClassifier:
             'EfficientNetB4': tf.keras.applications.EfficientNetB4,	
             'EfficientNetB5': tf.keras.applications.EfficientNetB5,	
             'EfficientNetB6': tf.keras.applications.EfficientNetB6,	
-            'EfficientNetB7': tf.keras.applications.EfficientNetB7
+            'EfficientNetB7': tf.keras.applications.EfficientNetB7 #813
             }
 
         ## 2. Create model
@@ -222,6 +226,7 @@ class ImageClassifier:
                                                        weights='imagenet')
         # Freeze the base model
         base_model.trainable = False
+          
 
         ### 2.2 Add preprocessing layers and a classification head to build the model
 
@@ -352,9 +357,9 @@ class ImageClassifier:
             plt.show()
 
         ## Evaluate the performance of the model
-        # Evaluate the overall performance on the test set
-        #loss, accuracy = self.model.evaluate(self.test_ds)
-        #print('Test accuracy :', accuracy)
+        # Evaluate the overall performance on the val_ds set
+        #loss, accuracy = self.model.evaluate(self.val_ds)
+        #print('Val accuracy :', accuracy)
 
         ## 5. Save model
 
@@ -369,6 +374,24 @@ class ImageClassifier:
         with open(self.modelDetailFile, 'w') as outfile:
             json.dump(modelDetails, outfile)
         print('Model details saved in ', self.modelDetailFile)
+
+    def evaluate(self):
+        prediction_tensor = self.model.predict(self.val_ds)
+        prediction_int = list(np.argmax(prediction_tensor,axis=1))
+        labels_int = []
+        for i,gt in self.val_ds:
+          for j in gt:
+            labels_int.append(np.argmax(j))
+
+        class_names = materialClassifier.classNames
+        prediction = [class_names[i] for i in prediction_int]
+        label = [class_names[i] for i in labels_int]
+
+        print(f'Accuracy is   : {accuracy_score(prediction,label)}')
+        print(f'F1 score is   : {accuracy_score(f1_score,label)}')
+        cnf_matrix = confusion_matrix(prediction,label)
+        plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix',normalize=True,xlabel='Labels',ylabel='Predictions')
+
 
 
     def retrain(self,lr1=0.0001,initial_epochs=10):
