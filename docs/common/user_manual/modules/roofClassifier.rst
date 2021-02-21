@@ -22,7 +22,7 @@ The first time you initialize this model, it will download the model from the in
 .. code-block:: none 
 
     # import the module
-    from brails.RoofTypeClassifier import RoofClassifier
+    from brails.modules import RoofClassifier
 
     # initialize a roof classifier
     roofModel = RoofClassifier()

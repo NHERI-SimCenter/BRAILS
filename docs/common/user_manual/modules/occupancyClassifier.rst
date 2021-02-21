@@ -8,7 +8,8 @@ The Occupancy Classifier is a module built upon the :ref:`lbl-genericImageClassi
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
 
-It takes a list of street view images of residential buildings as the input, and classify the buildings into two categories: single family building and  multi-family building.
+It takes a list of street view images of residential buildings as the input, and classify the buildings into three categories: 
+RES1 (single family building), RES3 (multi-family building), COM(Commercial building).
 
 
 Use the module
@@ -21,7 +22,7 @@ The first time you initialize this model, it will download the model from the in
 .. code-block:: none 
 
     # import the module
-    from brails.OccupancyClassClassifier import OccupancyClassifier
+    from brails.modules import OccupancyClassifier
 
     # initialize an occupancy classifier
     occupancyModel = OccupancyClassifier()
@@ -38,8 +39,8 @@ The predictions look like this:
 
 .. code-block:: none 
 
-    Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (99.99%)
-    Image :  image_examples/Occupancy/RES3/65883.png     Class : RES3 (98.67%)
+    Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (66.41%)
+    Image :  image_examples/Occupancy/RES3/65883.png     Class : RES1 (49.51%)
     Results written in file occupancy_preds.csv 
 
 The images used in this example are:

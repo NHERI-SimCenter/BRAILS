@@ -35,11 +35,11 @@ Run the following python script to test on this dataset.
     # import the module
     from brails.modules import SoftstoryClassifier
 
-    # initialize a roof classifier
-    roofModel = SoftstoryClassifier()
+    # initialize the classifier
+    model = SoftstoryClassifier()
 
     # use the model to predict
-    predictions = roofModel.predict(imgs)
+    predictions = model.predict(imgs)
     
     prediction = predictions['prediction'].values.tolist()
     label = ['softstory']*len(softstoryList) + ['others']*len(othersList)

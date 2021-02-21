@@ -21,7 +21,7 @@ The first time you initialize this model, it will download the model from the in
 .. code-block:: none 
 
     # import the module
-    from brails.SoftstoryClassifier import SoftstoryClassifier
+    from brails.modules import SoftstoryClassifier
 
     # initilize a soft-story classifier
     ssModel = SoftstoryClassifier()

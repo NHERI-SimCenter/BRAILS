@@ -47,7 +47,7 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.GenericImageClassifier import ImageClassifier
+    from brails.modules import ImageClassifier
 
     # initialize the classifier, give it a name
     materialClassifier = ImageClassifier(modelName='materialClassifierV0.1')
