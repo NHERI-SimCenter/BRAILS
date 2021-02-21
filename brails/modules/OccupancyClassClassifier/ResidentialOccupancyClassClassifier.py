@@ -15,7 +15,7 @@ from brails.modules.GenericImageClassifier.GenericImageClassifier import *
 import wget 
 import os
 
-class OccupancyClassifier(ImageClassifier):
+class ResidentialOccupancyClassifier(ImageClassifier):
     """ Occupancy Class Classifier. """
 
 
@@ -27,13 +27,13 @@ class OccupancyClassifier(ImageClassifier):
 
         if not os.path.exists(workDir): os.makedirs(workDir)
 
-        fileURL = zoo['occupancyClass']['fileURL']
+        fileURL = zoo['residentialOccupancyClass']['fileURL']
         
         if not classNames:
-            classNames = zoo['occupancyClass']['classNames']
+            classNames = zoo['residentialOccupancyClass']['classNames']
 
         if not modelName:
-            modelName = 'occupancy_InceptionV3_V0.2'
+            modelName = 'occupancy-78-78-79'
             print('A default occupancy model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
