@@ -24,30 +24,31 @@ It is implemented in a class, CityBuilder.
                     overwrite, 
                     reDownloadImgs)
 
+
 :attributes (list):     
-    A list of building attributes, such as ['story', 'occupancy', 'roofshape'], which are available in the current version.
+    A list of building attributes, such as [':ref:`roofshape<lbl-roofClassifier>`', ':ref:`occupancy<lbl-occupancyClassifier>`', ':ref:`softstory<lbl-softstoryClassifier>`', ':ref:`elevated<lbl-foundationElevationClassifier>`', ':ref:`story<lbl-nFloorDetector>`'], which are available in the current version.
 :numBldg (int):         
     Number of buildings to generate.
 :random (bool):         
     Randomly select numBldg buildings from the database if random is True.
 :bbox (list):           
-    [north, west, south, east], which are latitude and longitudes that defines a region of interest. 
+    [north, west, south, east], which are latitudes and longitudes of two corners that define a region of interest. 
 :place (str):           
-    The region of interest, e.g., Berkeley, California.
+    The region of interest, e.g., 'Berkeley, California'.
 :footPrints (str):      
-    The footprint provide, choose from OSM or Microsoft. The default value is OSM.
+    The footprint provide, choose from 'OSM' or 'Microsoft'. The default value is 'OSM'.
 :save (bool):           
     Save temporary files. Default value is True.
 :fileName (str):        
     Name of the generated BIM file. Default value will be generated if not provided by the user.
 :workDir (str):         
-    Work directory where all files will be saved. Default value is ./tmp
+    Work directory where all files will be saved. Default value is './tmp'
 :GoogleMapAPIKey (str): 
     Google API Key. Must be provided to use the workflow.
 :overwrite (bool):      
     Overwrite existing tmp files. Default value is False.
 :reDownloadImgs (bool): 
-    Re-download if an image exists locally. Default value is False.
+    Re-download even an image exists locally. Default value is False.
 
 
 
@@ -58,14 +59,20 @@ Use the key 'attributes' to specify a list of attributes you intend to collect f
 Available ones in the current version include: 
 ['roofshape', 
 'occupancy', 
-'softstory']. 
+'softstory',
+'elevated',
+'story']. 
 These attributes will be inferred from images using specific :ref:`modules <lbl-modules>`.
 
 * roofshape is the roof class, details can be found in :ref:`lbl-roofClassifier`.
 
-* occupancy is the occupancy class, details can be found in :ref:`lbl-occupancyClassifier`.
+* occupancy is the occupancy class, details can be found in :ref:`lbl-occupancyClassifier`. 
 
-* softstory is the soft-story classification, details can be found in :ref:`lbl-softstoryClassifier`.
+* softstory is the soft-story attribute, details can be found in :ref:`lbl-softstoryClassifier`.
+
+* elevated is the foundation elevation attribute, details can be found in :ref:`lbl-foundationElevationClassifier`.
+
+* story is the number of stories, details can be found in :ref:`lbl-nFloorDetector`. 
 
 
 .. _limitthenumber:
