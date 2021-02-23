@@ -20,8 +20,8 @@ import geopandas as gpd
 import json
 
 
-from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier
-
+from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier, YearBuiltClassifier
+from brails.modules import FoundationHeightClassifier as NFloorDetector # pseudo as a placeholder, will change when available
 
 from .workflow.Footprints import getMSFootprintsByPlace, getStateNameByBBox, getOSMFootprints, getMSFootprintsByBbox
 from .workflow.Images import getGoogleImages
@@ -103,10 +103,11 @@ class CityBuilder:
         else:
             assert False, f"Please provide a bbox or place name."
         
- 
+        print(f'{self.BIM.shape[0]} buildings found.')
         if numBldg < self.BIM.shape[0]: 
             if random: self.BIM = self.BIM.sample(n=numBldg)
             else: self.BIM = self.BIM[:numBldg]
+            print(f'{self.BIM.shape[0]} buildings selected.')
         
     def getFootprintByBbox(self,bbox=[],workDir='',GoogleMapAPIKey='',save=True,overwrite=True):
         #BIM = getCityBIM()
@@ -157,7 +158,7 @@ class CityBuilder:
         if 'roofshape' in self.attributes:
             imageTypes.append('TopView')
 
-        svAttrs = ['occupancy','softstory','elevated']
+        svAttrs = ['occupancy','softstory','elevated','story','year']
         usvAttrs = [x for x in svAttrs if x in set(self.attributes)]
         if len(usvAttrs)> 0: imageTypes.append('StreetView')
 
@@ -231,6 +232,27 @@ class CityBuilder:
                 elvProb = elv_df['probability'].to_list()
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
                 self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1) 
+
+            elif attr.lower()=='story':
+                storyModel = NFloorDetector()
+
+                story_df = storyModel.predict(self.BIM['StreetView'].tolist())
+
+                story = story_df['prediction'].to_list()
+                storyProb = story_df['probability'].to_list()
+                self.BIM['story'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+                self.BIM['storyProb'] = self.BIM.apply(lambda x: storyProb[x['ID']], axis=1) 
+
+            elif attr.lower()=='year':
+                yearModel = YearBuiltClassifier(workDir=self.workDir)
+
+                year_df = yearModel.predict(self.BIM['StreetView'].tolist())
+
+                year = year_df['prediction'].to_list()
+                yearProb = year_df['probability'].to_list()
+                self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
+                self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
+
 
 
             else:
