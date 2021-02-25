@@ -7,30 +7,38 @@
 ## What is BRAILS
 
 BRAILS is the acronym for Building Recognition using AI at Large-Scale, 
-which is an AI-Based pipeline for city-scale building information modeling (BIM).
+which is an AI-based pipeline for city-scale building information modeling (BIM).
 
 ## How to install
-
 
 ```
 pip install BRAILS
 ```
 
-## How to use
+If you have difficulties installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
 
 
-### Example 1
+## Documents
+
+Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+
+
+## Quickstart
+
+
+### Example 1: Modules
 
 
 The following example shows how to use BRAILS modules. 
 
-The example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
-or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
+This example can also be found in the document [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
+you can run it on you local computer or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
 
-Example images can be downloaded like this.
+Images used in examples can be downloaded by clicking [here](https://zenodo.org/record/4562949/files/image_examples.zip) or 
+using the following the command:
 
 ```
-wget https://zenodo.org/record/4095668/files/image_examples.zip
+wget https://zenodo.org/record/4562949/files/image_examples.zip
 ```
 
 ```python
@@ -88,7 +96,7 @@ Results written in file softstory_preds.csv
 ```
 
 
-### Example 2
+### Example 2: Workflow
 
 This example shows how to create a building inventory by specifying the name of a city. 
 
@@ -131,11 +139,6 @@ index geometry	                                       ID	roofShape	roofShapeProb
 
 
 
-
-
-## Documents
-
-Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
 
 
 
