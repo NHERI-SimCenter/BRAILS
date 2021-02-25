@@ -13,9 +13,15 @@ Building Recognition using AI at Large-Scale
 
 What is |brailsName|   
 ---------------------------
-|brailsName| is the acronym for Building Recognition using AI at Large-Scale, which is an AI-Based software for city information modeling.
 
-|brailsName| uses deep learning technologies to extract information from satellite or street view images, providing the architecture, engineering, and construction (AEC) professionals the insight and tools to more efficiently plan, design, construct, and manage buildings and infrastructure systems.
+The SimCenter tool - Building Recognition using AI at Large-Scale (BRAILS) is an AI-enabled software to assist regional-scale simulations. BRAILS utilizes machine learning (ML), deep learning (DL), and computer vision (CV) to extract information from satellite and street view images for being used in computational modeling and risk assessment of the built environment. It also provides the architecture, engineering, and construction professionals the insight and tools to more efficiently plan, design, construct, and manage buildings and infrastructure systems. 
+
+The released v2.0 is re-structured with modules for performing specific analyses of images. 
+The expanded module library enables BRAILS’ capability of predicting a larger spectrum of building attributes including occupancy class, roof type, foundation elevation, year built, soft-story. 
+
+The new release also features a streamlined workflow, CityBuilder, for automatic creation of regional-scale building inventories by fusing multiple sources of data, including OpenStreetMap, Microsoft Footprint Data, Google Maps, and extracting information from them using the modules.
+
+Examples of its application in natural hazard engineering include: The identification of roof shapes and foundation elevation to improve the damage and loss calculations for the hurricane workflow; The identification of soft-story buildings to improve models in earthquake workflows. 
 
 
 

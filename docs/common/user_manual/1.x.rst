@@ -1,6 +1,6 @@
 .. _lbl-1.x-tutorial:
 
-User Guide (1.x Legacy) 
+1.x User Guide (Legacy) 
 =======================
 
 .. toctree::

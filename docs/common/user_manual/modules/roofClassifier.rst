@@ -1,9 +1,9 @@
 .. _lbl-roofClassifier:
 
-Roof Classifier
+Roof Shape Classifier
 ========================
 
-The Roof Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
+The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
 
 The module is shipped with BRAILS, 
 so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
@@ -18,6 +18,8 @@ Use the module
 A pretrained model is shipped with BRAILS. So you can use it directly without training your own model.
 
 The first time you initialize this model, it will download the model from the internet to your local computer.
+
+The images used in the example can be downloaded from `here <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
 
 .. code-block:: none 
 

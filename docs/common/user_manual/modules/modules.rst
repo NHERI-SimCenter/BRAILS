@@ -13,6 +13,7 @@ They can be called by the workflow. Meanwhile, most of them can be used as a sta
    roofClassifier
    occupancyClassifier
    softstoryClassifier
+   yearClassifier
    foundationElevationClassifier
    nFloorDetector
    
