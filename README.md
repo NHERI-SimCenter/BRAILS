@@ -87,7 +87,7 @@ Image :  image_examples/Roof/flat/94.png     Class : flat (97.68%)
 Results written in file roofType_preds.csv
 
 Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (66.41%)
-Image :  image_examples/Occupancy/RES3/65883.png     Class : RES3 (49.51%)
+Image :  image_examples/Occupancy/RES3/65883.png     Class : RES1 (49.51%)
 Results written in file occupancy_preds.csv
 
 Image :  image_examples/Softstory/Others/3110.jpg     Class : others (96.13%)
