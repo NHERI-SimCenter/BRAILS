@@ -138,7 +138,7 @@ class ImageClassifier:
 
     def loadData(self, imgDir, valimgDir='', randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
-        if valimgDir = '':
+        if valimgDir == '':
             #print('* First split the data with 8:2.')
             self.train_ds = image_dataset_from_directory(imgDir,
             validation_split=split[1],
