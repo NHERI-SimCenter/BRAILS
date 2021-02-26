@@ -1,5 +1,6 @@
-from lib.train_detector import Detector
+# Author: Barbaros Cetiner
 
+from .lib.train_detector import Detector
 import os
 import cv2
 import numpy as np
@@ -9,6 +10,10 @@ from lib.infer_detector import Infer
 import torch
 import time
 from tqdm import tqdm
+import pandas as pd
+import warnings
+
+warnings.filterwarnings("ignore")
 
 class NFloorDetector():
     def __init__(self):
@@ -79,8 +84,8 @@ class NFloorDetector():
                   val_interval=self.system_dict["train"]["model"]["valInterval"],
                   save_interval=self.system_dict["train"]["model"]["saveInterval"])
 
-    def infer(self, imPath="datasets/test/", modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=True, outFile="nFloorPredict.csv"):
-        self.system_dict["infer"]["imPath"] = imPath
+    def predict(self, images, modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=True, outFile="nFloorPredict.csv"):
+        self.system_dict["infer"]["images"] = images
         self.system_dict["infer"]["modelPath"] = modelPath
         self.system_dict["infer"]["gpuEnabled"] = gpuEnabled
         self.system_dict["infer"]["outFile"] = outFile
@@ -146,7 +151,13 @@ class NFloorDetector():
         startTime = time.time()
         
         # Get the Image List
-        imgList = os.listdir(self.system_dict["infer"]["imPath"])
+        try: 
+            imgList = os.listdir(self.system_dict["infer"]["images"])
+            for imgno in range(len(imgList)):
+                imgList[imgno] = os.path.join(self.system_dict["infer"]["images"],imgList[imgno])
+        except:
+            imgList = self.system_dict["infer"]["images"]
+        
         nImages = len(imgList)
         
         # Initiate a CSV File to Write Program Output If More Than One Image in imageDir
@@ -160,9 +171,10 @@ class NFloorDetector():
         print("Performing inferences on images...")
         gtfInfer = Infer()
         gtfInfer.load_model(self.system_dict["infer"]["modelPath"], classes, use_gpu=self.system_dict["infer"]["gpuEnabled"])
-        for imgno in tqdm(range(6519,nImages)):
+        predictions = []
+        for imgno in tqdm(range(nImages)):
             # Perform Iterative Inference
-            imgPath = os.path.join(self.system_dict["infer"]["imPath"],imgList[imgno])
+            imgPath = imgList[imgno]
             img = cv2.imread(imgPath)
             img = cv2.resize(img,(640,640))
             cv2.imwrite("input.jpg",img)
@@ -256,8 +268,12 @@ class NFloorDetector():
                     csvFile.write(os.path.splitext(imgList[imgno])[0] + f", {nFloors}\n")
             else:
                 print(f"Number of floors:{nFloors}\n")        
+            predictions.append(nFloors)
         
         csvFile.close()
+        
+        df = pd.DataFrame(list(zip(imgList, predictions)), columns =['image', 'prediction',])
+        
         # End Program Timer and Display Execution Time
         endTime = time.time()
         hours, rem = divmod(endTime-startTime, 3600)
@@ -269,4 +285,5 @@ class NFloorDetector():
             os.remove("input.jpg")
         if os.path.isfile("output.jpg"):
             os.remove("output.jpg")
-            
+       
+        return df    

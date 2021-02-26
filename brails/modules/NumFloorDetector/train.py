@@ -1,3 +1,5 @@
+# Author: Barbaros Cetiner
+
 from lib.train_detector import Detector
 import argparse
 

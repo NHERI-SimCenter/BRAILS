@@ -1,6 +1,6 @@
 .. _nfloorTheory:
 
-Number of Floor Detector
+Number of Floors Detector
 ==============================
 
 In general, all modern object detectors can be said to consist of three main components: 
@@ -14,7 +14,7 @@ EfficientDet models use EfficientNets pretrained on ImageNet for their backbone 
 
 .. _fig_modelArch:
 .. figure:: ../../images/technical/EfficientDetArch.png
-   :width: 40 %
+   :width: 70 %
    :alt: Model architecture
 
    A high-level representation of the EfficientDet architecture
@@ -26,7 +26,7 @@ As shown in :numref:`fig_EfficientDetPerf`, at the time this work was published,
 
 .. _fig_EfficientDetPerf:
 .. figure:: ../../images/technical/EfficientDetPerf.png
-   :width: 40 %
+   :width: 70 %
    :alt: Detection performance
 
    A comparison of the performance and accuracy levels of EfficienDet models over other popular object detection architectures on the COCO dataset

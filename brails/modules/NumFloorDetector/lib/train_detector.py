@@ -7,15 +7,15 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from lib.efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
-from lib.backbone import EfficientDetBackbone
+from .efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
+from .backbone import EfficientDetBackbone
 from tensorboardX import SummaryWriter
 import numpy as np
 from tqdm import tqdm
 
-from lib.efficientdet.loss import FocalLoss
-from lib.utils.sync_batchnorm import patch_replication_callback
-from lib.utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
+from .efficientdet.loss import FocalLoss
+from .utils.sync_batchnorm import patch_replication_callback
+from .utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
 
 
 import urllib

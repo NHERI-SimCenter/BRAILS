@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
+# Author: Barbaros Cetiner
+
 from lib.infer_detector import Infer
 import torch
 import time
