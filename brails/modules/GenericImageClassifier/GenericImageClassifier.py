@@ -136,28 +136,43 @@ class ImageClassifier:
             pred = []
         return pred
 
-    def loadData(self, imgDir, randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
+    def loadData(self, imgDir, valimgDir='', randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
-        #print('* First split the data with 8:2.')
-        self.train_ds = image_dataset_from_directory(imgDir,
-        validation_split=split[1],
-        subset="training",
-        seed=randomseed,
-        image_size=image_size,
-        batch_size=batch_size,
-        label_mode='categorical')
-
-        
-        self.val_ds = image_dataset_from_directory(
-            imgDir,
+        if valimgDir = '':
+            #print('* First split the data with 8:2.')
+            self.train_ds = image_dataset_from_directory(imgDir,
             validation_split=split[1],
-            subset="validation",
+            subset="training",
             seed=randomseed,
             image_size=image_size,
             batch_size=batch_size,
-            label_mode='categorical'
-        )
-        
+            label_mode='categorical')
+
+
+            self.val_ds = image_dataset_from_directory(
+                imgDir,
+                validation_split=split[1],
+                subset="validation",
+                seed=randomseed,
+                image_size=image_size,
+                batch_size=batch_size,
+                label_mode='categorical'
+            )
+        else:
+            self.train_ds = image_dataset_from_directory(imgDir,
+            image_size=image_size,
+            batch_size=batch_size,
+            shuffle=True,
+            label_mode='categorical')
+
+
+            self.val_ds = image_dataset_from_directory(
+                valimgDir,
+                image_size=image_size,
+                batch_size=batch_size,
+                shuffle=True,
+                label_mode='categorical'
+            )        
 
         self.image_size = image_size
         self.batch_size = batch_size
