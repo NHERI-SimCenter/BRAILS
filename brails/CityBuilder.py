@@ -241,7 +241,7 @@ class CityBuilder:
                 story = story_df['prediction'].to_list()
                 storyProb = story_df['probability'].to_list()
                 self.BIM['story'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
-                self.BIM['storyProb'] = self.BIM.apply(lambda x: storyProb[x['ID']], axis=1) 
+                #self.BIM['storyProb'] = self.BIM.apply(lambda x: storyProb[x['ID']], axis=1) 
 
             elif attr.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir)
