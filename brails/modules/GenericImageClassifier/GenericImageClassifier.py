@@ -279,7 +279,7 @@ class ImageClassifier:
         self.model = tf.keras.Model(inputs, outputs)
 
         ### Compile the model
-        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr1),
+        self.model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=lr1, momentum=0.9),
               loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
         self.model.summary()
@@ -331,7 +331,7 @@ class ImageClassifier:
 
         ### 4.2 Compile the model
 
-        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr2),
+        self.model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=lr2, momentum=0.9),
                       loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
                       metrics=['accuracy'])
         #model.summary()
