@@ -5,7 +5,8 @@ Soft-story Building Classifier
 
 The Soft-story Building Classifier is validated here.
 
-An overall accuracy of 76.7% is obtained when the trained classifier is tested on a ground truth dataset that can be downloaded `here <https://zenodo.org/record/4508433/files/softstory-buildings-val.zip>`_.
+The trained classifier is tested on a ground truth dataset that can be downloaded `here <https://zenodo.org/record/4508433/files/softstory-buildings-val.zip>`_.
+Accuracy is 83.8%. Precision is 83.8%. Recall is 83.8%. F1 is 83.8%.
 
 Run the following python script to test on this dataset.
 

@@ -20,11 +20,11 @@ zoo = {
         'classNames' : ['RES1', 'RES3']
     } ,
     'occupancyClass':{
-        'fileURL' : 'https://zenodo.org/record/4553798/files/occupancy_InceptionV3_V0.2.h5',
+        'fileURL' : 'https://zenodo.org/record/4565557/files/occupancy_ResNet50_V0.1.h5',
         'classNames' : ['RES3', 'COM' ,'RES1']
     } ,
     'softstory':{
-        'fileURL' : 'https://zenodo.org/record/4094334/files/softstory-80-81-87.5-v0.1.h5',
+        'fileURL' : 'https://zenodo.org/record/4565554/files/softstory_ResNet50_V0.1.h5',
         'classNames' : ['others', 'softstory']
     } 
 }

@@ -194,7 +194,7 @@ class ImageClassifier:
 
     def train(self,baseModel='InceptionV3',lr1=0.0001,initial_epochs=10,
                     fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,
-                    horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,plot=True):
+                    horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,callbacks=[],plot=True):
         
         ## 1. Model zoo
          
@@ -285,7 +285,8 @@ class ImageClassifier:
         self.model.summary()
 
         ### 3. Train the model
-        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
+        #callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=10)
+        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds, callbacks=callbacks)
 
         # Plot learning curves
 
@@ -339,7 +340,7 @@ class ImageClassifier:
         ### 4.3 Continue training the model
 
         total_epochs =  initial_epochs + fine_tune_epochs
-        history_fine = self.model.fit(self.train_ds, epochs=total_epochs, initial_epoch=history.epoch[-1], validation_data=self.val_ds)
+        history_fine = self.model.fit(self.train_ds, epochs=total_epochs, initial_epoch=history.epoch[-1], validation_data=self.val_ds, callbacks=callbacks)
 
         # Plot learning curves
 
@@ -409,7 +410,7 @@ class ImageClassifier:
 
 
 
-    def retrain(self,lr1=0.0001,initial_epochs=10):
+    def retrain(self,lr1=0.0001,initial_epochs=10,callbacks=[]):
         '''
         if self.train_ds.class_names != self.classNames:
             print('Can not retrain. Folder names mismatch predefined classNames: {}'.format(self.classNames))
@@ -423,7 +424,7 @@ class ImageClassifier:
         self.model.summary()
 
         ### Train the model
-        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
+        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds,callbacks=callbacks)
 
     def save(self, newModelName=None):
         if newModelName != None: 

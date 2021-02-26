@@ -32,7 +32,7 @@ class SoftstoryClassifier(ImageClassifier):
             classNames = zoo['softstory']['classNames']
 
         if not modelName:
-            modelName = 'softstory-80-81-87.5-v0.1'
+            modelName = 'softstory_ResNet50_V0.1'  # good  softstory_ResNet50_V0.1_r
             print('A default softstory model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))

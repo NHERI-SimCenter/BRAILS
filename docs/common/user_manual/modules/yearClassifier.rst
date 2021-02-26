@@ -38,8 +38,8 @@ The first time you initialize this model, it will download the model from the in
     # import the module
     from brails.modules import YearBuiltClassifier
 
-    # initialize a roof classifier
-    model = FoundationHeightClassifier()
+    # initialize a year classifier
+    model = YearBuiltClassifier()
 
     # define the paths of images in a list
     from glob import glob
