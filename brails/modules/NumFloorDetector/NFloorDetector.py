@@ -100,10 +100,10 @@ class NFloorDetector():
                 model_path = os.path.join('models','efficientdet-d4_trained.pth')
         
                 if not os.path.isfile(model_path):
-                    print('Loading default model file to the models folder...')
+                    print('Loading default floor detector model file to the models folder...')
                     torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',
                                                    model_path, progress=False)
-                    print('Default model loaded.')
+                    print('Default floor detector model loaded.')
             else:
                 print(f'Inferences will be performed using the custom model at {model_path}.')
         
