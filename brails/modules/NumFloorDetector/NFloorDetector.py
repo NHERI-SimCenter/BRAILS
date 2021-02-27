@@ -178,7 +178,7 @@ class NFloorDetector():
         predictions = []
         for imgno in tqdm(range(nImages)):
             # Perform Iterative Inference
-            imgPath = imgList[imgno]
+            imgPath = str(imgList[imgno])
             img = cv2.imread(imgPath)
             img = cv2.resize(img,(640,640))
             cv2.imwrite("input.jpg",img)
