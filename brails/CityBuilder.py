@@ -20,8 +20,8 @@ import geopandas as gpd
 import json
 
 
-from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier, YearBuiltClassifier
-from brails.modules import NFloorDetector as NFloorDetector # pseudo as a placeholder, will change when available
+from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier, YearBuiltClassifier, NFloorDetector
+
 
 from .workflow.Footprints import getMSFootprintsByPlace, getStateNameByBBox, getOSMFootprints, getMSFootprintsByBbox
 from .workflow.Images import getGoogleImages
