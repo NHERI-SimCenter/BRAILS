@@ -50,7 +50,7 @@ class ImageClassifier:
         self.workDir = workDir
         self.modelFile = modelFile
         self.classNames = classNames
-        self.resultFile = resultFile
+        self.resultFile = os.path.join(workDir,resultFile)
         self.modelName = modelName
         self.modelDetailFile = modelDetailFile
         self.printRes = printRes

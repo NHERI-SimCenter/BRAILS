@@ -86,9 +86,11 @@ class CityBuilder:
         self.reDownloadImgs = reDownloadImgs
         self.footPrints = footPrints
 
-        if os.path.exists(bimFile) and not overwrite:
-            print('{} already exists.'.format(bimFile))
-            BIM = gpd.read_file(bimFile)
+        self.bimExist = False
+        if os.path.exists(self.bimFile) and not overwrite:
+            print('{} already exists, nothing to do. \n Set overwrite=True in CityBuilder to overwrite.'.format(self.bimFile))
+            self.BIM = gpd.read_file(self.bimFile)
+            self.bimExist = True
             return None
 
 
@@ -170,6 +172,10 @@ class CityBuilder:
 
     def build(self): 
 
+        if self.bimExist:
+            print('{} already exists, nothing to do. \n Set overwrite=True in CityBuilder to overwrite.'.format(self.bimFile))
+            return self.BIM
+
         self.downloadImgs()
 
         imageTypes = self.imageTypes
@@ -189,7 +195,7 @@ class CityBuilder:
             if attr.lower()=='roofshape':
 
                 # initialize a roof classifier
-                roofModel = RoofClassifier(printRes=False)
+                roofModel = RoofClassifier(workDir=self.workDir,printRes=False)
 
                 # use the roof classifier 
                 roofShape_df = roofModel.predict(self.BIM['TopView'].tolist())
@@ -201,7 +207,7 @@ class CityBuilder:
 
             elif attr.lower()=='occupancy':
                 # initialize an occupancy classifier
-                occupancyModel = OccupancyClassifier(printRes=False)
+                occupancyModel = OccupancyClassifier(workDir=self.workDir,printRes=False)
                 # use the occupancy classifier 
                 occupancy_df = occupancyModel.predict(self.BIM['StreetView'].tolist())
 
@@ -212,7 +218,7 @@ class CityBuilder:
 
             elif attr.lower()=='softstory':
                 # initialize a soft-story classifier
-                ssModel = SoftstoryClassifier(printRes=False)
+                ssModel = SoftstoryClassifier(workDir=self.workDir,printRes=False)
                 # use the softstory classifier 
                 softstory_df = ssModel.predict(self.BIM['StreetView'].tolist())
 
@@ -223,7 +229,7 @@ class CityBuilder:
 
             elif attr.lower()=='elevated':
                 # initialize a foundation classifier
-                elvModel = FoundationHeightClassifier(workDir=self.workDir, maskBuildings=False)
+                elvModel = FoundationHeightClassifier(workDir=self.workDir,printRes=False)
 
                 # use the classifier 
                 elv_df = elvModel.predict(self.BIM['StreetView'].tolist())
@@ -245,7 +251,7 @@ class CityBuilder:
                 self.BIM['numStories'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
                 
             elif attr.lower()=='year':
-                yearModel = YearBuiltClassifier(workDir=self.workDir)
+                yearModel = YearBuiltClassifier(workDir=self.workDir,printRes=False)
 
                 year_df = yearModel.predict(self.BIM['StreetView'].tolist())
 
@@ -254,7 +260,20 @@ class CityBuilder:
                 self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
                 self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
 
+            elif attr.lower()=='softstory2':
+                from brails.modules.SoftstoryDetector.SoftstoryDetector import SoftstoryDetector
+                # initialize a soft-story detector
+                ssModel = SoftstoryDetector()
+                # use the soft-story detector 
+                softstory_df = ssModel.detect(self.BIM['StreetView'].tolist())
 
+                softstory = softstory_df['prediction'].to_list()
+                softstoryProb = softstory_df['probability'].to_list()
+                self.BIM['softStory2'] = self.BIM.apply(lambda x: softstory[x['ID']], axis=1)
+                self.BIM['softStory2Prob'] = self.BIM.apply(lambda x: softstoryProb[x['ID']], axis=1)
+
+                self.BIM['StreetView2'] = self.BIM['StreetView'].astype(str) 
+                
             else:
                 assert False, "attributes can only contain roofshape, occupancy, softstory, elevated, numstories, year. Your % caused an error." % attr
 

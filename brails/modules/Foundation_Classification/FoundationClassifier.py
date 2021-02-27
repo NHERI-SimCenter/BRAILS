@@ -12,7 +12,7 @@ from .csail_segmentation_tool.csail_segmentation import MaskBuilding
 
 class FoundationHeightClassifier():
 
-    def __init__(self, checkpoint='', onlycpu=False, maskBuildings=False,loadMasks=False, workDir='tmp', resultFile='FoundationElevation.csv'):
+    def __init__(self, checkpoint='', onlycpu=False, maskBuildings=False,loadMasks=False, workDir='tmp', resultFile='FoundationElevation.csv', printRes=True):
         '''
         checkpoint (str): Path to checkpoint. Defaults to best pretrained version.
         onlycpu (bool): Use CPU only, disregard GPU by default.
@@ -26,6 +26,7 @@ class FoundationHeightClassifier():
         self.loadMasks = loadMasks
         self.workDir = workDir
         self.outFilePath = os.path.join(workDir, resultFile)
+        self.printRes = printRes
 
         self.checkpointsDir = os.path.join(workDir,'checkpoints')
         os.makedirs(self.checkpointsDir,exist_ok=True)
@@ -136,7 +137,7 @@ class FoundationHeightClassifier():
                 imagePathList.append(filename[0])
                 prob = score if score >= 0.5 else 1.-score
                 probs.append(prob)
-                print(f"Image :  {filename[0]}     Class : {p} ({str(round(prob*100,2))}%)") 
+                if self.printRes: print(f"Image :  {filename[0]}     Class : {p} ({str(round(prob*100,2))}%)") 
 
         
         df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 

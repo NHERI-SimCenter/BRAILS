@@ -28,7 +28,7 @@ sm = nn.Softmax()
 
 class YearBuiltClassifier():
 
-    def __init__(self, checkpoint='', onlycpu=False, workDir='tmp', resultFile='YearBuilt.csv'):
+    def __init__(self, checkpoint='', onlycpu=False, workDir='tmp', resultFile='YearBuilt.csv', printRes=True):
         '''
         checkpoint (str): Path to checkpoint. Defaults to best pretrained version.
         onlycpu (bool): Use CPU only, use GPU by default.
@@ -43,6 +43,7 @@ class YearBuiltClassifier():
         self.onlycpu = onlycpu
         self.workDir = workDir
         self.outFilePath = os.path.join(workDir, resultFile)
+        self.printRes = printRes
 
         self.checkpointsDir = os.path.join(workDir,'checkpoints')
         os.makedirs(self.checkpointsDir,exist_ok=True)
@@ -100,7 +101,7 @@ class YearBuiltClassifier():
             predictions.append(prediction['prediction'][0])
             p = prediction['probability']
             probs.append(p)
-            print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]} ({str(round(p*100,2))}%)")
+            if self.printRes: print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]} ({str(round(p*100,2))}%)")
 
         df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
         df.to_csv(self.outFilePath, index=False)

@@ -12,7 +12,7 @@
 
 zoo = {
     'roofType':{
-        'fileURL' : 'https://zenodo.org/record/4059084/files/roof_classifier_v0.1.h5',
+        'fileURL' : 'https://zenodo.org/record/4567613/files/rooftype_ResNet50_V0.2.h5',
         'classNames' : ['flat', 'gabled', 'hipped']
     } ,
     'residentialOccupancyClass':{
