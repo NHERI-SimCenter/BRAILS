@@ -33,14 +33,16 @@
 # You should have received a copy of the BSD 3-Clause License along with
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
-# Author:
+# Authors:
 # Chaofeng Wang, c_w@berkeley.edu
+# Barbaros Cetiner
 
 
 from brails.modules.GenericImageClassifier.GenericImageClassifier import ImageClassifier
 from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClassifier as SoftstoryClassifier
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
+from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
 from brails.modules.Foundation_Classification.FoundationClassifier import FoundationHeightClassifier
 from brails.modules.Year_Built_Classifier.YearBuiltClassifier import YearBuiltClassifier
 from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector

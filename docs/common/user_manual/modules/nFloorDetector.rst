@@ -1,6 +1,6 @@
 .. _lbl-nFloorDetector:
 
-Number of Floor Detector
+Number of Floors Detector
 ===========================
 
 The module is bundled with BRAILS, hence its use does not require a separate installation if BRAILS was installed following the :ref:`lbl-install` instructions. 
@@ -12,17 +12,18 @@ Use the module
 .. code-block:: none 
 
     # Import the module
-    from brails.NFloorDetector import NFloorDetector
+    from brails.modules import NFloorDetector
 
     # Initialize the detector
     nfloorDetector = NFloorDetector()
 
     # Define the path of the images:
-    imdir = datasets/test/
-    
-    # Detect the number of floors in each image inside imPath
-    nfloorDetector.infer(imPath=imDir)
-	
+    imDir = "datasets/test/"
+
+    # Detect the number of floors in each image inside imDir and write them in a 
+    # CSV file. The prediction can be also assigned to DataFrame variable:
+    predictions = nfloorDetector.predict(imDir)
+
     # Train a new detector using EfficientDet-D7 for 50 epochs
     nfloorDetector.load_train_data(rootDir="datasets/")
     nfloorDetector.train(compCoeff=7,numEpochs=50)

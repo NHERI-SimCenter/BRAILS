@@ -130,7 +130,7 @@ class Infer():
             if len(preds[i]['rois']) == 0:
                 continue
             for j in range(len(preds[i]['rois'])):
-                x1, y1, x2, y2 = preds[i]['rois'][j].astype(np.int)
+                x1, y1, x2, y2 = preds[i]['rois'][j].astype(int)
                 obj = self.system_dict["params"]["obj_list"][preds[i]['class_ids'][j]]
                 score = float(preds[i]['scores'][j])
                 if(score > self.system_dict["params"]["threshold"]):

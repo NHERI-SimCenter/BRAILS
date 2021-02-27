@@ -1,4 +1,4 @@
-Number of Floor Detector
+Number of Floors Detector
 =================================================
 
 Purpose of the Module
@@ -51,12 +51,12 @@ BSD 3-Caluse license
 
 Installation
 ---------------------------
-The following commands clone the BRAILS repository and install the number of floor detection module. Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
+The following commands clone the BRAILS repository and install the number of floors detection module. Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
 
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
-    cd BRAILS/brails/modules/Number_of_Floor_Detector
+    cd BRAILS/brails/modules/NumFloorDetector
     python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 

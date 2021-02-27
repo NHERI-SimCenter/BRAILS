@@ -21,7 +21,7 @@ import json
 
 
 from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier, YearBuiltClassifier
-from brails.modules import FoundationHeightClassifier as NFloorDetector # pseudo as a placeholder, will change when available
+from brails.modules import NFloorDetector as NFloorDetector # pseudo as a placeholder, will change when available
 
 from .workflow.Footprints import getMSFootprintsByPlace, getStateNameByBBox, getOSMFootprints, getMSFootprintsByBbox
 from .workflow.Images import getGoogleImages
@@ -31,12 +31,12 @@ from .workflow.Images import getGoogleImages
 class CityBuilder:
     """Class for creating city-scale BIM."""
 
-    def __init__(self, attributes=['story','occupancy','roofshape'], numBldg=10, random=True,bbox=[], place='', footPrints='OSM', save=True, fileName='', workDir='tmp',GoogleMapAPIKey='', overwrite=False, reDownloadImgs=False):
+    def __init__(self, attributes=['nfloors','occupancy','roofshape'], numBldg=10, random=True,bbox=[], place='', footPrints='OSM', save=True, fileName='', workDir='tmp',GoogleMapAPIKey='', overwrite=False, reDownloadImgs=False):
         """init function for CityBuilder class.
 
         Args:
 
-            attributes (list): A list of building attributes, such as ['story', 'occupancy', 'roofshape'], which are available in the current version.
+            attributes (list): A list of building attributes, such as ['nfloors', 'occupancy', 'roofshape'], which are available in the current version.
             numBldg (int): Number of buildings to generate.
             random (bool): Randomly select numBldg buildings from the database if random is True
             bbox (list): [north, west, south, east]
@@ -158,7 +158,7 @@ class CityBuilder:
         if 'roofshape' in self.attributes:
             imageTypes.append('TopView')
 
-        svAttrs = ['occupancy','softstory','elevated','story','year']
+        svAttrs = ['occupancy','softstory','elevated','nfloors','year']
         usvAttrs = [x for x in svAttrs if x in set(self.attributes)]
         if len(usvAttrs)> 0: imageTypes.append('StreetView')
 
@@ -233,16 +233,17 @@ class CityBuilder:
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
                 self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1) 
 
-            elif attr.lower()=='story':
+            elif attr.lower()=='nfloors':
+                # Initialize the floor detector object
                 storyModel = NFloorDetector()
 
+                # Call the floor detector to determine number of floors
                 story_df = storyModel.predict(self.BIM['StreetView'].tolist())
 
+                # Write the results to a dataframe
                 story = story_df['prediction'].to_list()
-                storyProb = story_df['probability'].to_list()
-                self.BIM['story'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
-                #self.BIM['storyProb'] = self.BIM.apply(lambda x: storyProb[x['ID']], axis=1) 
-
+                self.BIM['nfloors'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+                
             elif attr.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir)
 
@@ -256,7 +257,7 @@ class CityBuilder:
 
 
             else:
-                assert False, f"attributes can only contain occupancy, roofshape, softstory. Your {attr} caused an error."
+                assert False, f"attributes can only contain roofshape, occupancy, softstory, elevated, nfloors, year. Your {attr} caused an error."
 
         # delete columns
         self.BIM.drop(columns=['Lat','Lon','index'], axis=1, inplace=True)
