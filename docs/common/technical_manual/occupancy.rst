@@ -57,10 +57,10 @@ Run the following python script to test on this dataset.
 
 
 
-The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_occupancy`.
+The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_occupancy2`.
 
 
-.. _fig_confusion_occupancy:
+.. _fig_confusion_occupancy2:
 .. figure:: ../../images/technical/confusion_occupancy_v2.png
   :width: 40%
   :alt: Confusion matrix occupancy class
