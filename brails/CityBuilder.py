@@ -31,12 +31,12 @@ from .workflow.Images import getGoogleImages
 class CityBuilder:
     """Class for creating city-scale BIM."""
 
-    def __init__(self, attributes=['nfloors','occupancy','roofshape'], numBldg=10, random=True,bbox=[], place='', footPrints='OSM', save=True, fileName='', workDir='tmp',GoogleMapAPIKey='', overwrite=False, reDownloadImgs=False):
+    def __init__(self, attributes=['numstories','occupancy','roofshape'], numBldg=10, random=True,bbox=[], place='', footPrints='OSM', save=True, fileName='', workDir='tmp',GoogleMapAPIKey='', overwrite=False, reDownloadImgs=False):
         """init function for CityBuilder class.
 
         Args:
 
-            attributes (list): A list of building attributes, such as ['nfloors', 'occupancy', 'roofshape'], which are available in the current version.
+            attributes (list): A list of building attributes, such as ['numstories', 'occupancy', 'roofshape'], which are available in the current version.
             numBldg (int): Number of buildings to generate.
             random (bool): Randomly select numBldg buildings from the database if random is True
             bbox (list): [north, west, south, east]
@@ -158,7 +158,7 @@ class CityBuilder:
         if 'roofshape' in self.attributes:
             imageTypes.append('TopView')
 
-        svAttrs = ['occupancy','softstory','elevated','nfloors','year']
+        svAttrs = ['occupancy','softstory','elevated','numstories','year']
         usvAttrs = [x for x in svAttrs if x in set(self.attributes)]
         if len(usvAttrs)> 0: imageTypes.append('StreetView')
 
@@ -233,7 +233,7 @@ class CityBuilder:
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
                 self.BIM['elevatedProb'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1) 
 
-            elif attr.lower()=='nfloors':
+            elif attr.lower()=='numstories':
                 # Initialize the floor detector object
                 storyModel = NFloorDetector()
 
@@ -242,7 +242,7 @@ class CityBuilder:
 
                 # Write the results to a dataframe
                 story = story_df['prediction'].to_list()
-                self.BIM['nfloors'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+                self.BIM['numStories'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
                 
             elif attr.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir)
@@ -255,9 +255,8 @@ class CityBuilder:
                 self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
 
 
-
             else:
-                assert False, f"attributes can only contain roofshape, occupancy, softstory, elevated, nfloors, year. Your {attr} caused an error."
+                assert False, "attributes can only contain roofshape, occupancy, softstory, elevated, numstories, year. Your % caused an error." % attr
 
         # delete columns
         self.BIM.drop(columns=['Lat','Lon','index'], axis=1, inplace=True)
