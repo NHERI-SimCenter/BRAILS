@@ -14,7 +14,11 @@ import pandas as pd
 import warnings
 
 warnings.filterwarnings("ignore")
-
+if torch.cuda.is_available():
+    useGPU=True
+else:    
+    useGPU=False
+    
 class NFloorDetector():
     def __init__(self):
         self.system_dict = {}
@@ -84,7 +88,7 @@ class NFloorDetector():
                   val_interval=self.system_dict["train"]["model"]["valInterval"],
                   save_interval=self.system_dict["train"]["model"]["saveInterval"])
 
-    def predict(self, images, modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=True, outFile="nFloorPredict.csv"):
+    def predict(self, images, modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=useGPU, outFile="nFloorPredict.csv"):
         self.system_dict["infer"]["images"] = images
         self.system_dict["infer"]["modelPath"] = modelPath
         self.system_dict["infer"]["gpuEnabled"] = gpuEnabled
