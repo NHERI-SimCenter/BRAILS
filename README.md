@@ -29,7 +29,7 @@ Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Docum
 ### Example 1: Modules
 
 
-The following example shows how to use BRAILS modules. 
+The following example shows how to use BRAILS modules. Available modules [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/modules/modules.html).
 
 This example can also be found in the document [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
 you can run it on you local computer or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
