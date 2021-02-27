@@ -7,30 +7,38 @@
 ## What is BRAILS
 
 BRAILS is the acronym for Building Recognition using AI at Large-Scale, 
-which is an AI-Based pipeline for city-scale building information modeling (BIM).
+which is an AI-based pipeline for city-scale building information modeling (BIM).
 
 ## How to install
-
 
 ```
 pip install BRAILS
 ```
 
-## How to use
+If you have difficulties installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
 
 
-### Example 1
+## Documents
+
+Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+
+
+## Quickstart
+
+
+### Example 1: Modules
 
 
 The following example shows how to use BRAILS modules. 
 
-The example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
-or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
+This example can also be found in the document [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html), 
+you can run it on you local computer or you can test it in this [notebook](https://colab.research.google.com/drive/1zspDwK-rGA1gYcHZDnrQr_3Z27JL-ooS?usp=sharing) on Google Colab.
 
-Example images can be downloaded like this.
+Images used in examples can be downloaded by clicking [here](https://zenodo.org/record/4562949/files/image_examples.zip) or 
+using the following the command:
 
 ```
-wget https://zenodo.org/record/4095668/files/image_examples.zip
+wget https://zenodo.org/record/4562949/files/image_examples.zip
 ```
 
 ```python
@@ -78,8 +86,8 @@ Image :  image_examples/Roof/hipped/54.png     Class : hipped (100.0%)
 Image :  image_examples/Roof/flat/94.png     Class : flat (97.68%)
 Results written in file roofType_preds.csv
 
-Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (99.99%)
-Image :  image_examples/Occupancy/RES3/65883.png     Class : RES3 (98.67%)
+Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (66.41%)
+Image :  image_examples/Occupancy/RES3/65883.png     Class : RES1 (49.51%)
 Results written in file occupancy_preds.csv
 
 Image :  image_examples/Softstory/Others/3110.jpg     Class : others (96.13%)
@@ -88,7 +96,7 @@ Results written in file softstory_preds.csv
 ```
 
 
-### Example 2
+### Example 2: Workflow
 
 This example shows how to create a building inventory by specifying the name of a city. 
 
@@ -103,7 +111,7 @@ from brails.CityBuilder import CityBuilder
 
 # Initialize the CityBuilder
 cityBuilder = CityBuilder(attributes=['softstory','occupancy','roofshape'], 
-                   numBldg=10,random=False, place='Lake Charles, Louisiana', 
+                   numBldg=10,random=True, place='Lake Charles, Louisiana', 
                    GoogleMapAPIKey='put-your-key-here')
 
 # create the city-scale BIM file
@@ -114,28 +122,19 @@ BIM = cityBuilder.build()
 The definitions of the parameters in this example can be found [here](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/examples.html). 
 
 The result BIM is a geopandas dataframe:
-```
-index geometry	                                       ID	roofShape	roofShapeProb	softStory	softStoryProb	occupancy	occupancyProb
-0	POLYGON ((-93.18634 30.26957, -93.18626 30.269...	0	gabled	       0.985102	    softstory	0.985102	    RES1	    0.996449
-1	POLYGON ((-93.18812 30.25996, -93.18812 30.260...	1	gabled	       0.903468	    others      0.903468	    RES1	    0.999988
-2	POLYGON ((-93.18746 30.26043, -93.18746 30.260...	2	hipped	       0.790183	    others      0.790183	    RES1	    1.000000
-3	POLYGON ((-93.18283 30.26018, -93.18294 30.260...	3	flat	       0.414026	    softstory	0.414026	    RES1	    0.999875
-4	POLYGON ((-93.18224 30.26446, -93.18240 30.264...	4	flat	       0.956571	    softstory	0.956571	    RES1	    0.999984
-5	POLYGON ((-93.17564 30.26633, -93.17564 30.266...	5	flat	       0.982985	    others      0.982985	    RES1	    0.999994
-6	POLYGON ((-93.21555 30.23522, -93.21555 30.235...	6	flat	       0.992871	    softstory	0.992871	    RES3	    0.971049
-7	POLYGON ((-93.21243 30.22394, -93.21243 30.224...	7	flat	       0.490653	    softstory	0.490653	    RES1	    0.894999
-8	POLYGON ((-93.21002 30.22489, -93.21002 30.224...	8	hipped	       0.769291	    others      0.769291	    RES1	    0.904881
-9	POLYGON ((-93.21001 30.22770, -93.20999 30.227...	9	flat	       0.991286	    others      0.991286	    RES1	    0.688759
 
-```
-
-
-
-
-
-## Documents
-
-Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+index geometry	                                        |   ID	|   roofShape	|   roofShapeProb	|   softStory	|softStoryProb	|occupancy	|occupancyProb
+--------------------------------------------------------|-------|---------------|-------------------|---------------|---------------|-----------|------------
+0	POLYGON ((-93.21912 30.22786, -93.21892 30.227...	|   0	|   softstory	|   0.761644	    |   COM	    |    0.878260	|    flat	|    0.999769 
+1	POLYGON ((-93.21517 30.22412, -93.21491 30.224...	|   1	|   softstory	|   0.500260	    |   RES1	    |    0.549517	|    hipped	|    0.961910 
+2	POLYGON ((-93.21411 30.22617, -93.21427 30.226...	|   2	|   softstory	|   0.994021	    |   COM	    |    0.594705	|    hipped	|    0.999313 
+3	POLYGON ((-93.16719 30.23006, -93.16715 30.230...	|   3	|   softstory	|   0.969902	    |   COM	    |    0.372285	|    flat	|    0.735594 
+4	POLYGON ((-93.25565 30.21074, -93.25550 30.211...	|   4	|   softstory	|   0.000000	    |   COM	    |    0.000000	|    flat	|    0.998508 
+5	POLYGON ((-93.20388 30.22758, -93.20388 30.227...	|   5	|   others   	|   0.971890	    |   COM	    |    0.913591	|    flat	|    0.996405 
+6	POLYGON ((-93.21610 30.22505, -93.21613 30.224...	|   6	|   softstory	|   0.000000	    |   COM	    |    0.000000	|    flat	|    0.963075 
+7	POLYGON ((-93.16549 30.22877, -93.16546 30.228...	|   7	|   others   	|   0.841312	    |   RES3	    |    0.441689	|    hipped	|    0.534562 
+8	POLYGON ((-93.21525 30.22513, -93.21523 30.225...	|   8	|   others   	|   0.830462	    |   RES1	    |    0.383844	|    flat	|    0.786514 
+9	POLYGON ((-93.21924 30.23054, -93.21949 30.230...	|   9	|   softstory	|   0.000000	    |   COM	    |    0.000000	|    flat	|    0.986143 
 
 
 

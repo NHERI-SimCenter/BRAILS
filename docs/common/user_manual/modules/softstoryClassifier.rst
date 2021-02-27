@@ -18,10 +18,12 @@ A pretrained model is shipped with BRAILS. So you can use it directly without tr
 
 The first time you initialize this model, it will download the model from the internet to your local computer.
 
+The images used in the example can be downloaded from `here <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
+
 .. code-block:: none 
 
     # import the module
-    from brails.SoftstoryClassifier import SoftstoryClassifier
+    from brails.modules import SoftstoryClassifier
 
     # initilize a soft-story classifier
     ssModel = SoftstoryClassifier()

@@ -32,7 +32,7 @@ For example, if you are using Python3.8:
 
 Then you'll be able to:
 
-pip3 install BRAILSs
+pip3 install BRAILS
 
 
 Internet connection

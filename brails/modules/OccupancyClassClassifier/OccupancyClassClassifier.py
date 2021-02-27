@@ -27,13 +27,14 @@ class OccupancyClassifier(ImageClassifier):
 
         if not os.path.exists(workDir): os.makedirs(workDir)
 
-        fileURL = zoo['residentialOccupancyClass']['fileURL']
+        fileURL = zoo['occupancyClass']['fileURL']
         
         if not classNames:
-            classNames = zoo['residentialOccupancyClass']['classNames']
+            classNames = zoo['occupancyClass']['classNames']
 
         if not modelName:
-            modelName = 'occupancy-78-78-79'
+            #modelName = 'occupancy_InceptionV3_V0.2'
+            modelName = 'occupancy_ResNet50_V0.1' # r
             print('A default occupancy model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))

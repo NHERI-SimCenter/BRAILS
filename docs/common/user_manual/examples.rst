@@ -68,7 +68,7 @@ Use should limit the number of buildings (numBldg) because of :ref:`this <limitt
     from brails.CityBuilder import CityBuilder
 
     cityBuilder = CityBuilder(attributes=['occupancy','roofshape'], 
-                   numBldg=10,random=False, place='Lake Charles, LA', 
+                   numBldg=1000,random=False, place='Lake Charles, LA', 
                    GoogleMapAPIKey='put-your-API-key-here',
                    overwrite=True)
 
@@ -123,7 +123,7 @@ Use should limit the number of buildings (numBldg) because of :ref:`this <limitt
     from brails.CityBuilder import CityBuilder
 
     cityBuilder = CityBuilder(attributes=['softstory','occupancy','roofshape'], 
-                   numBldg=10,random=False, bbox=[37.872187, -122.282178,37.870629, -122.279765], 
+                   numBldg=100,random=False, bbox=[37.872187, -122.282178,37.870629, -122.279765], 
                    GoogleMapAPIKey='put-your-API-key-here',
                    overwrite=True)
 

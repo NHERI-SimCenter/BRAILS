@@ -89,7 +89,7 @@ The ConvNet-identified building information is then merged into the initial data
 
 
 It should be noted that, due to reasons like heavy occlusions in images or bad viewpoints,  
-predictions from ConvNet are not always with acceptable confidence. To tackle this issue, in :numref:`enhance`, 
+predictions from ConvNet are not always with acceptable confidence. To tackle this issue, in :ref:`enhance`, 
 a machine learning based approach will be employed to enhance the database. 
 
 

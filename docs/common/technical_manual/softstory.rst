@@ -5,7 +5,8 @@ Soft-story Building Classifier
 
 The Soft-story Building Classifier is validated here.
 
-An overall accuracy of 76.7% is obtained when the trained classifier is tested on a ground truth dataset :cite:`charles_wang_2019_3521067`.
+The trained classifier is tested on a ground truth dataset that can be downloaded `here <https://zenodo.org/record/4508433/files/softstory-buildings-val.zip>`_.
+Accuracy is 83.8%. Precision is 83.8%. Recall is 83.8%. F1 is 83.8%.
 
 Run the following python script to test on this dataset.
 
@@ -35,11 +36,11 @@ Run the following python script to test on this dataset.
     # import the module
     from brails.modules import SoftstoryClassifier
 
-    # initialize a roof classifier
-    roofModel = SoftstoryClassifier()
+    # initialize the classifier
+    model = SoftstoryClassifier()
 
     # use the model to predict
-    predictions = roofModel.predict(imgs)
+    predictions = model.predict(imgs)
     
     prediction = predictions['prediction'].values.tolist()
     label = ['softstory']*len(softstoryList) + ['others']*len(othersList)

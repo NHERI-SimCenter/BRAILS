@@ -136,28 +136,43 @@ class ImageClassifier:
             pred = []
         return pred
 
-    def loadData(self, imgDir, randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
+    def loadData(self, imgDir, valimgDir='', randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
-        #print('* First split the data with 8:2.')
-        self.train_ds = image_dataset_from_directory(imgDir,
-        validation_split=split[1],
-        subset="training",
-        seed=randomseed,
-        image_size=image_size,
-        batch_size=batch_size,
-        label_mode='categorical')
-
-        
-        self.val_ds = image_dataset_from_directory(
-            imgDir,
+        if valimgDir == '':
+            #print('* First split the data with 8:2.')
+            self.train_ds = image_dataset_from_directory(imgDir,
             validation_split=split[1],
-            subset="validation",
+            subset="training",
             seed=randomseed,
             image_size=image_size,
             batch_size=batch_size,
-            label_mode='categorical'
-        )
-        
+            label_mode='categorical')
+
+
+            self.val_ds = image_dataset_from_directory(
+                imgDir,
+                validation_split=split[1],
+                subset="validation",
+                seed=randomseed,
+                image_size=image_size,
+                batch_size=batch_size,
+                label_mode='categorical'
+            )
+        else:
+            self.train_ds = image_dataset_from_directory(imgDir,
+            image_size=image_size,
+            batch_size=batch_size,
+            shuffle=True,
+            label_mode='categorical')
+
+
+            self.val_ds = image_dataset_from_directory(
+                valimgDir,
+                image_size=image_size,
+                batch_size=batch_size,
+                shuffle=True,
+                label_mode='categorical'
+            )        
 
         self.image_size = image_size
         self.batch_size = batch_size
@@ -179,7 +194,7 @@ class ImageClassifier:
 
     def train(self,baseModel='InceptionV3',lr1=0.0001,initial_epochs=10,
                     fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,
-                    horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,plot=True):
+                    horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,callbacks=[],plot=True):
         
         ## 1. Model zoo
          
@@ -264,13 +279,14 @@ class ImageClassifier:
         self.model = tf.keras.Model(inputs, outputs)
 
         ### Compile the model
-        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr1),
+        self.model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=lr1, momentum=0.9),
               loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
         self.model.summary()
 
         ### 3. Train the model
-        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
+        #callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=10)
+        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds, callbacks=callbacks)
 
         # Plot learning curves
 
@@ -316,7 +332,7 @@ class ImageClassifier:
 
         ### 4.2 Compile the model
 
-        self.model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr2),
+        self.model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=lr2, momentum=0.9),
                       loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
                       metrics=['accuracy'])
         #model.summary()
@@ -324,7 +340,7 @@ class ImageClassifier:
         ### 4.3 Continue training the model
 
         total_epochs =  initial_epochs + fine_tune_epochs
-        history_fine = self.model.fit(self.train_ds, epochs=total_epochs, initial_epoch=history.epoch[-1], validation_data=self.val_ds)
+        history_fine = self.model.fit(self.train_ds, epochs=total_epochs, initial_epoch=history.epoch[-1], validation_data=self.val_ds, callbacks=callbacks)
 
         # Plot learning curves
 
@@ -394,7 +410,7 @@ class ImageClassifier:
 
 
 
-    def retrain(self,lr1=0.0001,initial_epochs=10):
+    def retrain(self,lr1=0.0001,initial_epochs=10,callbacks=[]):
         '''
         if self.train_ds.class_names != self.classNames:
             print('Can not retrain. Folder names mismatch predefined classNames: {}'.format(self.classNames))
@@ -408,7 +424,7 @@ class ImageClassifier:
         self.model.summary()
 
         ### Train the model
-        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds)
+        history = self.model.fit(self.train_ds, epochs=initial_epochs, validation_data=self.val_ds,callbacks=callbacks)
 
     def save(self, newModelName=None):
         if newModelName != None: 

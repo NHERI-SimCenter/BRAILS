@@ -19,8 +19,12 @@ zoo = {
         'fileURL' : 'https://zenodo.org/record/4091547/files/occupancy-78-78-79.h5',
         'classNames' : ['RES1', 'RES3']
     } ,
+    'occupancyClass':{
+        'fileURL' : 'https://zenodo.org/record/4565557/files/occupancy_ResNet50_V0.1.h5',
+        'classNames' : ['RES3', 'COM' ,'RES1']
+    } ,
     'softstory':{
-        'fileURL' : 'https://zenodo.org/record/4094334/files/softstory-80-81-87.5-v0.1.h5',
+        'fileURL' : 'https://zenodo.org/record/4565554/files/softstory_ResNet50_V0.1.h5',
         'classNames' : ['others', 'softstory']
     } 
 }

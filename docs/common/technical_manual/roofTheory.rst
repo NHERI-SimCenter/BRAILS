@@ -48,20 +48,18 @@ In the attempt to determine roof type for every building in a region,
 a ConvNet classifier 
 is trained to take a satellite image of a building and predicts its roof type.  
 A training data set of 6,000 satellite images (2,000 for each roof type: flat, gabled, hipped) is collected.  
-Specifically,  InceptionV3 :cite:`szegedy2016rethinking`, which is a widely-used ConvNet architecture for image feature recognition that has been shown to attain good results with an accuracy greater than 78.1\% on the ImageNet dataset, is employed. 
+Specifically,  ResNet :cite:`he2016deep`, which is a widely-used ConvNet architecture for image feature recognition, 
+is employed. 
 
-The InceptionV3 is made up of a series of symmetric and asymmetric building blocks, 
-including convolutions, average pooling, max pooling, concats, dropouts, and fully connected layers. 
-Batchnorm is used extensively throughout the model and applied to activation inputs. 
-Loss is computed via Softmax. 
-The architecture of the model is shown in :numref:`fig_InceptionV3_roof`.
+The architecture of the model is shown in :numref:`fig_resnet`.
+In this module, we used a 50-layer ResNet.
 
-.. _fig_InceptionV3_roof:
-.. figure:: ../../images/technical/inceptionv3.png
-  :width: 100%
-  :alt: InceptionV3
+.. _fig_resnet:
+.. figure:: ../../images/technical/ResNet.png
+  :width: 70%
+  :alt: ResNet
 
-  InceptionV3
+  ResNet
 
 
 
