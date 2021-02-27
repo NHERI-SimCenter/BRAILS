@@ -260,20 +260,6 @@ class CityBuilder:
                 self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
                 self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
 
-            elif attr.lower()=='softstory2':
-                from brails.modules.SoftstoryDetector.SoftstoryDetector import SoftstoryDetector
-                # initialize a soft-story detector
-                ssModel = SoftstoryDetector()
-                # use the soft-story detector 
-                softstory_df = ssModel.detect(self.BIM['StreetView'].tolist())
-
-                softstory = softstory_df['prediction'].to_list()
-                softstoryProb = softstory_df['probability'].to_list()
-                self.BIM['softStory2'] = self.BIM.apply(lambda x: softstory[x['ID']], axis=1)
-                self.BIM['softStory2Prob'] = self.BIM.apply(lambda x: softstoryProb[x['ID']], axis=1)
-
-                self.BIM['StreetView2'] = self.BIM['StreetView'].astype(str) 
-                
             else:
                 assert False, "attributes can only contain roofshape, occupancy, softstory, elevated, numstories, year. Your % caused an error." % attr
 

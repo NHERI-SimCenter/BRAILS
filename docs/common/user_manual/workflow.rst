@@ -26,7 +26,7 @@ It is implemented in a class, CityBuilder.
 
 
 :attributes (list):     
-    A list of building attributes, such as [':ref:`roofshape<lbl-roofClassifier>`', ':ref:`occupancy<lbl-occupancyClassifier>`', ':ref:`softstory<lbl-softstoryClassifier>`', ':ref:`elevated<lbl-foundationElevationClassifier>`', ':ref:`story<lbl-nFloorDetector>`'], which are available in the current version.
+    A list of building attributes, such as [':ref:`roofshape<lbl-roofClassifier>`', ':ref:`occupancy<lbl-occupancyClassifier>`', ':ref:`softstory<lbl-softstoryClassifier>`', ':ref:`elevated<lbl-foundationElevationClassifier>`', ':ref:`year<lbl-yearClassifier>`', ':ref:`numstories<lbl-nFloorDetector>`'], which are available in the current version.
 :numBldg (int):         
     Number of buildings to generate.
 :random (bool):         
@@ -61,7 +61,8 @@ Available ones in the current version include:
 'occupancy', 
 'softstory',
 'elevated',
-'story']. 
+'year',
+'numstories']. 
 These attributes will be inferred from images using specific :ref:`modules <lbl-modules>`.
 
 * roofshape is the roof class, details can be found in :ref:`lbl-roofClassifier`.
@@ -72,7 +73,10 @@ These attributes will be inferred from images using specific :ref:`modules <lbl-
 
 * elevated is the foundation elevation attribute, details can be found in :ref:`lbl-foundationElevationClassifier`.
 
-* story is the number of stories, details can be found in :ref:`lbl-nFloorDetector`. 
+* year is the year built, details can be found in :ref:`lbl-yearClassifier`. 
+
+* numstories is the number of stories, details can be found in :ref:`lbl-nFloorDetector`. 
+
 
 
 .. _limitthenumber:
