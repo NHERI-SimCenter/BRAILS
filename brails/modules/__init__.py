@@ -43,5 +43,6 @@ from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier 
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
 from brails.modules.Foundation_Classification.FoundationClassifier import FoundationHeightClassifier
 from brails.modules.Year_Built_Classifier.YearBuiltClassifier import YearBuiltClassifier
+from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
 
 

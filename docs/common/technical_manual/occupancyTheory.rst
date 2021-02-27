@@ -25,7 +25,7 @@ Examples of different occupancy type is shown in :numref:`occupancyexample`.
            Multi-Family Building
 
 
-The classifier is also trained based on InceptionV3 :cite:`szegedy2016rethinking`.
+The classifier is also trained using :cite:`he2016deep`.
 
 
 

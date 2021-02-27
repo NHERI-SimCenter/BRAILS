@@ -5,7 +5,8 @@ Roof Classifier
 
 The Roof Classifier is validated here.
 
-An overall accuracy of 89.5% is obtained when the trained classifier is tested on a ground truth `dataset <http://doi.org/10.5281/zenodo.4520781>`_.
+The trained classifier is tested on a ground truth `dataset <http://doi.org/10.5281/zenodo.4520781>`_.
+Accuracy is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
 
 Run the following python script to test on this dataset.
 

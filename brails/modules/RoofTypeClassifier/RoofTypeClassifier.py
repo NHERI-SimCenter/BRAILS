@@ -32,7 +32,8 @@ class RoofClassifier(ImageClassifier):
             classNames = zoo['roofType']['classNames']
 
         if not modelName:
-            modelName = 'roof_classifier_v0.1'
+            #modelName = 'roof_classifier_v0.1'
+            modelName = 'rooftype_ResNet50_V0.2'
             print('A default roof type model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
