@@ -73,7 +73,7 @@ Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul T
 
 Contact
 ---------------------------
-Charles Wang, NHERI SimCenter, University of California, Berkeley, c_w@berkeley.edu 
+NHERI-SimCenter nheri-simcenter@berkeley.edu
 
 References
 ---------------------------
