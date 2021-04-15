@@ -159,6 +159,6 @@ The pdf is <a href="https://www.researchgate.net/publication/346957248_Machine_L
 This material is based upon work supported by the National Science Foundation under Grant No. 1612843.
 
 ## Contact
-Charles Wang, NHERI SimCenter, UC Berkeley, c_w@berkeley.edu
+NHERI-SimCenter nheri-simcenter@berkeley.edu
 
 
