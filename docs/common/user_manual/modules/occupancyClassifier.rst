@@ -19,7 +19,7 @@ A pretrained model is shipped with BRAILS. So you can use it directly without tr
 
 The first time you initialize this model, it will download the model from the internet to your local computer.
 
-The images used in the example can be downloaded from `here <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
+The images used in the example can be downloaded from `here <https://zenodo.org/record/4627958/files/image_examples.zip>`_.
 
 .. code-block:: none 
 
@@ -30,8 +30,9 @@ The images used in the example can be downloaded from `here <https://zenodo.org/
     occupancyModel = OccupancyClassifier()
 
     # define the paths of images in a list
-    imgs = ['image_examples/Occupancy/RES1/51563.png',
-            'image_examples/Occupancy/RES3/65883.png']
+    imgs = ['image_examples/Occupancy/RES1/36887.jpg',
+        'image_examples/Occupancy/RES3/37902.jpg',
+        'image_examples/Occupancy/COM/42915.jpg']
     
     # use the model to predict
     predictions = occupancyModel.predict(imgs)
@@ -41,21 +42,26 @@ The predictions look like this:
 
 .. code-block:: none 
 
-    Image :  image_examples/Occupancy/RES1/51563.png     Class : RES1 (66.41%)
-    Image :  image_examples/Occupancy/RES3/65883.png     Class : RES1 (49.51%)
-    Results written in file occupancy_preds.csv 
+    Image :  image_examples/Occupancy/RES1/36887.jpg     Class : RES1 (100.0%)
+    Image :  image_examples/Occupancy/RES3/37902.jpg     Class : RES3 (100.0%)
+    Image :  image_examples/Occupancy/COM/42915.jpg     Class : COM (100.0%)
+    Results written in file tmp/occupancy_preds.csv
 
 The images used in this example are:
 
 .. list-table::
 
-    * - .. figure:: ../../../images/image_examples/Occupancy/RES1/51563.png 
+    * - .. figure:: ../../../images/image_examples/Occupancy/RES1/36887.jpg
 
-           images/image_examples/Occupancy/RES1/51563.png Single-family Building
+           Predicted as Single-family Building
 
-      - .. figure:: ../../../images/image_examples/Occupancy/RES3/65883.png
+      - .. figure:: ../../../images/image_examples/Occupancy/RES3/37902.jpg
 
-           images/image_examples/Occupancy/RES3/65883.png Multi-family Building
+           Predicted as Multi-family Building
+
+      - .. figure:: ../../../images/image_examples/Occupancy/COM/42915.jpg
+
+           Predicted as Commercial Building
     
 
 Retrain the model

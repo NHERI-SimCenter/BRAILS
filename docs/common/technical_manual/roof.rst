@@ -5,8 +5,12 @@ Roof Classifier
 
 The Roof Classifier is validated here.
 
-The trained classifier is tested on a ground truth `dataset <http://doi.org/10.5281/zenodo.4520781>`_.
-Accuracy is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
+The trained classifier is tested on a ground truth dataset that can be downloaded from `here <http://doi.org/10.5281/zenodo.4520781>`_.
+We firstly obtained a set of randomly selected buildings in the United States with their roof type labelled on OpenStreetMap.
+We then downloaded the satellite images from Google Maps for each building. 
+The dataset contains roof images in three categories: 32 flat, 40 gabled, 52 hipped. 
+
+For this dataset, the prediction accuracy is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
 
 Run the following python script to test on this dataset.
 
