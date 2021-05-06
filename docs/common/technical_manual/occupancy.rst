@@ -3,10 +3,10 @@
 Occupancy Classifier
 ========================
 
-The trained classifier is tested on a ground truth dataset that can be downloaded form `here <https://zenodo.org/record/4553803/files/occupancy_validation_images.zip>`_.
+The trained classifier is tested on a ground truth dataset that can be downloaded from `here <https://zenodo.org/record/4553803/files/occupancy_validation_images.zip>`_.
 We firstly obtained a set of randomly selected buildings in the United States with occupancy tags found on OpenStreetMap.
 We then downloaded the street view images from Google Street View for each building. 
-The dataset contains 98 single family building (RES1), 97 multi-family building (RES3) and 98 commercial building (COM). 
+The dataset contains 98 single family buildings (RES1), 97 multi-family buildings (RES3) and 98 commercial buildings (COM). 
 The accuracy, precision, recall and F1 are all found to be 100% for this dataset.
 
 
