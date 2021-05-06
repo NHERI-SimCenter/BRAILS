@@ -7,6 +7,8 @@ The trained classifier is tested on a ground truth dataset that can be downloade
 We firstly obtained a set of randomly selected buildings in the United States with occupancy tags found on OpenStreetMap.
 We then downloaded the street view images from Google Street View for each building. 
 The dataset contains 98 single family buildings (RES1), 97 multi-family buildings (RES3) and 98 commercial buildings (COM). 
+Examples of these street view images can be found in :ref:`lbl-occupancyClassifier`. 
+
 The accuracy, precision, recall and F1 are all found to be 100% for this dataset.
 
 

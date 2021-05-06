@@ -9,6 +9,7 @@ The trained classifier is tested on a ground truth dataset that can be downloade
 We firstly obtained a set of randomly selected buildings in the United States with their roof type labelled on OpenStreetMap.
 We then downloaded the satellite images from Google Maps for each building. 
 The dataset contains roof images in three categories: 32 flat, 40 gabled, 52 hipped. 
+Examples of these street view images can be found in :ref:`roofTheory`. 
 
 For this dataset, the prediction accuracy is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
 
