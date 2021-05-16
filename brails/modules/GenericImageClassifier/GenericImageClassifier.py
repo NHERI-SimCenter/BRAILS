@@ -197,7 +197,7 @@ class ImageClassifier:
             return
 
     def train(self,baseModel='InceptionV3',lr1=0.0001,initial_epochs=10,
-                    fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,
+                    fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,color_mode='rgb',
                     horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,callbacks=[],plot=True):
         
         ## 1. Model zoo
@@ -240,7 +240,13 @@ class ImageClassifier:
             return
 
         # Load InceptionV3 model pre-trained on imagenet
-        base_model = modelDict[baseModel](input_shape=self.image_size + (3,), # self.image_size is defined in loadData
+        if color_mode=='rgb':
+            imgDim = 3
+        elif color_mode=='rgba':
+            imgDim = 4
+        else:
+            imgDim = 1
+        base_model = modelDict[baseModel](input_shape=self.image_size + (imgDim,), # self.image_size is defined in loadData
                                                        include_top=False,
                                                        weights='imagenet')
         # Freeze the base model
@@ -263,7 +269,7 @@ class ImageClassifier:
         if len(aug_list)>0: data_augmentation = tf.keras.Sequential(aug_list)
 
         # Pre-processing layer
-        inputs = tf.keras.Input(shape=self.image_size + (3,))
+        inputs = tf.keras.Input(shape=self.image_size + (imgDim,))
         if len(aug_list)>0: 
             x = data_augmentation(inputs) # augment
             x = preprocess_input(x) 
