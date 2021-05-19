@@ -1,6 +1,6 @@
 .. _occupancyTheory:
 
-Occupancy 
+Occupancy classifier
 ==========================
 
 Occupancy class is an important parameter for natural hazard risk analysis of a building.
@@ -12,7 +12,7 @@ multi-family buildings (RES3) and commercial buildings (COM). Data of other occu
 Examples of different occupancy type is shown in :numref:`occupancyexample`.
 
 .. _occupancyexample:
-.. list-table::
+.. list-table:: Examples of different occupancy types
 
     * - .. figure:: ../../images/technical/RES1.jpg
 
@@ -26,8 +26,16 @@ Examples of different occupancy type is shown in :numref:`occupancyexample`.
 
            Commercial Building
 
-The classifier is also trained using :cite:`he2016deep`.
+The classifier is trained using a 50-layer ResNet :cite:`he2016deep`, a widely used ConvNet architecture for images feature recognition. 
 
+Its architecture is shown in :numref:`fig_resnet`.
+
+.. _fig_resnet:
+.. figure:: ../../images/technical/ResNet.png
+  :width: 70%
+  :alt: ResNet
+
+  ResNet
 
 
 

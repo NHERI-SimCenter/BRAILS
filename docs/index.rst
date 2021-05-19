@@ -14,14 +14,15 @@ Building Recognition using AI at Large-Scale
 What is |brailsName|   
 ---------------------------
 
-The SimCenter tool - Building Recognition using AI at Large-Scale (BRAILS) is an AI-enabled software to assist regional-scale simulations. BRAILS utilizes machine learning (ML), deep learning (DL), and computer vision (CV) to extract information from satellite and street view images for being used in computational modeling and risk assessment of the built environment. It also provides the architecture, engineering, and construction professionals the insight and tools to more efficiently plan, design, construct, and manage buildings and infrastructure systems. 
+The SimCenter tool - Building Recognition using AI at Large-Scale (BRAILS) is an AI-enabled software to assist regional-scale simulations. BRAILS is a prototype development that utilizes machine learning (ML), deep learning (DL), and computer vision (CV) to extract information from satellite and street view images for being used in computational modeling and risk assessment of the built environment. It also provides the architecture, engineering, and construction professionals the insight and tools to more efficiently plan, design, construct, and manage buildings and infrastructure systems. 
 
 The released v2.0 is re-structured with modules for performing specific analyses of images. 
-The expanded module library enables BRAILS’ capability of predicting a larger spectrum of building attributes including occupancy class, roof type, foundation elevation, year built, soft-story. 
+The expanded module library enables BRAILS’ capability of predicting a broader spectrum of building attributes including occupancy class, roof type, foundation elevation, year built, soft-story. 
 
 The new release also features a streamlined workflow, CityBuilder, for automatic creation of regional-scale building inventories by fusing multiple sources of data, including OpenStreetMap, Microsoft Footprint Data, Google Maps, and extracting information from them using the modules.
 
-Examples of its application in natural hazard engineering include: The identification of roof shapes and foundation elevation to improve the damage and loss calculations for the hurricane workflow; The identification of soft-story buildings to improve models in earthquake workflows. 
+Examples of BRAILS' application in natural hazard engineering include: 
+The identification of roof shapes, occupancy type, number of stories, construction year, and foundation elevation to improve the damage and loss calculations for the hurricane workflow; The identification of soft-story buildings to improve models in earthquake workflows. 
 
 
 
@@ -68,8 +69,7 @@ Examples of its application in natural hazard engineering include: The identific
 How to cite
 ---------------------------
 
-Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu & Kincho H. Law. (2019, October 11). NHERI-SimCenter/BRAILS: v1.0.1 (Version v1.0.1). Zenodo. http://doi.org/10.5281/zenodo.3483208
-
+Charles Wang, Sascha Hornauer, Barbaros Cetiner, Yunhui Guo, Frank McKenna, Qian Yu, Stella X. Yu, Ertugrul Taciroglu, & Kincho H. Law. (2021, March 1). NHERI-SimCenter/BRAILS: Release v2.0.0 (Version v2.0.0). Zenodo. http://doi.org/10.5281/zenodo.4570554
 
 Contact
 ---------------------------

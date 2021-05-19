@@ -47,7 +47,7 @@ The predictions look like this:
     Image :  image_examples/Occupancy/COM/42915.jpg     Class : COM (100.0%)
     Results written in file tmp/occupancy_preds.csv
 
-The images used in this example are:
+Sample images used in this example are:
 
 .. list-table::
 
@@ -63,7 +63,13 @@ The images used in this example are:
 
            Predicted as Commercial Building
     
+.. note:: 
 
+   The classifier takes an image as the input and will always produce a prediction. 
+   Since the classifier is trained to classify only a specific category of images, 
+   its prediction is meaningful only if the input image belongs to the category the model is trained for.
+
+   
 Retrain the model
 ------------------
 

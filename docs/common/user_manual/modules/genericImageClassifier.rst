@@ -11,7 +11,7 @@ An image classifier will be built automatically based on the images provided.
 
 The classifier is then trained and saved locally.
 
-The trained classifier can be used for inference readily and can be shared with other users.
+The trained classifier can readily be used for inference readily and can be shared with other users.
 
 During the inference stage, the classifier takes a list of images as the input, and predicts the classes of the images. 
 
@@ -23,7 +23,7 @@ The image dataset for this example contains street view images categorized accor
 
 The dataset can be downloaded `here <https://zenodo.org/record/4416845/files/building_materials.zip>`_.
 
-When unzipped, the file gives the 'building_materials' which is a directory where you have your images for training:
+When unzipped, the file gives the 'building_materials' which is a directory that contains the images for training:
 
 
 .. code-block:: none 
@@ -69,9 +69,9 @@ Train the model
     materialClassifier.train(baseModel='InceptionV3', initial_epochs=50,fine_tune_epochs=200)
 
 
-It is better to run the above example on a GPU machine.
+It is recommended to run the above example on a GPU machine.
 
-You can choose from the following options for the baseModel key:
+The following ML model training options are available for selection as the baseModel key:
 
 .. code-block:: none 
 
@@ -108,7 +108,7 @@ Use the model
 ---------------------
 
 
-Now you can use the trained model to predict on given images.
+Now you can use the trained model to predict the (building materials) class for a given image.
 
 .. code-block:: none 
 
@@ -128,7 +128,11 @@ Now you can use the trained model to predict on given images.
 The predictions will be written in preds.csv under the current directory.
 
 
-
+.. note::
+    The generic image classifier is intended to illustrate the overall process of model training and prediction.
+    The classifier takes an image as the input and will always produce a prediction. 
+    Since the classifier is trained to classify only a specific category of images, its prediction is meaningful only if 
+    the input image belongs to the category the model is trained for.
 
 
 

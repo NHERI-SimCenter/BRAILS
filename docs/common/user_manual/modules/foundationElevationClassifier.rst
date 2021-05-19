@@ -10,7 +10,6 @@ The code in this package enables to see if a building is elevated on piles piers
 
 For classification, the path of a folder holding the images has to be supplied. The result will be a comma separated value file in that folder, listing the filenames, classification (1: elevated, 0: not elevated), and the confidence of the prediction.
 
-There is further optional code to improve the quality and speed of the classification. At the current moment, classification reaches an F1-score of 72% on a random test set, holding out 20% of the data.
 
 Use the module
 ---------------------------
@@ -67,6 +66,9 @@ The images used in this example are:
 
            image_examples/Foundation/NotElevated/d.jpg   Not Elevated
 
+This module is currently under active development and testing.
+Currently, for the data set used, classification reaches an F1-score of 72% on a random test set that holds 20% of the data.
+Further optional code to improve the quality and speed of the classification is available.
 More details about the training, modification, improvement of this module can be found `here <https://github.com/NHERI-SimCenter/BRAILS/tree/master/brails/modules/Foundation_Classification>`_.
 
 .. note:: 

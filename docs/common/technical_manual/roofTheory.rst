@@ -1,6 +1,6 @@
 .. _roofTheory:
 
-Roof type
+Roof type classifier
 ==========================
 
 Roof type is a crucial information for wind hazard analyses of buildings because it is 
@@ -9,7 +9,7 @@ a key attribute needed for consideration of wind effects on structures.
 There are three major roof types, as shown in :numref:`roof_types`, that are widely used in the world: flat, gabled, hipped. 
 
 .. _roof_types:
-.. list-table::
+.. list-table:: Roof prototypes
 
     * - .. figure:: ../../images/technical/flat.jpg
 
@@ -26,7 +26,7 @@ There are three major roof types, as shown in :numref:`roof_types`, that are wid
 Correspondingly, a typical satellite image of each roof type is shown in :numref:`roof_images`.
 
 .. _roof_images:
-.. list-table::
+.. list-table:: Example satellite images of different roof types
 
     * - .. figure:: ../../images/image_examples/Roof/flat/94.png 
 

@@ -47,7 +47,7 @@ The predictions look like this:
     Image :  image_examples/Roof/flat/94.png     Class : flat (97.68%)
     Results written in file roofType_preds.csv
 
-The images used in this example are:
+Sample images used in this example are:
 
 .. list-table::
 

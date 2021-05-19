@@ -44,7 +44,7 @@ The predictions look like this:
     Image :  image_examples/Softstory/Softstory/901.jpg     Class : softstory (96.31%)
     Results written in file softstory_preds.csv
 
-The images used in this example are:
+Sample images used in this example are:
 
 .. list-table::
 
@@ -55,6 +55,12 @@ The images used in this example are:
       - .. figure:: ../../../images/image_examples/Softstory/Softstory/901.jpg 
 
            image_examples/Softstory/Softstory/901.jpg Soft-story Building
+
+.. note:: 
+
+   The classifier takes an image as the input and will always produce a prediction. 
+   Since the classifier is trained to classify only a specific category of images, 
+   its prediction is meaningful only if the input image belongs to the category the model is trained for.
 
 
 Retrain the model
