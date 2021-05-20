@@ -266,7 +266,8 @@ class CityBuilder:
         # delete columns
         self.BIM.drop(columns=['Lat','Lon','index'], axis=1, inplace=True)
         for c in imageTypes:
-            self.BIM.drop(columns=[c], axis=1, inplace=True)
+            #self.BIM.drop(columns=[c], axis=1, inplace=True)
+            self.BIM[c] = self.BIM[c].astype(str)
 
         # save
         self.BIM.to_file(self.bimFile, driver='GeoJSON')

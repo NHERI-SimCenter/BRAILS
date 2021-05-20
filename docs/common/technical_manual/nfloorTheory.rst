@@ -3,6 +3,8 @@
 Number of Floors Detector
 ==============================
 
+The number of Floors Detector is implemented based on object detection - each floor of a building is detected as a target object.
+
 In general, all modern object detectors can be said to consist of three main components: 
 
 1. A backbone network that extracts features from the given image at different scales,

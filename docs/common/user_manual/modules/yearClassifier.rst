@@ -14,7 +14,7 @@ The code is optimized to extract suitable features from Google Streetview
 images to classify houses into decades. However, the code does not make 
 assumptions about the semantic meaning of the provided folders. They
 have to be consistent between the training, validation and test folders but
-can be decades or shorter or longer and even uneven timespans.
+can be categorized by decades, or short or longer than a decade, and any specified timespans.
 
 The predictions fall in 6 categories:
 ::
@@ -48,5 +48,11 @@ The first time you initialize this model, it will download the model from the in
     # use the model to predict
     predictions = model.predict(imgs)
 
-
+The module is currently under active development and testing.
 More details about the training, modification, improvement of this module can be found `here <https://github.com/NHERI-SimCenter/BRAILS/tree/master/brails/modules/Year_Built_Classifier>`_.
+
+.. note:: 
+
+   The classifier takes an image as the input and will always produce a prediction. 
+   Since the classifier is trained to classify only a specific category of images, 
+   its prediction is meaningful only if the input image belongs to the category the model is trained for.

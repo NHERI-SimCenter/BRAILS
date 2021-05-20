@@ -21,7 +21,7 @@ zoo = {
     } ,
     'occupancyClass':{
         'fileURL' : 'https://zenodo.org/record/4565557/files/occupancy_ResNet50_V0.1.h5',
-        'classNames' : ['RES3', 'COM' ,'RES1']
+        'classNames' : ['COM' ,'RES1','RES3']
     } ,
     'softstory':{
         'fileURL' : 'https://zenodo.org/record/4565554/files/softstory_ResNet50_V0.1.h5',

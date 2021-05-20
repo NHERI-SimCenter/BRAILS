@@ -1,5 +1,7 @@
+six
+h5py~=2.10.0
 matplotlib
-tensorflow
+tensorflow>=2.4.1
 numpy
 argparse
 pandas

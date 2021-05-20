@@ -4,7 +4,7 @@ Modules
 ================
 
 The BRAILS framework consists of a series of modules.
-They can be called by the workflow. Meanwhile, most of them can be used as a standalone function.
+The modules can be called and executed in a workflow. Each module can also be used as a standalone function.
 
 .. toctree::
    :maxdepth: 1

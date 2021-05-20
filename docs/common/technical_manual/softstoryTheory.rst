@@ -12,7 +12,7 @@ Identifying these buildings is vital in earthquake loss estimation and mitigatio
 One example of soft-story failure is shown in :numref:`ssexample`.
 
 .. _ssexample:
-.. list-table::
+.. list-table:: Soft-story failure
 
     * - .. figure:: ../../images/technical/ss.png
            :width: 60%
@@ -26,11 +26,15 @@ One example of soft-story failure is shown in :numref:`ssexample`.
 
 
 
-The classifier is also trained using :cite:`he2016deep`.
+The classifier is trained using a 50-layer ResNet :cite:`he2016deep`, a widely used ConvNet architecture for images feature recognition. 
 
+Its architecture is shown in :numref:`fig_resnet`.
 
+.. _fig_resnet:
+.. figure:: ../../images/technical/ResNet.png
+  :width: 70%
+  :alt: ResNet
 
-
-
+  ResNet
 
    
