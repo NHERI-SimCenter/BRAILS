@@ -31,16 +31,16 @@ If the test images are constrained such that a single building exists in each im
 
     * - .. figure:: ../../images/technical/occluded1.jpg
 
-            Label: Heavily occluded building facade
+            Heavily occluded building facade
 
       - .. figure:: ../../images/technical/multipleBuildings.jpg
 
-            Label: Closely spaced buildings: obscure prediction target 
+            Closely spaced buildings: obscure prediction target 
 
     * - .. figure:: ../../images/technical/persDistort.jpg
 
-            Label: Significant perspective distortions
+            Significant perspective distortions
 
       - .. figure:: ../../images/technical/occluded2.jpg
 
-            Label: Heavily occluded building facade
+            Heavily occluded building facade
