@@ -9,7 +9,7 @@ In developing the pre-trained models in BRAILS, training images are subjected to
 
 .. list-table::
 
-    * - .. figure:: /figures/allDataNotCleaned.png
+    * - .. figure:: figures/allDataNotCleaned.png
 
-      - .. figure:: /figures/allDataCleaned.png
+      - .. figure:: figures/allDataCleaned.png
 
