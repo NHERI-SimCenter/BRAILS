@@ -67,10 +67,10 @@ Run the following python script to test on this dataset.
 
 
 
-The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_occupancy2`.
+The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_occupancyv2`.
 
 
-.. _fig_confusion_occupancy2:
+.. _fig_confusion_occupancyv2:
 .. figure:: ../../images/technical/confusion_occupancy_v2.png
   :width: 40%
   :alt: Confusion matrix occupancy class
@@ -327,10 +327,10 @@ Examples of false predictions are shown in :numref:`atlantic_occupancy_examples_
 
 .. note::
     Bias in dataset is very common. 
-    This validation doesn't consider the possible bias in the labels (examples can be found in :numref:`njdep_occupancy_examples_bias`), which also negatively influences the accuracy. 
+    This validation doesn't consider the possible bias in the labels (examples can be found in :numref:`njdep_occupancy_examples_biasv2`), which also negatively influences the accuracy. 
 
 
-.. _njdep_occupancy_examples_bias:
+.. _njdep_occupancy_examples_biasv2:
 .. list-table:: Example of street view images: Bias in the labels
 
     * - .. figure:: ../../images/technical/njdep/RES1-COM/StreetViewx-74.544719x39.459546.png
