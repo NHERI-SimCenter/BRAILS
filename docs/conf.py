@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath('./sphinx_ext/'))
 # -- Project information -----------------------------------------------------
 
 project = 'BRAILS'
-copyright = '2020, NHERI SimCenter'
+copyright = '2021, NHERI SimCenter'
 author = 'Charles Wang'
 
 # The short X.Y version
@@ -52,7 +52,9 @@ extensions = [
     'rst2pdf.pdfbuilder',
     'sphinx.ext.mathjax'
 ]
-pdf_documents = [('index', u'rst2pdf', u'Sample rst2pdf doc', u'Your Name'),]
+pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'Charles Wang'),]
+
+mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
