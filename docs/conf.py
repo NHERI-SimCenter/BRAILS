@@ -53,6 +53,7 @@ extensions = [
     'sphinx.ext.mathjax'
 ]
 pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'Charles Wang'),]
+bibtex_bibfiles = ['common/technical_manual/references.bib']
 
 mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
