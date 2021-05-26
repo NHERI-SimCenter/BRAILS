@@ -34,7 +34,8 @@ class OccupancyClassifier(ImageClassifier):
 
         if not modelName:
             #modelName = 'occupancy_InceptionV3_V0.2'
-            modelName = 'occupancy_ResNet50_V0.1' # r
+            #modelName = 'occupancy_ResNet50_V0.1' # r
+            modelName = 'occupancy_ResNet50_V0.2' # r
             print('A default occupancy model will be used: {}.'.format(modelName))
 
         modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
