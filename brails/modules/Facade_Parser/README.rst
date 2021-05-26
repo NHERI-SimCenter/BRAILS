@@ -1,4 +1,4 @@
-Number of Floors Detector
+Facade Parser
 =================================================
 
 Purpose of the Module
