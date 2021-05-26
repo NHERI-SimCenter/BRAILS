@@ -52,19 +52,19 @@ The images used in this example are:
 
     * - .. figure:: ../../../images/image_examples/Foundation/Elevated/a.jpg
 
-           image_examples/Foundation/Elevated/a.jpg Elevated
+           Elevated
 
       - .. figure:: ../../../images/image_examples/Foundation/Elevated/b.jpg 
 
-           image_examples/Foundation/Elevated/b.jpg  Elevated
+           Elevated
 
       - .. figure:: ../../../images/image_examples/Foundation/NotElevated/c.jpg 
 
-           image_examples/Foundation/NotElevated/c.jpg   Not Elevated
+           Not Elevated
 
       - .. figure:: ../../../images/image_examples/Foundation/NotElevated/d.jpg 
 
-           image_examples/Foundation/NotElevated/d.jpg   Not Elevated
+           Not Elevated
 
 This module is currently under active development and testing.
 Currently, for the data set used, classification reaches an F1-score of 72% on a random test set that holds 20% of the data.
