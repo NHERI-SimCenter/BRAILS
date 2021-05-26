@@ -15,9 +15,9 @@ import numpy as np
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
-                          title='Confusion matrix',
+                          title='',
                           cmap=plt.cm.Blues,
-                          xlabel='True label',ylabel='Predicted label'):
+                          xlabel='True label',ylabel='Predicted label',prec=1,rotation=0):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -30,7 +30,8 @@ def plot_confusion_matrix(cm, classes,
     
     fig, ax = plt.subplots()
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
+    if title!='':
+        plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=0)
@@ -39,7 +40,7 @@ def plot_confusion_matrix(cm, classes,
 
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, round(cm[i, j],1),
+        plt.text(j, i, round(cm[i, j],prec),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
@@ -48,5 +49,5 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel(xlabel, fontsize=12)
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+    plt.setp(ax.get_xticklabels(), rotation=rotation, ha="right", rotation_mode="anchor")
     plt.show()
