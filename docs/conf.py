@@ -27,6 +27,8 @@ rst_prolog = """
 .. |tool github link| replace:: `BRAILS Github page`_
 .. _brails Github page: https://github.com/NHERI-SimCenter/BRAILS
 .. |tool version| replace:: 1.0
+.. |SimCenter| replace:: `SimCenter`_
+.. _SimCenter: https://simcenter.designsafe-ci.org/
 
 .. |EE-UQ short name| replace:: EE-UQ app
 .. |EE-UQ app link| replace:: `EE-UQ app`_

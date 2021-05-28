@@ -3,24 +3,56 @@
 Roof Shape Classifier
 ========================
 
-The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. 
+The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. It's purpose is to classify the roof shape of a building.  The roof classifier takes a list of satellite images as the input and will classify the roof type into one of three categories: gabled, hipped, and flat.
 
-The module is shipped with BRAILS, 
-so you don't have to install it standalone if you've installed BRAILS following the :ref:`lbl-install` instruction. 
+.. _roof_types:
+.. list-table:: Roof prototypes
 
-It takes a list of satellite images of roof tops as the input, and classify the roof types into three categories: gabled, hipped, and flat.
+    * - .. figure:: ../../../images/technical/flat.jpg
 
+           Flat
 
+      - .. figure:: ../../../images/technical/gable.jpg
 
+           Gabled
+      - .. figure:: ../../../images/technical/hip.jpg
+
+           Hipped
+
+.. note::
+
+   The Roof shape classifier will only identify one roof type per image. As a consequence, the image you provide should only contain the building whose image is to be determined.
+
+.. warning:: 
+
+   The classifier takes an image as the input and will always produce a prediction. 
+   Since the classifier is trained to classify only a specific category of images, 
+   its prediction is meaningful only if the input image belongs to the category the model is trained for.
+
+   
 Use the module
------------------
+--------------
 
-A pretrained model is shipped with BRAILS. So you can use it directly without training your own model.
+Suppose you had a number of images in a folder named image_examples/Roof.
 
-The first time you initialize this model, it will download the model from the internet to your local computer.
 
-The images used in the example can be downloaded from `here <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
+.. list-table::
 
+    * - .. figure:: ../../../images/image_examples/Roof/gabled/76.png
+
+           image_examples/Roof/gabled/76.png Gabled
+
+      - .. figure:: ../../../images/image_examples/Roof/hipped/54.png 
+
+           image_examples/Roof/hipped/54.png  Hipped
+
+      - .. figure:: ../../../images/image_examples/Roof/flat/94.png 
+
+           image_examples/Roof/flat/94.png  Flat
+
+
+The following is a script you would create to use of the RoofClassifier to predict the roof shapes for these images:
+		   
 .. code-block:: none 
 
     # import the module
@@ -38,50 +70,52 @@ The images used in the example can be downloaded from `here <https://zenodo.org/
     predictions = roofModel.predict(imgs)
 
 
-The predictions look like this:
+The predictions obtained when the script runs will look like following:
 
 .. code-block:: none 
 
     Image :  image_examples/Roof/gabled/76.png     Class : gabled (83.21%)
     Image :  image_examples/Roof/hipped/54.png     Class : hipped (100.0%)
-    Image :  image_examples/Roof/flat/94.png     Class : flat (97.68%)
+    Image :  image_examples/Roof/flat/94.png       Class : flat (97.68%)
     Results written in file roofType_preds.csv
 
-Sample images used in this example are:
 
-.. list-table::
+.. note::
 
-    * - .. figure:: ../../../images/image_examples/Roof/gabled/76.png
+   #. The reference to a pretrained model is shipped with BRAILS and the first time you use this module, it will download that model from the internet to your local computer. This will allow you to use it directly without training your own model.
 
-           image_examples/Roof/gabled/76.png Gabled
+   #. The current pretrained model was trained with CHARLES XX labeled images utilizing the CHARLES 'ResNet50' training option. To perform the training a number of buildings with the roof classifications desired were identified utilizing OpenStreetMaps. Satellite images for those buildings were obtained using Google Maps, and these images were placed into one of three folders as discussed in :ref:`lbl-genericImageClassifier` module. Prior to trainiing thye model, the images in the folders were reviewed to ensure they contained an image of a roof and were of the correct roof shape.
 
-      - .. figure:: ../../../images/image_examples/Roof/hipped/54.png 
+   #. As mentioned in the introduction, SimCenter is constantly updating these trained models. The simplest way to get the latest model is to update your BRAILS installation. This can be done by issuing the following in a terminal/powershell window:
+   
+      .. code-block:: none 
 
-           image_examples/Roof/hipped/54.png  Hipped
+	  pip install -U BRAILS --upgrade
 
-      - .. figure:: ../../../images/image_examples/Roof/flat/94.png 
-
-           image_examples/Roof/flat/94.png  Flat
-
-
-
-.. note:: 
-
-   The classifier takes an image as the input and will always produce a prediction. 
-   Since the classifier is trained to classify only a specific category of images, 
-   its prediction is meaningful only if the input image belongs to the category the model is trained for.
-
-
+   #. The images used in the example can be downloaded from `Zenodo <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
 
 Retrain the model
 ------------------
 
-You can retrain the existing model with your own data.
+You can retrain the existing model with your own data. You would place each of your labeled images into one three seperate folders
+
+.. code-block:: none 
+
+    my_roof_shapes
+    │── flat
+    │       └── *.png
+    │── hipped
+    |      └── *.png
+    └── gabled
+           └── *.png
+
+
+Then you would create a python script as shown below and run finally run it to train the model.
 
 .. code-block:: none 
 
     # Load images from a folder
-    roofModel.loadData('folder-of-images')
+    roofModel.loadData('my_roof_shapes')
 
     # Re-train it for only 1 epoch for this demo. You can increase it.
     roofModel.retrain(initial_epochs=1)
@@ -92,3 +126,21 @@ You can retrain the existing model with your own data.
     # Save the re-trained model
     roofModel.save('myCoolNewModelv0.1')
 
+
+To use your newly trained model with the Roof Shape classifier, you would include in the RoofClassifier's constructor the name of the trained model as shown in the following script.
+
+.. code-block:: none 
+
+    # import the module
+    from brails.modules import RoofClassifier
+
+    # initialize a roof classifier
+    roofModel = RoofClassifier('myCoolNewModelv0.1')
+
+    # define the paths of images in a list
+    imgs = ['image_examples/Roof/gabled/76.png',
+            'image_examples/Roof/hipped/54.png',
+            'image_examples/Roof/flat/94.png']
+    
+    # use the model to predict
+    predictions = roofModel.predict(imgs)
