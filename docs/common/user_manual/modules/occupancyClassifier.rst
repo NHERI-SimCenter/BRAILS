@@ -11,6 +11,17 @@ so you don't have to install it standalone if you've installed BRAILS following 
 It takes a list of street view images of residential buildings as the input, and classify the buildings into three categories: 
 RES1 (single family building), RES3 (multi-family building), COM(Commercial building).
 
+.. note::
+
+    #. The reference to a pretrained model is shipped with BRAILS and the first time you use this module, it will download that model from the internet to your local computer. This will allow you to use it directly without training your own model.
+ 
+    #. The current pretrained model was trained with 15,743 labeled images utilizing ResNet50. To perform the training a number of buildings with the occupancy classifications desired were identified from OpenStreetMaps and a dataset provided by New Jersey Department of Environmental Protection (NJDEP), including 7,868 RES1 (2,868 'detached' from OpenStreetMap + 4,999 'RES1' from NJDEP), 5,074 RES3 (2,207 'apartment' from OpenStreetMap and 2,867 'RES3' from NJDEP), and 2,804 COM (2,418 'commercial' from OpenStreetMap + 386 'COM' from NJDEP), respectively. Satellite images for those buildings were obtained using Google Maps, and these images were placed into one of three folders as discussed in :ref:`lbl-genericImageClassifier` module. 
+ 
+    #. As mentioned in the introduction, SimCenter is constantly updating these trained models. The simplest way to get the latest model is to update your BRAILS installation. This can be done by issuing the following in a terminal/powershell window:
+    
+       .. code-block:: none 
+ 
+       pip install -U BRAILS --upgrade
 
 Use the module
 -----------------
