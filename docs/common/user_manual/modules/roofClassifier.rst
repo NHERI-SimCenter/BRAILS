@@ -1,9 +1,9 @@
 .. _lbl-roofClassifier:
 
 Roof Shape Classifier
-========================
+=====================
 
-The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. It's purpose is to classify the roof shape of a building.  The roof classifier takes a list of satellite images as the input and will classify the roof type into one of three categories: gabled, hipped, and flat.
+The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClassifier` module. It's purpose is to classify the roof shape of a building.  The roof classifier takes a list of satellite images as the input and will classify the roof type into one of three categories: gabled, hipped, and flat. 
 
 .. _roof_types:
 .. list-table:: Roof prototypes
@@ -21,7 +21,9 @@ The Roof Shape Classifier is a module built upon the :ref:`lbl-genericImageClass
 
 .. note::
 
-   The Roof shape classifier will only identify one roof type per image. As a consequence, the image you provide should only contain the building whose image is to be determined.
+   #. The Roof shape classifier will only identify one roof type per image. As a consequence, the image you provide should only contain the building whose image is to be determined.
+
+   #. Many roof shapes found these days are classified as `complex`.  The categories `hipped`, `flat`, and `gabled` were chosen as these are the classifications used in Hazus.
 
 .. warning:: 
 
@@ -84,7 +86,7 @@ The predictions obtained when the script runs will look like following:
 
    #. The reference to a pretrained model is shipped with BRAILS and the first time you use this module, it will download that model from the internet to your local computer. This will allow you to use it directly without training your own model.
 
-   #. The current pretrained model was trained with CHARLES XX labeled images utilizing the CHARLES 'ResNet50' training option. To perform the training a number of buildings with the roof classifications desired were identified utilizing OpenStreetMaps. Satellite images for those buildings were obtained using Google Maps, and these images were placed into one of three folders as discussed in :ref:`lbl-genericImageClassifier` module. Prior to trainiing thye model, the images in the folders were reviewed to ensure they contained an image of a roof and were of the correct roof shape.
+   #. The current pretrained model was trained with CHARLES XX labeled images utilizing the CHARLES 'ResNet50' training option. To perform the training a number of buildings with the roof classifications desired were identified utilizing OpenStreetMaps. CHARLES WHAT WERE THE LABELS IN OPENSTREETMAP. Satellite images for those buildings were obtained using Google Maps, and these images were placed into one of three folders as discussed in :ref:`lbl-genericImageClassifier` module. Prior to trainiing the model, the images in the folders were reviewed to ensure they contained an image of a roof and were of the correct roof shape. CHARLES WERE THERE ANY NOISY IMAGES PRESENT TO IMPROVE ACCURACY FOR IMAGES FROM THE WILD.
 
    #. As mentioned in the introduction, SimCenter is constantly updating these trained models. The simplest way to get the latest model is to update your BRAILS installation. This can be done by issuing the following in a terminal/powershell window:
    
@@ -95,9 +97,9 @@ The predictions obtained when the script runs will look like following:
    #. The images used in the example can be downloaded from `Zenodo <https://zenodo.org/record/4562949/files/image_examples.zip>`_.
 
 Retrain the model
-------------------
+-----------------
 
-You can retrain the existing model with your own data. You would place each of your labeled images into one three seperate folders
+You can retrain the existing model with your own data. To do so, you would place each of your labeled images (images of type .png) into one three seperate folders.
 
 .. code-block:: none 
 
@@ -110,7 +112,7 @@ You can retrain the existing model with your own data. You would place each of y
            └── *.png
 
 
-Then you would create a python script as shown below and run finally run it to train the model.
+Then you would create a python script as shown below and run finally run that script to train the model.
 
 .. code-block:: none 
 
