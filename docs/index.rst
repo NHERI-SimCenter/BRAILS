@@ -39,6 +39,7 @@ The software framework Building Recognition using AI at Large-Scale, |app|, is  
 
    common/technical_manual/theory
    common/technical_manual/vnv
+   common/technical_manual/understand
 
 
 .. _lbl-developer-manual:
