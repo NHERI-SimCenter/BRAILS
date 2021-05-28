@@ -11,10 +11,35 @@ import torchvision.models.segmentation as models
 from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 from torch.utils.data import DataLoader
-from sklearn.metrics import f1_score, roc_auc_score
+#from sklearn.metrics import f1_score, roc_auc_score
 import numpy as np
 from tqdm import tqdm
 import argparse
+
+def get_args():
+    parser = argparse.ArgumentParser('Pytorch-based segmentation model for facade parsing')
+    parser.add_argument('--data_path', type=str, default='dataset',
+                        help='Path for the root folder of dataset')
+    parser.add_argument('--architecture', type=str, default="deeplabv3_resnet101",
+                        help='Available options: fcn_resnet50, fcn_resnet101, deeplabv3_resnet50, deeplabv3_resnet101')
+    parser.add_argument('--num_workers', type=int, default=0,
+                        help='Number of workers of Dataloader')
+    parser.add_argument('--batch_size', type=int, default=2,
+                        help='The number of images per batch')
+    parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate')
+    parser.add_argument('--optim', type=str, default='adam',
+                        help='Select optimizer for training, '
+                             'Use \'adam\' until the last stage'
+                             'then switch to \'sgd\'')
+    parser.add_argument('--num_epochs', type=int, default=25, help='Number of training epochs')
+
+    args = parser.parse_args()
+    return args
+
+def boolean_string(s):
+    if s not in {'False', 'True'}:
+        raise ValueError('Not a valid boolean entry')
+    return s == 'True'
 
 class Dataset(VisionDataset):
     def __init__(self,
@@ -47,49 +72,23 @@ class Dataset(VisionDataset):
             sample = {"image": image, "mask": mask}
             if self.transforms:
                 sample["image"] = self.transforms(sample["image"])
-                sample["mask"] = self.transforms(sample["mask"])
+                sample["mask"] = torch.tensor(np.array(sample["mask"],dtype=np.uint8), dtype=torch.long)
             return sample
-
-def get_args():
-    parser = argparse.ArgumentParser('Pytorch-based segmentation model for building height prediction')
-    parser.add_argument('--architecture', type=str, default="deeplabv3_resnet101",
-                        help='Available options: fcn_resnet50, fcn_resnet101, deeplabv3_resnet50, deeplabv3_resnet101')
-    parser.add_argument('--num_workers', type=int, default=0,
-                        help='Number of workers of Dataloader')
-    parser.add_argument('--batch_size', type=int, default=2,
-                        help='The number of images per batch')
-    parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate')
-    parser.add_argument('--optim', type=str, default='adam',
-                        help='Select optimizer for training, '
-                             'Use \'adam\' until the last stage'
-                             'then switch to \'sgd\'')
-    parser.add_argument('--num_epochs', type=int, default=25, help='Number of training epochs')
-    parser.add_argument('--data_path', type=str, default='dataset',
-                        help='Path for the root folder of dataset')
-
-
-    args = parser.parse_args()
-    return args
-
-def boolean_string(s):
-    if s not in {'False', 'True'}:
-        raise ValueError('Not a valid boolean entry')
-    return s == 'True'
 
 def train(opt):
     # Specify the Model Architecture
     if opt.architecture.lower()=="deeplabv3_resnet50":
         model = models.deeplabv3_resnet50(pretrained=True,progress=True)
-        model.classifier = models.deeplabv3.DeepLabHead(2048,1)
-    elif opt.architecture.lower()=="deeplabv3_resnet101":    
+        model.classifier = models.deeplabv3.DeepLabHead(2048,4)
+    elif  opt.architecture.lower()=="deeplabv3_resnet101":    
         model = models.deeplabv3_resnet101(pretrained=True,progress=True)
-        model.classifier = models.deeplabv3.DeepLabHead(2048,1)
-    elif opt.architecture.lower()=="fcn_resnet50":    
+        model.classifier = models.deeplabv3.DeepLabHead(2048,4)
+    elif  opt.architecture.lower()=="fcn_resnet50":    
         model = models.fcn_resnet50(pretrained=True,progress=True)
-        model.classifier = models.fcn.FCNHead(2048,1)
-    elif opt.architecture.lower()=="fcn_resnet101":    
+        model.classifier = models.fcn.FCNHead(2048,4)
+    elif  opt.architecture.lower()=="fcn_resnet101":    
         model = models.fcn_resnet101(pretrained=True,progress=True)
-        model.classifier = models.fcn.FCNHead(2048,1)
+        model.classifier = models.fcn.FCNHead(2048,4)
     
     # Define Optimizer    
     if opt.optim.lower()=="adam":
@@ -98,10 +97,13 @@ def train(opt):
         modelOptim = torch.optim.SGD(model.parameters(), lr = opt.lr)
         
     # Define Loss Function 
-    lossFnc = torch.nn.MSELoss(reduction="mean")
+    lossFnc = torch.nn.CrossEntropyLoss()
     
     # Set Training and Validation Datasets
-    dataTransforms = transforms.Compose([transforms.ToTensor()])
+    dataTransforms = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
     
     segdata = {
         x: Dataset(root=Path(opt.data_path) / x,
@@ -124,7 +126,8 @@ def train(opt):
     model.to(device)
     
     # Create and Initialize Training Log File
-    perfMetrics = {"f1-score": f1_score, "auroc": roc_auc_score}
+    #perfMetrics = {"f1-score": f1_score, "auroc": roc_auc_score}
+    perfMetrics = {"f1-score": f1_score}
     fieldnames = ['epoch', 'train_loss', 'valid_loss'] + \
         [f'train_{m}' for m in perfMetrics.keys()] + \
         [f'valid_{m}' for m in perfMetrics.keys()]
@@ -132,6 +135,7 @@ def train(opt):
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
     
+    #model = torch.load('trainedModel25.pth')
     # Train
     startTimer = time.time()
     for epoch in range(1,opt.num_epochs+1):
@@ -157,11 +161,19 @@ def train(opt):
                     loss = lossFnc(outputs['out'], masks)
                     y_pred = outputs['out'].data.cpu().numpy().ravel()
                     y_true = masks.data.cpu().numpy().ravel()
+    
                     for name, metric in perfMetrics.items():
                         if name == 'f1-score':
                             # Use a classification threshold of 0.1
-                            batchsummary[f'{phase}_{name}'].append(
-                                metric(y_true > 0, y_pred > 0.1))
+                            f1Classes = np.zeros(4)
+                            nPixels = np.zeros(4)
+                            for classID in range(4):
+                                f1Classes[classID]  = metric(y_true==classID,y_pred[classID*len(y_true):(classID+1)*len(y_true)]>0.1)
+                                nPixels[classID] = np.count_nonzero(y_true==classID)
+                            f1weights = nPixels/(np.sum(nPixels))
+                            f1 = np.matmul(f1Classes,f1weights)
+                            batchsummary[f'{phase}_{name}'].append(f1)
+                              
                         else:
                             batchsummary[f'{phase}_{name}'].append(
                                 metric(y_true.astype('uint8'), y_pred))
@@ -178,9 +190,9 @@ def train(opt):
         print((f'train loss: {batchsummary["train_loss"]: .4f}, '
                f'valid loss: {batchsummary["valid_loss"]: .4f}, '
                f'train f1-score: {batchsummary["train_f1-score"]: .4f}, '
-               f'valid f1-score: {batchsummary["valid_f1-score"]: .4f}, '
-               f'train auroc: {batchsummary["train_auroc"]: .4f}, '
-               f'valid auroc: {batchsummary["valid_auroc"]: .4f}, '))
+               f'valid f1-score: {batchsummary["valid_f1-score"]: .4f}, '))
+               #f'train auroc: {batchsummary["train_auroc"]: .4f}, '
+               #f'valid auroc: {batchsummary["valid_auroc"]: .4f}, '))
         with open(os.path.join('log.csv'), 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow(batchsummary)
@@ -197,9 +209,6 @@ def train(opt):
     
     # load best model weights
     model.load_state_dict(best_model_wts)
-    
-    # Save the Trained Model
-    torch.save(model.state_dict(),"trainedModel.pth")
     
 if __name__ == '__main__':
     opt = get_args()
