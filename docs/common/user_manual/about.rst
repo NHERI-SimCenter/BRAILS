@@ -15,7 +15,7 @@ The |app| software framework provides applications that will first gather and th
 
 ..  note::
 
-    DISCLAIMER: The modules are implemented to demonstrate the potentials of ML methods to help establish building attributes and inventories for regional scale simulation. The modules are tested extensively using the data sets as reported herein for validations. How these modules generalize to new and unseen data from different geographical locations depends on how similar they are to the training data. Generalization of machine learning models remains an active research area. Users should exercise cautions when the modules are used beyond their intended purposes and trained model ability.
+    DISCLAIMER: The modules are implemented to demonstrate the potentials of ML methods to help establish building attributes and inventories for regional scale simulation. The modules are tested extensively using the data sets as reported herein for validations. How these modules generalize to new and unseen data from different geographical locations depends on how similar they are to the training data. User are referred to :ref:`lbl-understand` for examples on the data-generalization topic. Generalization of machine learning models remains an active research area. Users should exercise cautions when the modules are used beyond their intended purposes and trained model ability.
 
 
 
