@@ -62,10 +62,10 @@ In developing the pre-trained models in BRAILS, training images are subjected to
 
 Data Suitable for Inference
 --------------------------------
-For obtaining meaningful results from the models bundled with BRAILS, using images satisfy the following criteria area essential.
+For obtaining meaningful results from the models bundled with BRAILS, use of images that satisfy the following criteria is essential.
 
 1. Images should contain buildings with little to no obstructions. 
 2. If possible, images should contain a single building only.
-3. The types of buildings that the predictions are performed on should not be substantially different in appearance from the buildings within the regions used to train the pretrained models.
+3. The types of buildings that the predictions are performed on should not be substantially different in appearance from the building inventories used to establish the pretrained models.
 
-If the images used to predict building attributes meet all three criteria, attribute predictions at the reported accuracy will be more achievable.
+If the images used to predict building attributes meet all three criteria, attribute predictions at the accuracy levels comparable to what is reported for each module will be more achievable.
