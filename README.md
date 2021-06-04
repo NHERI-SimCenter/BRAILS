@@ -123,7 +123,7 @@ The definitions of the parameters in this example can be found [here](https://nh
 
 The result BIM is a geopandas dataframe:
 
-index geometry	                                        |   ID	|   roofShape	|   roofShapeProb	|   softStory	|softStoryProb	|occupancy	|occupancyProb
+index geometry	                                        |   ID	|   softStory	|   softStoryProb	|   occupancy	|occupancyProb	|roofShape	|roofShapeProb	
 --------------------------------------------------------|-------|---------------|-------------------|---------------|---------------|-----------|------------
 0	POLYGON ((-93.21912 30.22786, -93.21892 30.227...	|   0	|   softstory	|   0.761644	    |   COM	    |    0.878260	|    flat	|    0.999769 
 1	POLYGON ((-93.21517 30.22412, -93.21491 30.224...	|   1	|   softstory	|   0.500260	    |   RES1	    |    0.549517	|    hipped	|    0.961910 
