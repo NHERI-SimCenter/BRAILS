@@ -5,7 +5,7 @@ Number of Floors Detector
 
 The module is bundled with BRAILS, hence its use does not require a separate installation if BRAILS was installed following the :ref:`lbl-install` instructions. 
 
-This module enables automated detection of number of floors in a building from image input. It takes the directory for an image or folder of images as input and writes the number of floor detections for each images into a CSV file.
+This module enables automated detection of number of floors in a building from image input. It takes the directory for an image or folder of images as input and writes the number of floor detections for each image into a CSV file. As the module is developed for performing predictions on only street-level building imagery, meaningful model outputs for other classes of images shall not be expected.
 
 Use the module
 -----------------
