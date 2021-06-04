@@ -75,7 +75,8 @@ def download(urls):
 
                     if os.path.getsize(picname)/1024 < 9: 
                         #print(urlStreet)
-                        print(f"empty image from API: ", addr)
+                        #print(f"empty image from API: ", addr)
+                        pass
                         #exit() # empty image from API
 
         else:
@@ -115,7 +116,7 @@ def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView'
         urlStreet = baseurl_streetview.format(lat=lat,lon=lon,fov=fov,pitch=pitch)
         cats = imageTypes
         reDownload = 1 if reDownloadImgs else 0
-        urls.append([urlTop,urlStreet,lon,lat,cats,imgDir,reDownload])
+        urls.append([urlTop,urlStreet,[o.x, o.y],cats,imgDir,reDownload])
 
     #print('shuffling...')
     #random.shuffle(urls)

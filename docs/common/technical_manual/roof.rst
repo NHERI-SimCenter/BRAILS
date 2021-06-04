@@ -12,11 +12,29 @@ Dataset 1: Compare with OpenStreetMap Labels
 The trained classifier is first tested on a ground truth dataset that can be downloaded from `here <http://doi.org/10.5281/zenodo.4520781>`_.
 We firstly obtained a set of randomly selected buildings in the United States with their roof type labelled on OpenStreetMap.
 We then downloaded the satellite images from Google Maps for each building. 
-We removed images in which we didn't clearly see there is a roof. 
+We removed images in which we didn't clearly see there is a roof, examples are shown in :numref:`random_roof_empty`.
+
+.. _random_roof_empty:
+.. list-table:: Images removed from the test dataset
+
+    * - .. figure:: ../../images/technical/bad/TopViewx-76.78538744x38.978670699999995.png
+
+
+
+      - .. figure:: ../../images/technical/bad/TopViewx-76.84497884x38.71229606.png
+
+
+
+      - .. figure:: ../../images/technical/bad/TopViewx-76.93814628x39.06148106.png
+
+
+
+      - .. figure:: ../../images/technical/bad/TopViewx-76.86937465999999x39.10108044.png
+
+
+
 The resulting dataset contains roof images in three categories: 32 flat, 40 gabled, 52 hipped. 
 Examples of these satellite images can be found in :ref:`roofTheory`. 
-
-For this dataset, the prediction accuracy is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
 
 Run the following python script to test on this dataset.
 
@@ -67,9 +85,9 @@ Run the following python script to test on this dataset.
     plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix',normalize=True,xlabel='Labels',ylabel='Predictions')
 
 
+The prediction accuracy on this dataset is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.
 
-
-The confusion matrix tested on this dataset is shown in :numref:`fig_confusion_roof`.
+The confusion matrix for this validation is shown in :numref:`fig_confusion_roof`.
 
 .. _fig_confusion_roof:
 .. figure:: ../../images/technical/confusion_roof.png
@@ -408,6 +426,28 @@ The accuracy for three classes are:
 * gabled: Accuracy = 0.2, F1 = 0.3
 * hipped: Accuracy = 0.9, F1 = 0.6
 * flat:   Accuracy = 0.8, F1 = 0.3
+
+
+Examples of false predictions are shown in :numref:`irma_roof_examples_false`.
+
+.. _irma_roof_examples_false:
+.. list-table:: Examples of false predictions
+
+    * - .. figure:: ../../images/technical/irma/false/gable-flat/TopViewx35-Blue-Water-Drive-Key-West-Monroe-FL-.png
+
+            Label: Gabled, BRAILS Prediction: Flat
+
+      - .. figure:: ../../images/technical/irma/false/gable-flat/TopViewx43-Blue-Water-Dr-Key-West-Monroe-FL-.png
+
+            Label: Gabled, BRAILS Prediction: Flat
+
+      - .. figure:: ../../images/technical/irma/false/gable-hip/TopViewx13-Boulder-Dr-Key-West-Monroe-FL-.png
+
+            Label: Gabled, BRAILS Prediction: Hipped
+
+      - .. figure:: ../../images/technical/irma/false/gable-hip/TopViewx208-North-Storter-Avenue-Everglades-City-Collier-County-Florida-.png
+
+            Label: Gabled, BRAILS Prediction: Hipped
 
 It shows the accuracy for the gable is not as high as the other classes.
 A further look into the images we found the following facts:
