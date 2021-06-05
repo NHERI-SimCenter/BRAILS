@@ -3,7 +3,7 @@
 Number of Floors Detector
 ==============================
 
-The number of Floors Detector is implemented based on object detection - each floor of a building is detected as a target object.
+The Number of Floors Detector uses object detection for locating floors of a building in an image input.
 
 In general, all modern object detectors can be said to consist of three main components: 
 
@@ -22,7 +22,7 @@ EfficientDet models use EfficientNets pretrained on ImageNet for their backbone 
    A high-level representation of the EfficientDet architecture
 
 Remarkable performance gains can be attained in image classification by jointly scaling up all dimensions of neural network width, depth, and input resolution, as noted in the study by `Tan and Le
-<https://arxiv.org/abs/1905.11946>`_. Inspired by this work, EfficienDet utilizes a new compound scaling method for object detection that jointly increases all dimensions of the backbone network, BiFPN, class/box network, and input image resolution, using a simple compound coefficient, φ. A total of 8 compounding levels are defined for EffcienDet, i.e., φ = 0 to 8, with EfficientDet-D0 being the simplest and EfficientDet-D8 being the most complex of the network architectures. 
+<https://arxiv.org/abs/1905.11946>`_. Inspired by this work, EfficienDet utilizes a new compound scaling method for object detection that jointly increases all dimensions of the backbone network, BiFPN, class/box network, and input image resolution, using a simple compound coefficient, φ. A total of 8 compounding levels are defined for EffcienDet, i.e., φ = 0 to 7, with EfficientDet-D0 being the simplest and EfficientDet-D7 being the most complex of the network architectures. 
 
 As shown in :numref:`fig_EfficientDetPerf`, at the time this work was published, EfficientDet object detection algorithms attained the state-of-the-art performance on the COCO dataset. Also suggested in Figure 3 is the more complex the network architecture is, the higher the detection performance will be. From a practical standpoint, however, architecture selection will depend on the availability of computational resources. For example, to train a model on an architecture with a compound coefficient higher than 4, a GPU with a memory of more than 11 GB will almost always be required.
 
