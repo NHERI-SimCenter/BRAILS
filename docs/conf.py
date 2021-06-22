@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath('./sphinx_ext/'))
 # -- Project information -----------------------------------------------------
 
 project = 'BRAILS'
-copyright = '2020, NHERI SimCenter'
+copyright = '2021, NHERI SimCenter'
 author = 'Charles Wang'
 
 # The short X.Y version
@@ -27,6 +27,8 @@ rst_prolog = """
 .. |tool github link| replace:: `BRAILS Github page`_
 .. _brails Github page: https://github.com/NHERI-SimCenter/BRAILS
 .. |tool version| replace:: 1.0
+.. |SimCenter| replace:: `SimCenter`_
+.. _SimCenter: https://simcenter.designsafe-ci.org/
 
 .. |EE-UQ short name| replace:: EE-UQ app
 .. |EE-UQ app link| replace:: `EE-UQ app`_
@@ -52,7 +54,10 @@ extensions = [
     'rst2pdf.pdfbuilder',
     'sphinx.ext.mathjax'
 ]
-pdf_documents = [('index', u'rst2pdf', u'Sample rst2pdf doc', u'Your Name'),]
+pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'Charles Wang'),]
+bibtex_bibfiles = ['common/technical_manual/references.bib']
+
+mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

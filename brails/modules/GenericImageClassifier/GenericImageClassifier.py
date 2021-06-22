@@ -69,9 +69,9 @@ class ImageClassifier:
             print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
 
 
-    def predictOne(self,imagePath):
+    def predictOne(self,imagePath,color_mode='rgb'):
 
-        img = image.load_img(imagePath, target_size=(256, 256))
+        img = image.load_img(imagePath, color_mode=color_mode, target_size=(256, 256))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         prediction = self.model.predict(x)
@@ -88,7 +88,7 @@ class ImageClassifier:
             print("Image :  {}     Class : {} ({}%)".format(imagePath, prediction, str(round(prob*100,2)))) 
             return [imagePath,prediction,prob]
 
-    def predictMulti(self,imagePathList):
+    def predictMulti(self,imagePathList,color_mode='rgb'):
         predictions = []
         probs = []
         for imagePath in imagePathList:
@@ -106,7 +106,7 @@ class ImageClassifier:
                 if self.classNames: prediction = self.classNames[prediction]
                 predictions.append(prediction)
             '''
-            img = image.load_img(imagePath, target_size=(256, 256))
+            img = image.load_img(imagePath, color_mode=color_mode, target_size=(256, 256))
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
             prediction = self.model.predict(x)
@@ -128,15 +128,15 @@ class ImageClassifier:
 
         return df
     
-    def predict(self,image):
-        if type(image) is list: pred = self.predictMulti(image)
-        elif type(image) is str: pred = self.predictOne(image)
+    def predict(self,image,color_mode='rgb'):
+        if type(image) is list: pred = self.predictMulti(image,color_mode=color_mode)
+        elif type(image) is str: pred = self.predictOne(image,color_mode=color_mode)
         else: 
             print("The parameter of this function should be string or list.")
             pred = []
         return pred
 
-    def loadData(self, imgDir, valimgDir='', randomseed=1993, image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
+    def loadData(self, imgDir, valimgDir='', randomseed=1993, color_mode='rgb', image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
 
         if valimgDir == '':
             #print('* First split the data with 8:2.')
@@ -144,6 +144,7 @@ class ImageClassifier:
             validation_split=split[1],
             subset="training",
             seed=randomseed,
+            color_mode=color_mode,
             image_size=image_size,
             batch_size=batch_size,
             label_mode='categorical')
@@ -154,12 +155,14 @@ class ImageClassifier:
                 validation_split=split[1],
                 subset="validation",
                 seed=randomseed,
+                color_mode=color_mode,
                 image_size=image_size,
                 batch_size=batch_size,
                 label_mode='categorical'
             )
         else:
             self.train_ds = image_dataset_from_directory(imgDir,
+            color_mode=color_mode,
             image_size=image_size,
             batch_size=batch_size,
             shuffle=True,
@@ -168,6 +171,7 @@ class ImageClassifier:
 
             self.val_ds = image_dataset_from_directory(
                 valimgDir,
+                color_mode=color_mode,
                 image_size=image_size,
                 batch_size=batch_size,
                 shuffle=True,
@@ -193,7 +197,7 @@ class ImageClassifier:
             return
 
     def train(self,baseModel='InceptionV3',lr1=0.0001,initial_epochs=10,
-                    fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,
+                    fine_tune_at=300,lr2=0.00001,fine_tune_epochs=50,color_mode='rgb',
                     horizontalFlip=False,verticalFlip=False,dropout=0.6,randomRotation=0.0,callbacks=[],plot=True):
         
         ## 1. Model zoo
@@ -236,7 +240,13 @@ class ImageClassifier:
             return
 
         # Load InceptionV3 model pre-trained on imagenet
-        base_model = modelDict[baseModel](input_shape=self.image_size + (3,), # self.image_size is defined in loadData
+        if color_mode=='rgb':
+            imgDim = 3
+        elif color_mode=='rgba':
+            imgDim = 4
+        else:
+            imgDim = 1
+        base_model = modelDict[baseModel](input_shape=self.image_size + (imgDim,), # self.image_size is defined in loadData
                                                        include_top=False,
                                                        weights='imagenet')
         # Freeze the base model
@@ -259,7 +269,7 @@ class ImageClassifier:
         if len(aug_list)>0: data_augmentation = tf.keras.Sequential(aug_list)
 
         # Pre-processing layer
-        inputs = tf.keras.Input(shape=self.image_size + (3,))
+        inputs = tf.keras.Input(shape=self.image_size + (imgDim,))
         if len(aug_list)>0: 
             x = data_augmentation(inputs) # augment
             x = preprocess_input(x) 

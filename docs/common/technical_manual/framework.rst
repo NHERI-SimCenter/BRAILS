@@ -5,7 +5,9 @@ Framework
 
 
 
-A framework that works as an abstraction providing generic functionalities and can be selectively changed by additional user-written codes with user-provided input data, thus providing a region-specific building information harvesting tool, is presented in this section. 
+This section presents a framework that works as an abstraction providing generic functionalities and can be selectively 
+changed by additional user-written codes with user-provided input data, 
+thus providing a region-specific building information harvesting tool. 
 The framework provides a standard way to create realistic building inventory databases and it is a universal, reusable environment that provides particular functionalities facilitating regional-scale building information modeling. 
 
 
@@ -116,7 +118,10 @@ For regions outside of the United States, footprints can be inferred from satell
 Each geotagged address has a unique coordinate, therefore can be merged with corresponding building footprints. 
 
 
-Using address as the index, the aforementioned filtered and cleaned basic building information retrieved from multiple data sources can now be merged into the main stream of the data flow pipeline. For buildings with missing information, satellite and street view images of each building are then retrieved and fed into pretrained ConvNets, and predictions on the building features such as number of stories, roof types, etc., can be yield.
+Using address as the index, the aforementioned filtered and cleaned basic building information retrieved from 
+multiple data sources can now be merged into the main stream of the data flow pipeline. For buildings with missing information, 
+satellite and street view images of each building are then retrieved and fed into pretrained ConvNets, 
+and predictions on the building features such as number of stories, roof types, etc., can be obtained.
 Merging the predicted values into the data stream results in the initial building database. 
 
 .. _brailsFusion:
@@ -135,7 +140,7 @@ Data enhancement
 
 
 Note that, after the fusion, the initial building database is still incomplete.
-The reasons are: 
+Some of the reasons are: 
 firstly no data source is perfect and there are usually a considerable amount of missing items in them;
 secondly some missing values, for example the year of construction of an individual building, 
 are either visually incomprehensible to a ConvNet, 
@@ -143,7 +148,7 @@ or for some visually comprehensible features, for example the number of stories,
 if the building is occluded by other objects, usually a tree or a car, in the image, 
 which happens quite often, the feature can not be predicted accurately by ConvNets.
 These reasons leave gaps in the initial building database. 
-In this section, the authors propose a machine learning - based method to 
+This section describes a machine learning - based data enhancement method to 
 fill the gaps in the data.
 
 
@@ -212,7 +217,7 @@ semivariograms will give measures of how much two buildings will vary in attribu
 (such as height, number of stories, etc.) regarding to the distance between those samples. 
 
 
-Using the semivariogram function, the authors investigated the spatial patterns of 
+Semivariogram function is employed to explore the spatial patterns of 
 different building properties within a selected region. 
 The results show that buildings were indeed built following certain spatial patterns. 
 As a demonstration, the spatial semivariograms of two building properties, 
@@ -224,7 +229,7 @@ regrading to number of stories and the year of construction for an example, incr
 relationship between the distance and dis-similarity is neither linear nor following any obvious rule. 
 Another note that deserves to be taken here is the curves revealed in :numref:`numofstories_semivariogram` and :numref:`yearofbuilt_semivariogram` 
 are city- or region-specific, i.e., the semivariogram curve may reflect the truth of the region being investigated, and may not be exactly 
-correct for describing another region. 
+correct or directly applicable for describing another region. 
 In other words, the spatial dependence of building features are regional-specific and the semivariogram curves vary regionally.  
 
 
