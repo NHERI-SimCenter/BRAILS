@@ -44,8 +44,15 @@ class OccupancyClassifier(ImageClassifier):
         if not os.path.exists(modelFile): # download
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
-
-        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile, printRes=printRes)
+        
+        # Call parent constructor
+        ImageClassifier.__init__(self, 
+            modelName=modelName, 
+            classNames=classNames, 
+            resultFile=resultFile, 
+            workDir=workDir,
+            printRes=printRes
+        )
 
 
 
