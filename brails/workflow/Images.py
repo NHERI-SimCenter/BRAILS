@@ -15,6 +15,26 @@ from multiprocessing.dummy import Pool as ThreadPool
 import requests 
 from pathlib import Path
 
+try:
+    # Requires Python 3.9
+    from functools import cache
+except ImportError:
+    cache = lambda x: x
+
+@cache
+def validateGoogleMapsAPI(key: str)->bool:
+    """Validate a Google Maps API key.
+    
+    The `@cache` decorator automatically creates a
+    cache for API values so that a validation process
+    will only be run the first time the function is 
+    called.
+
+    `bool(key)` will be false for both the empty
+    string, `''`, and `None` values. This function
+    should be expanded.
+    """
+    return bool(key) and key != 'put-your-key-here'
 
 def capturePic(browser, picname):
     try:
@@ -86,12 +106,10 @@ def download(urls):
 def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView','TopView'],imgDir='',ncpu=2,fov=60,pitch=0,reDownloadImgs=False):
 
     if footprints is None:
-        print('Please provide footprints') 
-        return None
+        raise ValueError('Please provide footprints') 
 
-    if GoogleMapAPIKey == '':
-        print('Please provide GoogleMapAPIKey') 
-        return None
+    if not validateGoogleMapsAPI(GoogleMapAPIKey):
+        raise ValueError('Invalid GoogleMapAPIKey.') 
 
     for imgType in imageTypes:
         tmpImgeDir = os.path.join(imgDir, imgType)
@@ -140,12 +158,10 @@ def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView'
 def getGoogleImagesByAddrOrCoord(Addrs=None, GoogleMapAPIKey='',imageTypes=['StreetView','TopView'],imgDir='',ncpu=2,fov=60,pitch=0,reDownloadImgs=False):
 
     if Addrs is None:
-        print('Please provide Addrs') 
-        return None
+        raise ValueError('Please provide Addrs') 
 
-    if GoogleMapAPIKey == '':
-        print('Please provide GoogleMapAPIKey') 
-        return None
+    if not validateGoogleMapsAPI(GoogleMapAPIKey):
+        raise ValueError('Invalid GoogleMapAPIKey.') 
 
     for imgType in imageTypes:
         tmpImgeDir = os.path.join(imgDir, imgType)
