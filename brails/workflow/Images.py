@@ -14,18 +14,13 @@ import random
 from multiprocessing.dummy import Pool as ThreadPool
 import requests 
 from pathlib import Path
+from functools import lru_cache
 
-try:
-    # Requires Python 3.9
-    from functools import cache
-except ImportError:
-    cache = lambda x: x
-
-@cache
+@lru_cache(maxsize=None)
 def validateGoogleMapsAPI(key: str)->bool:
     """Validate a Google Maps API key.
     
-    The `@cache` decorator automatically creates a
+    The `@lru_cache` decorator automatically creates a
     cache for API values so that a validation process
     will only be run the first time the function is 
     called.
