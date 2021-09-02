@@ -18,13 +18,20 @@ class RoofClassifier(ImageClassifier):
     """ Roof Image Classifier. """
 
 
-    def __init__(self, modelName=None, classNames=None, resultFile='roofType_preds.csv', workDir='tmp', printRes=True):
+    def __init__(self, 
+            modelName=None, 
+            classNames=None, 
+            resultFile='roofType_preds.csv', 
+            workDir='tmp', 
+            printRes=True
+    ):
         '''
         modelFile: path to the model
         classNames: a list of classnames
         '''
 
-        if not os.path.exists(workDir): os.makedirs(workDir)
+        if not os.path.exists(workDir):
+            os.makedirs(workDir)
 
         fileURL = zoo['roofType']['fileURL']
         
@@ -43,7 +50,13 @@ class RoofClassifier(ImageClassifier):
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
 
-        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile, printRes=printRes)
+        ImageClassifier.__init__(self,
+            modelName=modelName,
+            classNames=classNames,
+            resultFile=resultFile,
+            workDir=workDir,
+            printRes=printRes
+        )
 
 
 

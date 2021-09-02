@@ -9,12 +9,16 @@
 *------------------------------------------------------*/
 """
 
-import argparse
 import os
+import json
+import types
 import random
+import pathlib
+import argparse
+from glob import glob
+
 import tensorflow as tf
 import numpy as np
-from glob import glob
 import pandas as pd
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
@@ -22,7 +26,6 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.applications.inception_v3 import preprocess_input
 from brails.modules.ModelZoo import zoo
 import matplotlib.pyplot as plt
-import json
 
 from brails.utils.plotUtils import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
@@ -121,19 +124,22 @@ class ImageClassifier:
         if self.printRes:
             for img, pred, prob in zip(imagePathList, predictions, probs): 
                 print("Image :  {}     Class : {} ({}%)".format(img, pred, str(round(prob*100,2)))) 
-
-        df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
+        df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability'])
+        print(df)
         df.to_csv(self.resultFile, index=False)
         print('Results written in file {}'.format(self.resultFile))
 
         return df
     
     def predict(self,image,color_mode='rgb'):
-        if type(image) is list: pred = self.predictMulti(image,color_mode=color_mode)
-        elif type(image) is str: pred = self.predictOne(image,color_mode=color_mode)
+        if isinstance(image, types.GeneratorType):
+            image = list(image)
+        if isinstance(image, list): 
+            pred = self.predictMulti(image,color_mode=color_mode)
+        elif isinstance(image, (str, pathlib.Path)):
+            pred = self.predictOne(image,color_mode=color_mode)
         else: 
-            print("The parameter of this function should be string or list.")
-            pred = []
+            raise TypeError("")
         return pred
 
     def loadData(self, imgDir, valimgDir='', randomseed=1993, color_mode='rgb', image_size=(256, 256), batch_size = 32, split=[0.8,0.2]):
