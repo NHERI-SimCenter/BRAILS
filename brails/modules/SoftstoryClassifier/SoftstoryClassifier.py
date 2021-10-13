@@ -42,7 +42,13 @@ class SoftstoryClassifier(ImageClassifier):
             print('Downloading the model ...')
             downloadedModelFile = wget.download(fileURL, out=modelFile)
 
-        ImageClassifier.__init__(self, modelName=modelName, classNames=classNames, resultFile=resultFile, printRes=printRes)
+        ImageClassifier.__init__(self,
+            modelName=modelName,
+            classNames=classNames,
+            resultFile=resultFile,
+            workDir=workDir,
+            printRes=printRes
+        )
 
 
 

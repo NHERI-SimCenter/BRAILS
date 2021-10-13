@@ -1,0 +1,13 @@
+numpy
+opencv-python
+tqdm
+tensorboard
+tensorboardX
+webcolors
+pycocotools  
+pascal_voc_writer
+pandas
+matplotlib
+torch
+torchvision
+shapely
