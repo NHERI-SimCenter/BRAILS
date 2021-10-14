@@ -1,19 +1,16 @@
-import os
-import cv2
-import numpy as np
-from shapely.geometry import Polygon
-from shapely.ops import unary_union
 # Author: Barbaros Cetiner
 
+import os
+import cv2
 from lib.infer_detector import Infer
 import torch
 import time
 from tqdm import tqdm
-import warnings
 import argparse
 import csv
+import warnings
 
-# Ignore Divide by Zero Warnings for dyOverdx
+# Ignore warning messages:
 warnings.filterwarnings("ignore")
 
 def get_args():
@@ -25,7 +22,7 @@ def get_args():
                              'Do NOT define this argument if the pretrained model bundled with the module will be used')
     parser.add_argument('--gpu_enabled', type=boolean_string, default=True,
                         help='Enable GPU processing (Enter False for CPU-based inference)')    
-    parser.add_argument('--csv_out', type=str, default="nFloorPredict.csv",
+    parser.add_argument('--csv_out', type=str, default="garageOut.csv",
                         help='Name of the CSV output file where the inference results will be written')
 
     args = parser.parse_args()
@@ -43,7 +40,7 @@ def install_default_model(model_path):
 
         if not os.path.isfile(model_path):
             print('Loading default model file to the models folder...')
-            torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',
+            torch.hub.download_url_to_file('https://zenodo.org/record/5384012/files/efficientdet-d4_trained.pth',
                                            model_path, progress=False)
             print('Default model loaded.')
     else:
@@ -67,21 +64,21 @@ def infer(opt):
 
     rows = []
     for imFile in tqdm(imgList):
-        img = cv2.imread(os.path.join(imdir,imFile))
-        bldgID = int(imFile.split('.')[0])
+        img = cv2.imread(os.path.join(opt.im_path,imFile))
+        bldgID = imFile.split('.')[0]
         cv2.imwrite("input.jpg", img)
-        scores, labels, boxes = gtf.predict("input.jpg", threshold=0.35)
+        scores, labels, boxes = gtfInfer.predict("input.jpg", threshold=0.35)
         if len(boxes)>=1:
           rows.append([bldgID,1])
         else:
           rows.append([bldgID,0])
            
-        with open('garageOut.csv', 'w') as csvfile: 
-            # creating a csv writer object 
-            csvwriter = csv.writer(csvfile) 
-    
-            # writing the data rows 
-            csvwriter.writerows(rows)
+    with open(opt.csv_out, 'w', newline='', encoding='utf-8') as csvfile: 
+        # creating a csv writer object 
+        csvwriter = csv.writer(csvfile) 
+
+        # writing the data rows 
+        csvwriter.writerows(rows)
     
     # End Program Timer and Display Execution Time
     endTime = time.time()

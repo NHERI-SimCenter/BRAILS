@@ -34,12 +34,12 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Author:
-# Chaofeng Wang, c_w@berkeley
+# NHERI SimCenter, nheri-simcenter@berkeley.edu
 
 from ._version import __version__
 
 
-__author__ = 'Chaofeng Wang'
+__author__ = 'NHERI SimCenter'
 __copyright__ = 'Copyright 2019-2021, The Regents of the University of California'
 
 __license__ = "BSD 3-Clause License"

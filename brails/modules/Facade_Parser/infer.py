@@ -16,7 +16,7 @@ from shapely.geometry import Point, LineString, Polygon
 import json
 from tqdm import tqdm
 
-key = "AIzaSyAwDN7vrLgCcbLZov5HE5NCD_hqHXrLeis"
+key = ""
 gpu_enabled = True
 model_path = "models/facadeParser.pth"
 footprint_file = "Alameda_footprints_400up.geojson"
