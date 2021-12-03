@@ -1,9 +1,9 @@
-Chimney Detector
+Masonry Chimney Detector
 =================================================
 
 Purpose of the Module
 ------------------------------------------
-This module enables automated detection of chimney(s) of a building from image input.
+This module enables automated detection of masonry chimney(s) of a building from image input.
 
 .. figure:: images/sampleChimneyDetections.gif
    :scale: 70 %

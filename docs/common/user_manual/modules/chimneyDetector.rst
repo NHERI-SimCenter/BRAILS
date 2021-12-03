@@ -1,6 +1,6 @@
 .. _lbl-ChimneyDetector:
 
-Chimney Detector
+Masonry Chimney Detector
 ===========================
 
 The module is bundled with BRAILS, hence its use does not require a separate installation if BRAILS was installed following the :ref:`lbl-install` instructions. 
