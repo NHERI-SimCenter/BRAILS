@@ -1,9 +1,9 @@
-Chimney Detector
+Masonry Chimney Detector
 =================================================
 
 Purpose of the Module
 ------------------------------------------
-This module enables automated detection of chimney(s) of a building from image input.
+This module enables automated detection of masonry chimney(s) of a building from image input.
 
 .. figure:: images/sampleChimneyDetections.gif
    :scale: 70 %
@@ -92,7 +92,7 @@ Training, validation, and test folders should be separate. All three folders mus
 Running the Module Using the Pretrained Chimney Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The module is bundled with a pretrained chimneydetection model, trained on 1,757 training samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+The module is bundled with a pretrained chimneydetection model, trained on 2,195 samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
