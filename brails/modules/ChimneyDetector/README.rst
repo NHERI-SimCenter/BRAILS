@@ -1,15 +1,15 @@
-Garage Detector
+Chimney Detector
 =================================================
 
 Purpose of the Module
 ------------------------------------------
-This module enables automated detection of attached garages and carports in a building from image input.
+This module enables automated detection of chimney(s) of a building from image input.
 
-.. figure:: images/sampleGarageDetections.gif
+.. figure:: images/sampleChimneyDetections.gif
    :scale: 70 %
-   :alt: Sample model garage detections
+   :alt: Sample model chimney detections
 
-   Figure 1: Sample garage detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
+   Figure 1: Sample chimney detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
 
 Copyright
 ~~~~~~~~~
@@ -51,12 +51,12 @@ BSD 3-Caluse license
 
 Installation
 ---------------------------
-The following commands clone the BRAILS repository and install the garage detection module. Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
+The following commands clone the BRAILS repository and install the chimney detection module. Requirements are installed using pip and weights of all used models are downloaded. Make sure to run the last line to add the current folder to the PYTHONPATH variable to avoid issues in training.
 
 ::
 
     git clone https://github.com/NHERI-SimCenter/BRAILS.git BRAILS
-    cd BRAILS/brails/modules/GarageDetector
+    cd BRAILS/brails/modules/ChimneyDetector
     python3 -m pip install -r requirements.txt
     export PYTHONPATH=$PYTHONPATH:`pwd`
 
@@ -89,10 +89,10 @@ Training, validation, and test folders should be separate. All three folders mus
         └── classes.txt
 
 
-Running the Module Using the Pretrained Garage Detection Model
+Running the Module Using the Pretrained Chimney Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The module is bundled with a pretrained garage detection model, trained on 1,887 training samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+The module is bundled with a pretrained chimneydetection model, trained on 1,757 training samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
@@ -111,13 +111,13 @@ Using the command line option ``--model_path``, ``infer.py`` can be called with 
 
     --gpu_enabled (default: True) Enable GPU processing (Enter False for CPU-based inference)
 
-    --csv_out (default: "garageDetect.csv") Name of the CSV output file where the inference results will be written
+    --csv_out (default: "chimneyDetect.csv") Name of the CSV output file where the inference results will be written
 
 
 Model Training
 ~~~~~~~~~~~~~~~
 
-If the user wishes to further train the pretrained garage detection model that is bundled with this module, or train a separate model by finetuning an EfficientDet model already trained on COCO 2017 detection
+If the user wishes to further train the pretrained chimney detection model that is bundled with this module, or train a separate model by finetuning an EfficientDet model already trained on COCO 2017 detection
 datasets, using custom data; the folder structure shown in `Input Data Format for Training and Testing`_ shall be strictly followed. Model training is performed using ``train.py``. 
 
 Following is an comprehensive list of the available command line parameters. The user may also use the ``train.py --help`` syntax to view a brief version of the list below.
@@ -157,7 +157,7 @@ Following is an comprehensive list of the available command line parameters. The
                                This option is meant for continued training of an existing model. 
                                It can be used for models trained on an EfficientDet backbone only
 
-For example, the command to train a garage detection model **on CPU** by **fine-tuning the full EfficientDet-D4 backbone trained on COCO dataset** for **25 epochs** using a **learning rate of 0.0001**:
+For example, the command to train a chimney detection model **on CPU** by **fine-tuning the full EfficientDet-D4 backbone trained on COCO dataset** for **25 epochs** using a **learning rate of 0.0001**:
 
 ::
 

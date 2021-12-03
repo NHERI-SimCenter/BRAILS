@@ -42,8 +42,7 @@ from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClas
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
 from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
+from brails.modules.GarageDetector.GarageDetector import GarageDetector
+from brails.modules.GarageDetector.GarageDetector import ChimneyDetector
 from brails.modules.Foundation_Classification.FoundationClassifier import FoundationHeightClassifier
 from brails.modules.Year_Built_Classifier.YearBuiltClassifier import YearBuiltClassifier
-from brails.modules.GarageDetector.GarageDetector import GarageDetector
-
-

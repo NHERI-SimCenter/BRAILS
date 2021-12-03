@@ -14,15 +14,15 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def get_args():
-    parser = argparse.ArgumentParser('EfficientDet-based garage detection model')
+    parser = argparse.ArgumentParser('EfficientDet-based chimney detection model')
     parser.add_argument('--im_path', type=str, default="datasets/test",
                         help='Path for the building images')
-    parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_garage.pth",
+    parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_chimney.pth",
                         help='Path for the pretrained inference model.' 
                              'Do NOT define this argument if the pretrained model bundled with the module will be used')
     parser.add_argument('--gpu_enabled', type=boolean_string, default=True,
                         help='Enable GPU processing (Enter False for CPU-based inference)')    
-    parser.add_argument('--csv_out', type=str, default="garageOut.csv",
+    parser.add_argument('--csv_out', type=str, default="chimneyOut.csv",
                         help='Name of the CSV output file where the inference results will be written')
 
     args = parser.parse_args()
@@ -34,9 +34,9 @@ def boolean_string(s):
     return s == 'True'
 
 def install_default_model(model_path):
-    if model_path == "models/efficientdet-d4_garage.pth":
+    if model_path == "models/efficientdet-d4_chimney.pth":
         os.makedirs('models',exist_ok=True)
-        model_path = os.path.join('models','efficientdet-d4_garage.pth')
+        model_path = os.path.join('models','efficientdet-d4_chimney.pth')
 
         if not os.path.isfile(model_path):
             print('Loading default model file to the models folder...')
@@ -56,7 +56,7 @@ def infer(opt):
     imgList = os.listdir(opt.im_path)
         
     # Create and Define the Inference Model
-    classes = ["garage"]
+    classes = ["chimney"]
     
     print("Performing inferences on images...")
     gtfInfer = Infer()
