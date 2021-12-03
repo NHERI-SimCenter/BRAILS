@@ -15,6 +15,7 @@ import types
 import random
 import pathlib
 import argparse
+import warnings
 from glob import glob
 
 import tensorflow as tf
@@ -24,6 +25,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.applications.inception_v3 import preprocess_input
+from PIL import UnidentifiedImageError
 from brails.modules.ModelZoo import zoo
 import matplotlib.pyplot as plt
 
@@ -109,7 +111,13 @@ class ImageClassifier:
                 if self.classNames: prediction = self.classNames[prediction]
                 predictions.append(prediction)
             '''
-            img = image.load_img(imagePath, color_mode=color_mode, target_size=(256, 256))
+            try:
+                img = image.load_img(imagePath, color_mode=color_mode, target_size=(256, 256))
+            except UnidentifiedImageError:
+                warnings.warn(f"Image format error: skipping image '{imagePath}'")
+                probs.append(None)
+                predictions.append(None)
+                continue
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
             prediction = self.model.predict(x)
