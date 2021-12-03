@@ -34,17 +34,15 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Authors:
-# Chaofeng Wang, c_w@berkeley.edu
 # Barbaros Cetiner
-
+# Chaofeng Wang
 
 from brails.modules.GenericImageClassifier.GenericImageClassifier import ImageClassifier
 from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClassifier as SoftstoryClassifier
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
 from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
 from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
-from brails.modules.Foundation_Classification.FoundationClassifier import FoundationHeightClassifier
-from brails.modules.Year_Built_Classifier.YearBuiltClassifier import YearBuiltClassifier
-from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
-
-
+from brails.modules.GarageDetector.GarageDetector import GarageDetector
+from brails.modules.GarageDetector.GarageDetector import ChimneyDetector
+from brails.modules.FoundationClassification.FoundationClassifier import FoundationHeightClassifier
+from brails.modules.YearBuiltClassifier.YearBuiltClassifier import YearBuiltClassifier

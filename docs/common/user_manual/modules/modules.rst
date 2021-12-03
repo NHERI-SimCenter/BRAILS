@@ -21,4 +21,6 @@ The following is the set of current modules available in BRAILS:
    yearClassifier
    foundationElevationClassifier
    nFloorDetector
+   GarageDetector
+   ChimneyDetector
    
