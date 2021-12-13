@@ -38,6 +38,6 @@ The number of floor detections performed by this module are based on image-based
    :width: 70 %
    :alt: Sample model floor detections
 
-   Sample floor detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
+Sample floor detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
 
 For a given image, the described floor detection model generates the bounding box output for its detections and calculates the confidence level associated with each detection. A post-processor that converts stacks of neighboring bounding boxes into floor counts is provided as a part of this module. Recognizing an image may contain more than one building at a time, this post-processor is capable of detecting floor counts for multiple building instances in an input image. 

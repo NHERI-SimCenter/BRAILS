@@ -93,9 +93,9 @@ class NFloorDetector():
         self.system_dict["infer"]["outFile"] = outFile
         
         def install_default_model(model_path):
-            if model_path == "models/efficientdet-d4_trained.pth":
+            if model_path == "models/efficientdet-d4_garageDetector.pth":
                 os.makedirs('models',exist_ok=True)
-                model_path = os.path.join('models','efficientdet-d4_trained.pth')
+                model_path = os.path.join('models','efficientdet-d4_garageDetector.pth')
         
                 if not os.path.isfile(model_path):
                     print('Loading default garage detector model file to the models folder...')

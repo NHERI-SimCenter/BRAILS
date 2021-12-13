@@ -17,7 +17,7 @@ if torch.cuda.is_available():
 else:    
     useGPU=False
     
-class NFloorDetector():
+class ChimneyDetector():
     def __init__(self):
         self.system_dict = {}
         self.system_dict["train"] = {}
@@ -31,7 +31,7 @@ class NFloorDetector():
     def set_fixed_params(self):        
         self.system_dict["train"]["data"]["trainSet"] = "train"
         self.system_dict["train"]["data"]["validSet"] = "valid"
-        self.system_dict["train"]["data"]["classes"] = ["garage"]
+        self.system_dict["train"]["data"]["classes"] = ["chimney"]
         self.system_dict["train"]["model"]["valInterval"] = 1
         self.system_dict["train"]["model"]["saveInterval"] = 5
         self.system_dict["train"]["model"]["esMinDelta"] = 0.0
@@ -86,22 +86,23 @@ class NFloorDetector():
                   val_interval=self.system_dict["train"]["model"]["valInterval"],
                   save_interval=self.system_dict["train"]["model"]["saveInterval"])
 
-    def predict(self, images, modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=useGPU, outFile="garageOut.csv"):
+    def predict(self, images, modelPath="models/efficientdet-d4_chimneyDetector.pth",
+                gpuEnabled=useGPU, outFile="chimneyOut.csv"):
         self.system_dict["infer"]["images"] = images
         self.system_dict["infer"]["modelPath"] = modelPath
         self.system_dict["infer"]["gpuEnabled"] = gpuEnabled
         self.system_dict["infer"]["outFile"] = outFile
         
         def install_default_model(model_path):
-            if model_path == "models/efficientdet-d4_trained.pth":
+            if model_path == "models/efficientdet-d4_chimneyDetector.pth":
                 os.makedirs('models',exist_ok=True)
-                model_path = os.path.join('models','efficientdet-d4_trained.pth')
+                model_path = os.path.join('models','efficientdet-d4_chimneyDetector.pth')
         
                 if not os.path.isfile(model_path):
-                    print('Loading default garage detector model file to the models folder...')
-                    torch.hub.download_url_to_file('https://zenodo.org/record/5384012/files/efficientdet-d4_trained.pth',
+                    print('Loading default chimney detector model file to the models folder...')
+                    torch.hub.download_url_to_file('https://zenodo.org/record/5775292/files/efficientdet-d4_chimneyDetector.pth',
                                                    model_path, progress=False)
-                    print('Default garage detector model loaded.')                    
+                    print('Default chimney detector model loaded.')                    
             else:
                 print(f'Inferences will be performed using the custom model at {model_path}.')
         
@@ -120,11 +121,12 @@ class NFloorDetector():
             imgList = self.system_dict["infer"]["images"]
             
         # Create and Define the Inference Model
-        classes = ["garage"]
+        classes = ["chimney"]
         
         print("Performing inferences on images...")
         gtfInfer = Infer()
-        gtfInfer.load_model(self.system_dict["infer"]["modelPath"], classes, use_gpu=self.system_dict["infer"]["gpuEnabled"])
+        gtfInfer.load_model(self.system_dict["infer"]["modelPath"], classes, 
+                            use_gpu=self.system_dict["infer"]["gpuEnabled"])
         
         rows = []
         predictions = []
@@ -142,17 +144,19 @@ class NFloorDetector():
 
         nImages = len(imgList)               
         if nImages!=1: 
-            with open(self.system_dict["infer"]["outFile"], 'w', newline='', encoding='utf-8') as csvfile: 
+            with open(self.system_dict["infer"]["outFile"], 'w', newline='', 
+                      encoding='utf-8') as csvfile: 
                 # creating a csv writer object 
                 csvwriter = csv.writer(csvfile) 
         
                 # writing the data rows 
-                rows.insert(0, "Image, garageExist")
+                rows.insert(0, "Image, chimneyExist")
                 csvwriter.writerows(rows)  
         else:
-            print(f"Garage exists: {bool(predictions)}\n")        
+            print(f"Chimney exists: {bool(predictions)}\n")        
         
-        df = pd.DataFrame(list(zip(imgList, predictions)), columns =['image', 'prediction',])
+        df = pd.DataFrame(list(zip(imgList, predictions)), columns =['image', 
+                                                                     'prediction',])
         
         # End Program Timer and Display Execution Time
         endTime = time.time()

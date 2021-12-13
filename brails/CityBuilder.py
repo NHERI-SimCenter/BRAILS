@@ -3,9 +3,12 @@
 /*------------------------------------------------------*
 |                         BRAILS                        |
 |                                                       |
-| Author: Charles Wang,  UC Berkeley, c_w@berkeley.edu  |
+| Authors: Barbaros Cetiner                             |
+|          Frank McKenna                                |
+|          Chaofeng Wang                                |
 |                                                       |
-| Date:    01/5/2021                                    |
+| Date:         01/05/2021                              |
+| Last revised: 12/12/2021                              |
 *------------------------------------------------------*/
 """
 
@@ -20,7 +23,10 @@ import geopandas as gpd
 import json
 
 
-from brails.modules import RoofClassifier, OccupancyClassifier, SoftstoryClassifier, FoundationHeightClassifier, YearBuiltClassifier, NFloorDetector
+from brails.modules import (RoofClassifier, OccupancyClassifier, 
+                            SoftstoryClassifier, FoundationHeightClassifier, 
+                            YearBuiltClassifier, NFloorDetector, 
+                            GarageDetector, ChimneyDetector)
 
 
 from .workflow.Footprints import getMSFootprintsByPlace, getStateNameByBBox, getOSMFootprints, getMSFootprintsByBbox
@@ -31,12 +37,16 @@ from .workflow.Images import getGoogleImages
 class CityBuilder:
     """Class for creating city-scale BIM."""
 
-    def __init__(self, attributes=['numstories','occupancy','roofshape'], numBldg=10, random=True,bbox=[], place='', footPrints='OSM', save=True, fileName='', workDir='tmp',GoogleMapAPIKey='', overwrite=False, reDownloadImgs=False):
+    def __init__(self, attributes=['numstories','occupancy','roofshape'], 
+                 numBldg=10, random=True,bbox=[], place='', 
+                 footPrints='OSM', save=True, fileName='', 
+                 workDir='tmp',GoogleMapAPIKey='', overwrite=False, 
+                 reDownloadImgs=False):
         """init function for CityBuilder class.
 
         Args:
 
-            attributes (list): A list of building attributes, such as ['numstories', 'occupancy', 'roofshape'], which are available in the current version.
+            attributes (list): The list of requested building attributes, such as ['numstories', 'occupancy', 'roofshape']
             numBldg (int): Number of buildings to generate.
             random (bool): Randomly select numBldg buildings from the database if random is True
             bbox (list): [north, west, south, east]
@@ -250,6 +260,28 @@ class CityBuilder:
                 story = story_df['prediction'].to_list()
                 self.BIM['numStories'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
                 
+            elif attr.lower()=='garage':
+                # Initialize the garage detector object
+                garageModel = GarageDetector()
+
+                # Call the floor detector to determine number of floors
+                garage_df = garageModel.predict(self.BIM['StreetView'].tolist())
+
+                # Write the results to a dataframe
+                garage = garage_df['prediction'].to_list()
+                self.BIM['garageExist'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+
+            elif attr.lower()=='chimney':
+                # Initialize the floor detector object
+                chimneyModel = ChimneyDetector()
+
+                # Call the floor detector to determine number of floors
+                chimney_df = chimneyModel.predict(self.BIM['StreetView'].tolist())
+
+                # Write the results to a dataframe
+                chimney = chimney_df['prediction'].to_list()
+                self.BIM['chimneyExist'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+                
             elif attr.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir,printRes=False)
 
@@ -261,7 +293,7 @@ class CityBuilder:
                 self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
 
             else:
-                assert False, "attributes can only contain roofshape, occupancy, softstory, elevated, numstories, year. Your % caused an error." % attr
+                assert False, "attributes can only contain roofshape, occupancy, numstories, garage, chimney, year, elevated, softstory. Your % caused an error." % attr
 
         # delete columns
         self.BIM.drop(columns=['Lat','Lon','index'], axis=1, inplace=True)

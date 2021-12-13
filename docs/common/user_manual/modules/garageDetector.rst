@@ -30,14 +30,14 @@ Use the module
 
 Garage detection using Object Detection 
 ---------------------------------------------------	
-The number of floor detections performed by this module are based on image-based detections of visible floor locations (i.e, rows of windows) from street-level images. The current pretrained model that comes with this module was trained on the  `EfficientDet-D4 architecture
-<https://arxiv.org/abs/1911.09070>`_ using a dataset of 60,000 building images retrieved from all counties of New Jersey, excluding Atlantic County. 80%, 15%, and 5% of the samples in dataset were used for training, validation, and testing, respectively. All three sets were formed to be disjoint from each other to eliminate data contamination. In training the model, to ensure faster model convergence, initial weights of the model were set to model weights of the (pretrained) object detection model that, at the time, achieved state-of-the-art performance on the 2017 COCO Detection set. For this specific implementation, the peak model performance was achieved using the Adam optimizer at a learning rate of 0.0001 (batch size: 2) after 50 epochs. Figure :numref:`fig_FloorDetections` shows examples of the floor detections performed by the model.
+The garage detections performed by this module are based on image-based detections of garages visible in street-level images. The current pretrained model that comes with this module was trained on the  `EfficientDet-D4 architecture
+<https://arxiv.org/abs/1911.09070>`_ using a dataset of 1,887 building images retrieved from California, New Jersey, and Louisiana. 80%, 10%, and 10% of the samples in dataset were used for training, validation, and testing, respectively. All three sets were formed to be disjoint from each other to eliminate data contamination. In training the model, to ensure faster model convergence, initial weights of the model were set to model weights of the (pretrained) object detection model that, at the time, achieved state-of-the-art performance on the 2017 COCO Detection set. For this specific implementation, the peak model performance was achieved using the Adam optimizer at a learning rate of 0.0001 (batch size: 2) after 50 epochs. Figure :numref:`_fig_GarageDetections` shows examples of garage detections performed by the model.
 
-.. _fig_FloorDetections:
-.. figure:: ../../../images/image_examples/nFloor/sampleModelOutputs.gif
+.. _fig_GarageDetections:
+.. figure:: ../../../images/image_examples/Garage/sampleGarageDetections.gif
    :width: 70 %
-   :alt: Sample model floor detections
+   :alt: Sample garage detections
 
-   Sample floor detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
+Sample garage detections of the pretrained model provided with this module, shown by bright green bounding boxes. The percentage value shown on the top right corner of each bounding box indicates the model's confidence level associated with that prediction.
 
-For a given image, the described floor detection model generates the bounding box output for its detections and calculates the confidence level associated with each detection. A post-processor that converts stacks of neighboring bounding boxes into floor counts is provided as a part of this module. Recognizing an image may contain more than one building at a time, this post-processor is capable of detecting floor counts for multiple building instances in an input image. 
+For a given image, the described garage detection model generates the bounding box output for its detections and calculates the confidence level associated with each detection. A post-processor that converts bounding boxes detections into garage existence information is provided as a part of this module. Recognizing an image may contain more than one building at a time, this post-processor is capable of detecting garages for multiple building instances in an input image. 

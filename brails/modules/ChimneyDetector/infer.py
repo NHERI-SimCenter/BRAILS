@@ -9,6 +9,7 @@ from tqdm import tqdm
 import argparse
 import csv
 import warnings
+import shutil
 
 # Ignore warning messages:
 warnings.filterwarnings("ignore")
@@ -17,7 +18,7 @@ def get_args():
     parser = argparse.ArgumentParser('EfficientDet-based chimney detection model')
     parser.add_argument('--im_path', type=str, default="datasets/test",
                         help='Path for the building images')
-    parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_chimney.pth",
+    parser.add_argument('--model_path', type=str, default="models/efficientdet-d4_chimneyDetector.pth",
                         help='Path for the pretrained inference model.' 
                              'Do NOT define this argument if the pretrained model bundled with the module will be used')
     parser.add_argument('--gpu_enabled', type=boolean_string, default=True,
@@ -34,13 +35,13 @@ def boolean_string(s):
     return s == 'True'
 
 def install_default_model(model_path):
-    if model_path == "models/efficientdet-d4_chimney.pth":
+    if model_path == "models/efficientdet-d4_chimneyDetector.pth":
         os.makedirs('models',exist_ok=True)
-        model_path = os.path.join('models','efficientdet-d4_chimney.pth')
+        model_path = os.path.join('models','efficientdet-d4_chimneyDetector.pth')
 
         if not os.path.isfile(model_path):
             print('Loading default model file to the models folder...')
-            torch.hub.download_url_to_file('https://zenodo.org/record/5384012/files/efficientdet-d4_trained.pth',
+            torch.hub.download_url_to_file('https://zenodo.org/record/5775292/files/efficientdet-d4_chimneyDetector.pth',
                                            model_path, progress=False)
             print('Default model loaded.')
     else:
@@ -63,11 +64,14 @@ def infer(opt):
     gtfInfer.load_model(opt.model_path, classes, use_gpu=opt.gpu_enabled)
 
     rows = []
+    count = 1
     for imFile in tqdm(imgList):
         img = cv2.imread(os.path.join(opt.im_path,imFile))
         bldgID = imFile.split('.')[0]
         cv2.imwrite("input.jpg", img)
-        scores, labels, boxes = gtfInfer.predict("input.jpg", threshold=0.35)
+        scores, labels, boxes = gtfInfer.predict("input.jpg", threshold=0.2)
+        shutil.copyfile("output.jpg",f"output{count}.jpg")
+        count += 1
         if len(boxes)>=1:
           rows.append([bldgID,1])
         else:
@@ -87,10 +91,10 @@ def infer(opt):
     print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
     
     # Cleanup the Root Folder
-    if os.path.isfile("input.jpg"):
-        os.remove("input.jpg")
-    if os.path.isfile("output.jpg"):
-        os.remove("output.jpg")
+    #if os.path.isfile("input.jpg"):
+    #    os.remove("input.jpg")
+    #if os.path.isfile("output.jpg"):
+    #    os.remove("output.jpg")
         
 if __name__ == '__main__':
     opt = get_args()
