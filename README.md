@@ -15,12 +15,12 @@ which is an AI-based pipeline for city-scale building information modeling (BIM)
 pip install BRAILS
 ```
 
-If you have difficulties installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
+If you have difficulty installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
 
 
 ## Documents
 
-Read the online document <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+Read the online documentation <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
 
 
 ## Quickstart

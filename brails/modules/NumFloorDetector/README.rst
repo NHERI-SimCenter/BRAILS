@@ -104,7 +104,7 @@ Using the command line option ``--model_path``, ``infer.py`` can be called with 
 
 .. parsed-literal::
 
-    --im_path (default: "datasets/test/") Path for the building images that will be inferred by module. Must end with backward slash.
+    --im_path (default: "datasets/test/") Path for the building images that will be inferred by module. Must end with forward slash.
 
     --model_path (default: "models/efficientdet-d4_trained.pth") Path for the pretrained inference model.
                                                                  Do NOT define this argument if the pretrained model bundled with the module will be used

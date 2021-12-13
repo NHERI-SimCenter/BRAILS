@@ -1,11 +1,11 @@
 .. _lbl-ChimneyDetector:
 
-Masonry Chimney Detector
+Chimney Detector
 ===========================
 
 The module is bundled with BRAILS, hence its use does not require a separate installation if BRAILS was installed following the :ref:`lbl-install` instructions. 
 
-This module enables automated detection of building chimneys from image input. It takes the directory for an image or folder of images as input and writes the existence of chimneys in each image into a CSV file. As the module is developed for performing predictions on only street-level building imagery, meaningful model outputs for other classes of images shall not be expected.
+This module enables automated detection of masonry or concrete building chimneys from image input. It takes the directory for an image or folder of images as input and writes the existence of chimneys in each image into a CSV file. As the module is developed for performing predictions on only street-level building imagery, meaningful model outputs for other classes of images shall not be expected.
 
 Use the module
 --------------------
@@ -22,7 +22,7 @@ Use the module
 
     # Detect if there are chimneys in each image inside imDir and write results in a 
     # CSV file. The prediction can be also assigned to DataFrame variable:
-    predictions = chimneyDetector .predict(imDir)
+    predictions = chimneyDetector.predict(imDir)
 
     # Train a new detector using EfficientDet-D7 for 50 epochs
     chimneyDetector.load_train_data(rootDir="datasets/")
@@ -31,7 +31,7 @@ Use the module
 Chimney detection using Object Detection 
 -------------------------------------------------
 The chimney detections performed by this module are based on image-based detections of visible chimneys from street-level images. The current pretrained model that comes with this module was trained on the  `EfficientDet-D4 architecture
-<https://arxiv.org/abs/1911.09070>`_ using a dataset of 2,195 building images retrieved from California, New Jersey, and Louisiana. 80%, 10%, and 10% of the samples in dataset were used for training, validation, and testing, respectively. All three sets were formed to be disjoint from each other to eliminate data contamination. In training the model, to ensure faster model convergence, initial weights of the model were set to model weights of the (pretrained) object detection model that, at the time, achieved state-of-the-art performance on the 2017 COCO Detection set. For this specific implementation, the peak model performance was achieved using the Adam optimizer at a learning rate of 0.0001 (batch size: 2) after 50 epochs. Figure :numref:`_fig_ChimneyDetections` shows examples of chimney detections performed by the model.
+<https://arxiv.org/abs/1911.09070>`_ using a dataset of 1,703 building images retrieved from California, New Jersey, and Louisiana. 80%, 10%, and 10% of the samples in dataset were used for training, validation, and testing, respectively. All three sets were formed to be disjoint from each other to eliminate data contamination. In training the model, to ensure faster model convergence, initial weights of the model were set to model weights of the (pretrained) object detection model that, at the time, achieved state-of-the-art performance on the 2017 COCO Detection set. For this specific implementation, the peak model performance was achieved using the Adam optimizer at a learning rate of 0.0001 (batch size: 2) after 50 epochs. Figure :numref:`_fig_ChimneyDetections` shows examples of chimney detections performed by the model.
 
 .. _fig_ChimneyDetections:
 .. figure:: ../../../images/image_examples/Chimney/sampleChimneyDetections.gif
