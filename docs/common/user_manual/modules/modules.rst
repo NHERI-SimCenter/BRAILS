@@ -17,10 +17,9 @@ The following is the set of current modules available in BRAILS:
    genericImageClassifier
    roofClassifier
    occupancyClassifier
-   softstoryClassifier
+   nFloorDetector
    yearClassifier
    foundationElevationClassifier
-   nFloorDetector
    garageDetector
    chimneyDetector
-   
+   softstoryClassifier  
