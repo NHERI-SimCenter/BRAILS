@@ -1,9 +1,9 @@
-Masonry Chimney Detector
+Chimney Detector
 =================================================
 
 Purpose of the Module
 ------------------------------------------
-This module enables automated detection of masonry chimney(s) of a building from image input.
+This module enables automated detection of masonry or concrete chimney(s) of a building from image input.
 
 .. figure:: images/sampleChimneyDetections.gif
    :scale: 70 %
@@ -92,7 +92,7 @@ Training, validation, and test folders should be separate. All three folders mus
 Running the Module Using the Pretrained Chimney Detection Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The module is bundled with a pretrained chimneydetection model, trained on 2,195 samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
+The module is bundled with a pretrained chimney detection model, trained on 1,703  samples. This model can be called out-of-the-box via ``infer.py``. The basic syntax to perform inferences on a set of images requires defining the path for the images and the type of computational environment (i.e., use of CPU or GPU units for inference) by the user as follows.
 
 ::
 
@@ -104,7 +104,7 @@ Using the command line option ``--model_path``, ``infer.py`` can be called with 
 
 .. parsed-literal::
 
-    --im_path (default: "datasets/test/") Path for the building images that will be inferred by module. Must end with backward slash.
+    --im_path (default: "datasets/test/") Path for the building images that will be inferred by module. Must end with forward slash.
 
     --model_path (default: "models/efficientdet-d4_trained.pth") Path for the pretrained inference model.
                                                                  Do NOT define this argument if the pretrained model bundled with the module will be used
