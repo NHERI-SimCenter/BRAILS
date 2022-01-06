@@ -7,5 +7,6 @@ Modules
 
    roof
    occupancy
-   softstory
    nfloor
+   softstory
+

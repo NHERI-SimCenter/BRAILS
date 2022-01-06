@@ -24,12 +24,15 @@ im_path = "images"
 save_segimages = True
 segim_path = "segmentedImages"
 
+# Function that downloads a file given its URL and the desired path to save it:
 def download_url(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
     with open(save_path, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
 
+# Function that obtains the camera location for a StreetView image given the
+# latitude/longitude and API key for the location:
 def download_metadata(latlon,key):
     metadataBaseURL = "https://maps.googleapis.com/maps/api/streetview/metadata?size=640x640&location=%s&key=%s"
     metadataURL = metadataBaseURL % (str(latlon)[1:-1].replace(" ", ""), key)
@@ -40,6 +43,9 @@ def download_metadata(latlon,key):
         cameraLoc = None
     return cameraLoc
 
+# Function that downloads a StreetView image given the latitude/longitude for
+# the location, camera heading and FOV, API key, and the image path and file 
+# name to save the image: 
 def download_image(latlon,heading,fov,key,imName,im_path):
     os.makedirs(im_path,exist_ok=True)
     streetViewBaseURL = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%s&heading=%s&fov=%s&key=%s"
@@ -49,14 +55,15 @@ def download_image(latlon,heading,fov,key,imName,im_path):
         with open(os.path.join(im_path,f"{imName}.jpg"), 'wb') as f:
             f.write(r.content)
   
-# Given three colinear points p, q, r, the function checks if 
-# point q lies on line segment 'pr' 
+# Function that checks if, given three colinear points p, q, r, point q lies on
+# line segment 'pr': 
 def onSegment(p, q, r):
     if ( (q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and 
            (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
         return True
     return False
-  
+
+# Function that checks the orientation of an ordered triplet (p,q,r):
 def orientation(p, q, r):
     # to find the orientation of an ordered triplet (p,q,r)
     # function returns the following values:
@@ -76,8 +83,8 @@ def orientation(p, q, r):
         # Colinear orientation
         return 0
   
-# The main function that returns true if 
-# the line segment 'p1q1' and 'p2q2' intersect.
+# The main function that returns true if the line segment 'p1q1' and 'p2q2'
+# intersect:
 def doIntersect(p1,q1,p2,q2):
       
     # Find the 4 orientations required for 
@@ -106,14 +113,18 @@ def doIntersect(p1,q1,p2,q2):
     # If none of the cases
     return False
 
+# Function that returns the midpoint of a line segment given its vertices:
 def midpoint_calc(vert1,vert2):
     q1x = 0.5*(vert1.x + vert2.x)
     q1y = 0.5*(vert1.y + vert2.y)      
     q1 = Point(q1x,q1y)
     return q1        
 
+# Function that calculates the distance between two points.
+# Input: two points with coordinates defined as latitude and longitude
+# Output: distance between the input points in feet
 def dist(p1,p2):
-    R = 6373.0
+    R = 6371.0 # Mean radius of the earth in kilometers
     
     lat1 = math.radians(p1.x)
     lon1 = math.radians(p1.y)
@@ -126,68 +137,124 @@ def dist(p1,p2):
     a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     
-    distance = R*c*3280.84
+    distance = R*c*3280.84 # distance between the two points in feet
     return distance
 
+# Function to project the rough reference line onto the frontal line:
 def compute_refLineVert(lineFrontal,refLineVertRough,footprint,linesKeep):
-        indexVertRough = np.where(footprint==refLineVertRough[0])[0].item(0)
-        
-        if indexVertRough==0: 
-            n = len(footprint)-2
-        else:
-            n = indexVertRough-1
-            
-        if len(np.where(linesKeep==np.append(footprint[n,:],footprint[indexVertRough,:]))[0])==0:
-           refLineVertConnect =  footprint[n,:]          
-        else:
-           refLineVertConnect = footprint[indexVertRough+1,:]
-        
-        m1 = (lineFrontal[3]-lineFrontal[1])/(lineFrontal[2]-lineFrontal[0])        
-        m2 = (refLineVertRough[1]-refLineVertConnect[1])/(refLineVertRough[0]-refLineVertConnect[0])
-        x1 = lineFrontal[0]; y1 = lineFrontal[1]
-        x2 = refLineVertConnect[0]; y2 = refLineVertConnect[1]
-        
-        xRefLineVert = (m1*x1 - m2*x2 - y1 + y2)/(m1 - m2)
-        yRefLineVert = m1*(xRefLineVert - x1) + y1
-        
-        refLineVert = [xRefLineVert, yRefLineVert]
-        
-        return refLineVert
+    # Find the index for footprint vertex that matches the rough reference
+    # line vertex:    
+    indexVertRough = np.where(footprint==refLineVertRough[0])[0].item(0)
 
+    # Start looking for the non-visible line segment connecting into the rough
+    # reference line vertex by assuming the second vertex of this line is the
+    # point before the reference line vertex in the array of footprint 
+    # vertices. Here the reason for searching the non-visible line vertex is 
+    # to find the vertex that will enable extending the fontal line such that
+    # it extends covers the entire front facade:
+
+    # If the reference line vertex is the first point in the array of
+    # footprint vertices, the point before would be on the row
+    # (#Rows of Footprint Array)-2: 
+    if indexVertRough==0: 
+        n = len(footprint)-2
+    # Else the point before would be on the row right before the reference line
+    # vertex:
+    else:
+        n = indexVertRough-1
+    
+    # If the second vertex for the non-visible line segment connecting into the 
+    # rough reference line vertex is the point before the reference line
+    # vertex in the array of footprint vertices:
+    if len(np.where(linesKeep==np.append(footprint[n,:],
+                                         footprint[indexVertRough,:]))[0])==0:
+       # The Boolean above checks if the line formed by [footprint[n,:],
+       # footprint[indexVertRough,:]] is a visible line. We not the program 
+       # keeps it
+        refLineVertConnect =  footprint[n,:]
+    # Else:          
+    else:
+       refLineVertConnect = footprint[indexVertRough+1,:]
+    
+    # Compute the insersection of the frontal line and the line formed by
+    # rough reference line vertex and the connecting vertex on the footprint 
+    # that is not a visible line:
+    
+    m1 = (lineFrontal[3]-lineFrontal[1])/(lineFrontal[2]-lineFrontal[0])        
+    m2 = (refLineVertRough[1]-refLineVertConnect[1])/(refLineVertRough[0]
+                                                      -refLineVertConnect[0])
+    x1 = lineFrontal[0]; y1 = lineFrontal[1]
+    x2 = refLineVertConnect[0]; y2 = refLineVertConnect[1]
+    
+    xRefLineVert = (m1*x1 - m2*x2 - y1 + y2)/(m1 - m2)
+    yRefLineVert = m1*(xRefLineVert - x1) + y1
+    
+    # The computed intersection is one of the vertices of the preliminary
+    # reference line: 
+    refLineVert = [xRefLineVert, yRefLineVert]
+    
+    return refLineVert
+
+# Function to compute the preliminary reference line. Here preliminary 
+# reference line is the line segment that spans the extreme frontal edges of 
+# footprint that is snapped on the footprint line segment closest to the camera
+# location:
 def compute_refline(footprint,p1,visibleLineSeg):
+    # If there are more than one visible line segments: 
     if visibleLineSeg.shape[0]!=1:
+        # Compute to slopes of the visible lines:
         lineSegSlopes = [(visibleLineSeg[k,3]-visibleLineSeg[k,1])/
                          (visibleLineSeg[k,2]-visibleLineSeg[k,0])
                          for k in range(visibleLineSeg.shape[0])]
         
+        # If all of the calculated line slopes are finite:
         if any(abs(np.array(lineSegSlopes))==float('inf'))==False:
             
+            # Split the visible lines into two classes based on their 
+            # orientation (i.e., slopes):
             slopeDiff = (lineSegSlopes-lineSegSlopes[0])/lineSegSlopes[0]*100
             linesKeep1 = np.where(abs(slopeDiff)<50)[0]
             linesKeep2 = np.where(abs(slopeDiff)>=50)[0]
             
+            # Calculate the lengths of the first set of lines:
             linesKeep1Len = np.zeros(len(linesKeep1))
             for k in range(len(linesKeep1)): 
                 linesKeep1Len[k] = dist(Point(visibleLineSeg[linesKeep1][k,0:2]),
                                       Point(visibleLineSeg[linesKeep1][k,2:4]))
             
+            # Calculate the lengths of the second set of lines:
             linesKeep2Len = np.zeros(len(linesKeep2))
             for k in range(len(linesKeep2)): 
                 linesKeep2Len[k] = dist(Point(visibleLineSeg[linesKeep2][k,0:2]),
                                       Point(visibleLineSeg[linesKeep2][k,2:4]))
             
+            # Keep the set of lines that are predominant. Here predominant is 
+            # defined as the set of lines that have the longest cummulative
+            # length:
             if np.sum(linesKeep1Len)>np.sum(linesKeep2Len):
                 linesKeep = visibleLineSeg[linesKeep1]
             else:
                 linesKeep = visibleLineSeg[linesKeep2]
             
+            # Calculate the distance between the camera location and the 
+            # vertices of the set of lines that were kept:
             linesKeepDist = np.zeros([len(linesKeep),2])
             for k in range(len(linesKeep)): 
                 linesKeepDist[k,0] = dist(p1,Point(linesKeep[k,0:2]))
                 linesKeepDist[k,1] = dist(p1,Point(linesKeep[k,2:4]))
-                
+            
+            # Find the row index of the vertex closest to the camera location
+            # and get the vertices for the line that contains this vertex. If
+            # orientation based classification above works correctly, there
+            # should be exactly one line that is closest to the camera:
             lineFrontal = linesKeep[np.where(linesKeepDist==np.min(linesKeepDist))[0].item(0),:]
             
+            
+            # Create a rough reference line that spans the predominant 
+            # direction of the visible lines. Here the predominant direction
+            # is identified as the direction that spans longest distance
+            # between the extreme vertices of the visible lines (which are 
+            # denoted as left/right or top/bottom points): 
             vertLat = np.append(linesKeep[:,0],linesKeep[:,2])
             vertLon = np.append(linesKeep[:,1],linesKeep[:,3])
             
@@ -204,7 +271,8 @@ def compute_refline(footprint,p1,visibleLineSeg):
             else:
                 refLineRough = np.array([leftPt.x,leftPt.y,rightPt.x,rightPt.y])
             
-            # Case 1: Frontal line is located on the rough reference:        
+            # Case 1: Frontal line is located on the rough reference (i.e., 
+            # the two lines share a vertex):        
             if len(list(set(refLineRough) - set(lineFrontal)))==2:
                 refLineVert2Rough = list(set(refLineRough) - set(lineFrontal))
                 refLineVert2 = compute_refLineVert(lineFrontal,refLineVert2Rough,
@@ -218,33 +286,47 @@ def compute_refline(footprint,p1,visibleLineSeg):
                 refLineVert2Rough = refLineRough[2:4]
                 refLineVert2 = compute_refLineVert(lineFrontal,refLineVert2Rough,
                                                    footprint,linesKeep)
+            # Case 3: Frontal line and the rough reference are identical:
             else:
                 refLineVert1 = refLineRough[0:2]
                 refLineVert2 = refLineRough[2:4]
             
-            premRefLine = np.array([[refLineVert1[0],refLineVert1[1]],[refLineVert2[0],refLineVert2[1]]])
+            # Define the preliminary reference line:
+            premRefLine = np.array([[refLineVert1[0],refLineVert1[1]],
+                                    [refLineVert2[0],refLineVert2[1]]])
             #refLength = dist(Point(refLineVert1),Point(refLineVert2))
-            
+        
+        # If not all of the calculated line slopes are finite, set the 
+        # preliminary reference line as None:    
         else:
             premRefLine = None
             #refLength = None
+    
+    # If there is only one visible line segment, set it equal to the 
+    # preliminary reference line: 
     else:
         premRefLine = np.array([[visibleLineSeg[0,0],visibleLineSeg[0,1]],
                             [visibleLineSeg[0,2],visibleLineSeg[0,3]]])
         #refLength = dist(Point(visibleLineSeg[0,0:2]),Point(visibleLineSeg[0,2:4]))
     return premRefLine
 
+# Function to calculate the bearing of a line given the latitude/longitude
+# values of two points on the line in degrees:
 def get_bearing(lat1, long1, lat2, long2):
     dLon = (long2 - long1)
-    x = math.cos(math.radians(lat2)) * math.sin(math.radians(dLon))
-    y = math.cos(math.radians(lat1)) * math.sin(math.radians(lat2)) - math.sin(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.cos(math.radians(dLon))
-    brng = math.atan2(x,y)*180/math.pi
-    if brng<0:
-        brng += 360
+    x = math.cos(math.radians(lat2))*math.sin(math.radians(dLon))
+    y = (math.cos(math.radians(lat1))*math.sin(math.radians(lat2)) - 
+         math.sin(math.radians(lat1))*math.cos(math.radians(lat2))*
+         math.cos(math.radians(dLon)))
+    brng = (math.atan2(x,y)*180/math.pi + 360) % 360
     return brng
 
+# Function to compute the camera parameters necessary to retrieve the best
+# image of the building. Here the best image is defined as the image that
+# is primarily filled with a view of the building with very little inclusion
+# of other buildings. The camera parameters computed are the reference line,
+# image plane, image scale, fov, and heading:
 def get_camParam(premRefLine,p1):
-    
     # Camera location:
     x1 = p1.x 
     y1 = p1.y
@@ -254,12 +336,12 @@ def get_camParam(premRefLine,p1):
     y2 = premRefLine[0,1]
 
     # Calculate the slope of the preliminary reference line (since the slope is
-    # in proportions, no need to transform coordinates to Cartesian)
+    # in proportions, no need to transform coordinates to Cartesian):
     m = (premRefLine[0,1] - premRefLine[1,1])/(premRefLine[0,0] - premRefLine[1,0])
 
-    # Compute the point the reference line segment that forms the shortest 
-    # line segment between the camera location and the preliminary reference
-    # line segment:
+    # Compute the point where the reference line segment that forms the shortest 
+    # distance between the camera location and the preliminary reference
+    # line segment intersect:
     xint = (m/(1+m**2))*(x1/m + m*x2 + y1 - y2)
     yint = m*(xint - x2) + y2
     pint = Point(xint,yint)
@@ -287,23 +369,30 @@ def get_camParam(premRefLine,p1):
     fov = math.ceil((2*math.atan2(imageExtent,camDist)*180/math.pi)/10)*10
     if fov>120:
         fov = 120
+        # Calculate half of the image plane distance resulting from FOV=120
+        # degrees:
         d = camDist*math.tan(math.pi/3)
+        # Calculate half the length of the previously calculated image plane:
         dimPlane = dist(Point(imagePlane[0,:]),Point(imagePlane[1,:]))/2
+        # Scale down the change in x and y by multiplying half the distance
+        # between xint and yint and an end of the image plane by d/dimPlane:
         dx = d/dimPlane*(xint - imagePlane[0,0])
         dy = d/dimPlane*(yint - imagePlane[0,1]) 
+        # Calculate the new end points of the image plane:
         x0 = xint - dx
         y0 = yint - dy
         x3 = xint + dx
         y3 = yint + dy
         imagePlane = np.array([[x0,y0],[x3,y3]])
 
-    # Determine the endpoints of the reference line:
+    ## Determine the endpoints of the reference line:
+    # Convert the  
     lineCoords = np.vstack((imagePlane,premRefLine))
     xLines = np.zeros((len(lineCoords)))
+    lon1 = lineCoords[0,0]
+    lat1 = lineCoords[0,1]
     for k in range(1,len(xLines)):
-        lon1 = lineCoords[0,0]
         lon2 = lineCoords[k,0]
-        lat1 = lineCoords[0,1]
         lat2 = lineCoords[k,1]
         
         x = (lon1-lon2)*40075000*3.28084*math.cos((lat1+lat2)*math.pi/360)/360
@@ -345,39 +434,60 @@ def get_camParam(premRefLine,p1):
     return refLine, imagePlane, scale, fov, heading
   
 def image_retrieve(footprint,im_path,imName,key):
-# Calculate latitude/longitude
+    ## Compute the latitude/longitude of footprint centroid:
     latlon = Polygon(footprint).centroid
     latlon = [latlon.x,latlon.y]
     
-    # Extract camera location:
+    ## Extract camera location:
     p1 = download_metadata(latlon,key)
     
+    ## Identify the lines that are visible from the extracted camera location:
+    
+    # If camera location is succesfully extracted and the camera location is 
+    # not in within the footprint (i.e., an indoor was not extracted):
     if (p1 is not None) and (not Polygon(footprint).contains(p1)):
-        # Identify the footprint edges visible from the extracted camera location:
+        # Identify the footprint edges visible from the extracted camera
+        # location:
         #plt.plot(footprint[:,0],footprint[:,1])
         nVert = footprint.shape[0] - 1
         visibleLineSeg = np.zeros([nVert,4])
         visibleCount = 0
+        # Create light rays from the camera location to the midpoint of each 
+        # line segment that forms the footprint:
         for k in range(nVert):
             q1 = midpoint_calc(Point(footprint[k,0],footprint[k,1]),
                                Point(footprint[k+1,0],footprint[k+1,1]))
             #plt.plot(q1.x,q1.y,'bo')
             #plt.plot([p1.x,q1.x],[p1.y,q1.y])
             counter = 0
+            # If the light ray cast on a line segment from the camera location
+            # intersects with any other line segment that forms the footprint, 
+            # the light ray is obstructed by the intersecting line segment. 
+            # Hence, the line segment on which the ray is cast is not visible
+            # to the camera. Here intersection is defined as the two lines
+            # crossing each other. The situation where a line ends on another
+            # line is not considered line intersection:
             for m in range(nVert):
                 if m!=k:
                     p2 = Point(footprint[m,0], footprint[m,1])
                     q2 = Point(footprint[m+1,0], footprint[m+1,1])
                     if doIntersect(p1,q1,p2,q2):
                         counter+=1
+            # If the light ray cast on a line segment from the camera location
+            # does not intersect with any other line segment from the footprint 
+            # the line segment on which the ray is cast is visible to the 
+            # camera:
             if counter==0:
-                visibleLineSeg[visibleCount,:] = [footprint[k,0],footprint[k,1],
-                                               footprint[k+1,0],footprint[k+1,1]]
+                visibleLineSeg[visibleCount,:] = [footprint[k,0],
+                                                  footprint[k,1],
+                                                  footprint[k+1,0],
+                                                  footprint[k+1,1]]
                 visibleCount +=1
         
+        # Remove the rows of zeros from visibleLineSeg:
         visibleLineSeg = visibleLineSeg[~np.all(visibleLineSeg == 0, axis=1)]
     
-        # Compute the vertices and length of the ideal reference line:
+        ## Compute the vertices and length of the ideal reference line:
         premRefLine = compute_refline(footprint,p1,visibleLineSeg)  
         if premRefLine is not None:
             # Compute FOV and heading angles appropriate for the camera/footprint configuration   
@@ -542,7 +652,7 @@ def install_default_model(model_path):
 
         if not os.path.isfile(model_path):
             print('Loading default model file to the models folder...')
-            torch.hub.download_url_to_file('https://zenodo.org/record/4784634/files/facadeParser.pth',
+            torch.hub.download_url_to_file('https://zenodo.org/record/5809365/files/facadeParser.pth',
                                            model_path, progress=False)
             print('Default model loaded.')
     else:
@@ -579,9 +689,10 @@ def gen_bboxR0(roofBBoxPoly,facadeBBoxPoly):
                           (xRoofBottom[0],yRoofBottom[0])])
     return R0BBoxPoly
 
-def decode_segmap(image, nc=4):
-    label_colors = np.array([(0, 0, 0),(255, 0, 0), (255, 165, 0), (0, 0, 255)])
-                 # 0=background # 1=roof, 2=facade, 3=window
+def decode_segmap(image, nc=5):
+    label_colors = np.array([(0, 0, 0),(255, 0, 0), (255, 165, 0), (0, 0, 255),
+                             (175,238,238)])
+                 # 0=background # 1=roof, 2=facade, 3=window, 4=door
 
     r = np.zeros_like(image).astype(np.uint8)
     g = np.zeros_like(image).astype(np.uint8)
@@ -615,7 +726,7 @@ dfOut = pd.DataFrame(columns=['img', 'R0', 'R1','pitch'])
 with open(footprint_file) as f:
     footprintList = json.load(f)["features"]
 
-for polyNo in tqdm(range(10)):#tqdm(range(len(footprintList))):
+for polyNo in tqdm(range(4)):#tqdm(range(len(footprintList))):
     # Extract building footprint information and download the image viewing
     # this footprint:
     footprint = np.fliplr(np.squeeze(np.array(footprintList[polyNo]['geometry']['coordinates'])))
@@ -643,6 +754,7 @@ for polyNo in tqdm(range(10)):#tqdm(range(len(footprintList))):
     maskRoof = (pred==1).astype(np.uint8)
     maskFacade = (pred==2).astype(np.uint8)
     maskWin = (pred==3).astype(np.uint8)
+    maskDoor = (pred==4).astype(np.uint8)
     
     # Open and close masks
     kernel = np.ones((10,10), np.uint8)
@@ -650,7 +762,7 @@ for polyNo in tqdm(range(10)):#tqdm(range(len(footprintList))):
     maskFacade = cv2.morphologyEx(openedFacadeMask, cv2.MORPH_CLOSE, kernel)
     openedWinMask = cv2.morphologyEx(maskWin, cv2.MORPH_OPEN, kernel)
     maskWin = cv2.morphologyEx(openedWinMask, cv2.MORPH_CLOSE, kernel)
-    #plt.imshow(maskRoof)
+    plt.imshow(maskRoof)
     
     #plt.imshow(maskWin); plt.show()
     
@@ -658,7 +770,7 @@ for polyNo in tqdm(range(10)):#tqdm(range(len(footprintList))):
     contours, _ = cv2.findContours(maskRoof,cv2.RETR_EXTERNAL,
                                    cv2.CHAIN_APPROX_SIMPLE)
     roofContour = max(contours, key = cv2.contourArea).squeeze()
-    #plt.plot(roofContour[:,0],roofContour[:,1])
+    plt.plot(roofContour[:,0],roofContour[:,1])
     
     # Find the mimumum area rectangle that fits around the primary roof contour
     roofMinRect = cv2.minAreaRect(roofContour)
@@ -669,14 +781,14 @@ for polyNo in tqdm(range(10)):#tqdm(range(len(footprintList))):
                                         (roofMinRect[2,0],roofMinRect[2,1]),
                                         (roofMinRect[3,0],roofMinRect[3,1])])
     x,y = roofMinRectPoly.exterior.xy
-    #plt.plot(x,y)
+    plt.plot(x,y)
     
     roofBBoxPoly = gen_bbox(roofContour)
     x,y = roofBBoxPoly.exterior.xy
     roofPixHeight = max(y)-min(y)
     
-    #plt.plot(x,y)
-    #plt.show()
+    plt.plot(x,y)
+    plt.show()
     
     # Find facade contours
     #plt.imshow(maskFacade)
