@@ -16,7 +16,7 @@ from shapely.geometry import Point, LineString, Polygon
 import json
 from tqdm import tqdm
 
-key = "AIzaSyByMuXjShzjjGWsau8cwVk-1s-B5EHQLas"
+key = ""
 gpu_enabled = True
 model_path = "models/facadeParser.pth"
 footprint_file = "Alameda_footprints_400up.geojson"
@@ -385,13 +385,14 @@ def get_camParam(premRefLine,p1):
         y3 = yint + dy
         imagePlane = np.array([[x0,y0],[x3,y3]])
 
-    # Determine the endpoints of the reference line:
+    ## Determine the endpoints of the reference line:
+    # Convert the  
     lineCoords = np.vstack((imagePlane,premRefLine))
     xLines = np.zeros((len(lineCoords)))
+    lon1 = lineCoords[0,0]
+    lat1 = lineCoords[0,1]
     for k in range(1,len(xLines)):
-        lon1 = lineCoords[0,0]
         lon2 = lineCoords[k,0]
-        lat1 = lineCoords[0,1]
         lat2 = lineCoords[k,1]
         
         x = (lon1-lon2)*40075000*3.28084*math.cos((lat1+lat2)*math.pi/360)/360
