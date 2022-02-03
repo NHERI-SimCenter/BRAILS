@@ -3,31 +3,25 @@
 /*------------------------------------------------------*
 |                         BRAILS                        |
 |                                                       |
-| Author: Charles Wang,  UC Berkeley, c_w@berkeley.edu  |
+| Author: NHERI SimCenter                               |
 |                                                       |
-| Date:    1/10/2021                                    |
+| Last updated:    01/26/2022                           |
 *------------------------------------------------------*/
 """
 
 import os
-import random
 from multiprocessing.dummy import Pool as ThreadPool
 import requests 
 from pathlib import Path
 from functools import lru_cache
 
 @lru_cache(maxsize=None)
-def validateGoogleMapsAPI(key: str)->bool:
-    """Validate a Google Maps API key.
-    
+def validateGoogleAPIKey(key: str)->bool:
+    """
     The `@lru_cache` decorator automatically creates a
     cache for API values so that a validation process
     will only be run the first time the function is 
     called.
-
-    `bool(key)` will be false for both the empty
-    string, `''`, and `None` values. This function
-    should be expanded.
     """
     return bool(key) and key != 'put-your-key-here'
 
@@ -103,7 +97,7 @@ def getGoogleImages(footprints=None, GoogleMapAPIKey='',imageTypes=['StreetView'
     if footprints is None:
         raise ValueError('Please provide footprints') 
 
-    if not validateGoogleMapsAPI(GoogleMapAPIKey):
+    if not validateGoogleAPIKey(GoogleMapAPIKey):
         raise ValueError('Invalid GoogleMapAPIKey.') 
 
     for imgType in imageTypes:
