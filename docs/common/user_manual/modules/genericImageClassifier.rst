@@ -3,7 +3,78 @@
 Generic Image Classifier
 ========================
 
-The Generic Image Classifier is a module that can be used for creating user defined classifier.
+
+The Generic Image Classifier is a class that can be used for creating user defined classifier. 
+
+.. container:: toggle
+	       
+   .. container:: header
+
+       **Methods**
+
+   #. **init**
+      
+      #. **modelName** Path to model
+      #. **classNames** List of class names
+      #. **resultFile** default = preds.csv
+      #. **workDir** default = tmp
+      #. **printRes** default=True
+
+   #. **predict**
+
+      #. **image**: single image or list of images
+      #. **color_mode**: default='rgb'
+
+Methods
+-------	 
+
+* Constructor
+
+   #. **modelName** Path to model
+   #. **classNames** List of class names
+   #. **resultFile** default = preds.csv
+   #. **workDir** default = tmp
+   #. **printRes** default=True
+
+* train
+
+   #. **baseModel**: default='InceptionV3'
+   #. **lr1**: default=0.0001
+   #. **initial_epochs**: default==10,
+   #. **fine_tune_at**: default==300,
+   #. **lr2**: default=0.00001,
+   #. **fine_tune_epochs:** default==50,
+   #. **color_mode default**: ='rgb',
+   #. **horizontalFlip**: default=False,
+   #. **verticalFlip**: default=False,
+   #. **dropout**: default=0.6
+   #. **randomRotation**: default=0.0,
+   #. **callbacks**: default==[],
+   #. **plot**: default==True
+   
+
+* predict
+
+   #. **image**: single image or list of images
+   #. **color_mode**: default='rgb'
+
+* loadData
+
+   #. **imgDir**:
+   #. **valimgDir**: default=''
+   #. **randomseed**: default=1993,
+   #. **color_mode** default='rgb',
+   #. **image_size** default=(256, 256),
+   #. **batch_size**: default = 32,
+   #. **split**: default=[0.8,0.2]):   	       
+   
+
+ 
+
+
+
+Decription
+----------
 
 The user provides categorized images to this module. 
 
@@ -54,9 +125,6 @@ Construct the image classifier
 
     # load data
     materialClassifier.loadData('building_materials')
-
-
-
 
 
 
