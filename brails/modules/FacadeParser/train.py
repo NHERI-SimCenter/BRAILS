@@ -11,7 +11,7 @@ import torchvision.models.segmentation as models
 from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 from torch.utils.data import DataLoader
-#from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score#, roc_auc_score
 import numpy as np
 from tqdm import tqdm
 import argparse
@@ -79,16 +79,16 @@ def train(opt):
     # Specify the Model Architecture
     if opt.architecture.lower()=="deeplabv3_resnet50":
         model = models.deeplabv3_resnet50(pretrained=True,progress=True)
-        model.classifier = models.deeplabv3.DeepLabHead(2048,4)
+        model.classifier = models.deeplabv3.DeepLabHead(2048,5)
     elif  opt.architecture.lower()=="deeplabv3_resnet101":    
         model = models.deeplabv3_resnet101(pretrained=True,progress=True)
-        model.classifier = models.deeplabv3.DeepLabHead(2048,4)
+        model.classifier = models.deeplabv3.DeepLabHead(2048,5)
     elif  opt.architecture.lower()=="fcn_resnet50":    
         model = models.fcn_resnet50(pretrained=True,progress=True)
-        model.classifier = models.fcn.FCNHead(2048,4)
+        model.classifier = models.fcn.FCNHead(2048,5)
     elif  opt.architecture.lower()=="fcn_resnet101":    
         model = models.fcn_resnet101(pretrained=True,progress=True)
-        model.classifier = models.fcn.FCNHead(2048,4)
+        model.classifier = models.fcn.FCNHead(2048,5)
     
     # Define Optimizer    
     if opt.optim.lower()=="adam":
@@ -206,9 +206,12 @@ def train(opt):
     print('Training completed in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
     print(f'Lowest validation loss: {best_loss: .4f}')
-    
-    # load best model weights
+        
+    # Load best model weights:
     model.load_state_dict(best_model_wts)
+
+    # Save the best model:
+    torch.save(model, 'facadeParser.pth')
     
 if __name__ == '__main__':
     opt = get_args()
