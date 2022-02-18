@@ -42,7 +42,7 @@ from brails.utils.plotUtils import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
 
 
-class MyLazyDataset(Dataset):
+class CustomDataset(Dataset):
     def __init__(self, dataset, transform=None):
         self.dataset = dataset
         self.transform = transform
@@ -61,12 +61,18 @@ class MyLazyDataset(Dataset):
 
 
 class ImageClassifier:
-    """ A Generic Image Classifier. Can be used for  """
+    """ A Generic Image Classifier. Can be used for training and evaluating the model. """
 
-    def __init__(self, modelName=None, imgDir="/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType", valimgDir='', batch_size=256, resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
+    def __init__(self, modelName=None, imgDir='', valimgDir='', random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
         '''
-        modelFile: path to the model
-        classNames: a list of classnames
+        modelName: architecture of the model. Please refer to https://github.com/rwightman/pytorch-image-models for supported models.
+        imgDir: directories for training data
+        valimgDir: directories for validation data
+        random_split: ratio to split the data into a training set and validation set if validation data is not provided.
+        resultFile: name of the result file for predicting multple images.
+        workDir: the working directory
+        printRes: show the probability and prediction
+        printConfusionMatrix: whether to print the confusion matrix or not
         '''
 
         if not os.path.exists(workDir): 
@@ -77,12 +83,12 @@ class ImageClassifier:
             modelName = 'resnet18'
             print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
 
-
         # the name of the trained model
         modelFile = os.path.join(workDir,'{}.pickle'.format(modelName))
         
-        # meta data
+        # meta data contains model name, 
         modelDetailFile = os.path.join(workDir,'{}.json'.format(modelName))
+
 
         self.workDir = workDir
         self.modelFile = modelFile
@@ -91,36 +97,57 @@ class ImageClassifier:
         self.modelDetailFile = modelDetailFile
         self.printRes = printRes
         self.printConfusionMatrix = printConfusionMatrix
-        self.batch_size = batch_size
+        self.random_split = random_split
+        self.classNames = None
         #######################################################
         # create model
         self.model = timm.create_model(modelName, pretrained=True)
+
+        #######################################################
 
         if imgDir != '':
             
             self.loadData(imgDir=imgDir, valimgDir=valimgDir)
 
+            self.model.reset_classifier(len(self.classNames))
+
+        
         self.criterion =  nn.CrossEntropyLoss()
 
-        #######################################################
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model.to(self.device)
+        # load local model
 
         if os.path.exists(modelFile):
-
-            self.load_model(modelFile)
-
             print('Model found locally: {} '.format(modelFile))
-            
+
+            if imgDir != '':
+                print ("You are going to fine-tune the local model.")
+
+
             # check if a local definition of the model exists.
             if os.path.exists(self.modelDetailFile):
                 with open(self.modelDetailFile) as f:
                     self.classNames = json.load(f)['classNames']
                     print('Class names found in the detail file: {} '.format(self.classNames))
 
-        else:
-            print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
+            # change the number of output class
+            self.model.reset_classifier(len(self.classNames))
 
+            self.load_model(modelFile)
+
+        else:
+
+            if imgDir != '':
+                
+                print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
+            else:
+                print ("Pre-trained model does not exist. Need to provide training data.")
+                exit()
+
+        #######################################################
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model.to(self.device)
+
+        #######################################################
 
     def load_model(self, modelFile):
 
@@ -129,7 +156,7 @@ class ImageClassifier:
         self.model.load_state_dict(state_dict)
 
 
-    def predictOne(self, imagePath):
+    def predictOneImage(self, imagePath):
 
         image = Image.open(imagePath).convert("RGB")
 
@@ -159,7 +186,13 @@ class ImageClassifier:
         return [imagePath, prediction, prob]
 
 
-    def predictMulti(self,imagePathList):
+    def predictMultipleImages(self,imagePathList, resultFile=None):
+        
+        if resultFile:
+
+            self.resultFile = os.path.join(self.workDir, resultFile)
+
+
         predictions = []
         probs = []
 
@@ -215,21 +248,6 @@ class ImageClassifier:
         print('Results written in file {}'.format(self.resultFile))
 
         return df
-    
-    def predict(self, image):
-        if isinstance(image, types.GeneratorType):
-            image = list(image)
-
-        if isinstance(image, list): 
-            pred = self.predictMulti(image)
-
-        elif isinstance(image, (str, pathlib.Path)):
-            pred = self.predictOne(image)
-        else: 
-            raise TypeError("")
-        
-        return pred
-
 
     def get_transform(self):
 
@@ -256,6 +274,26 @@ class ImageClassifier:
 
         return train_transforms, val_transforms 
 
+
+    def predictOneDirectory(self, directory_name=None, resultFile=None):
+
+        if not directory_name:
+            print ("Please provide the directory for saving the images.")
+            return
+
+        if resultFile:
+
+            self.resultFile = os.path.join(self.workDir,resultFile)
+
+
+        self.printRes = False
+        train_transforms, val_transforms = self.get_transform()
+
+        image_path = list( pathlib.Path(directory_name).rglob('*.[pP][nN][gG]') )
+
+        self.predictMultipleImages(image_path)
+
+
     def Get_Images(self, root_dir):
         
         data = torchvision.datasets.ImageFolder(root=root_dir)
@@ -263,50 +301,53 @@ class ImageClassifier:
         return data
 
 
-    def loadData(self, imgDir="/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType", valimgDir='', randomseed=1993, split=[0.8,0.2]):
+    def loadData(self, imgDir="", valimgDir=''):
 
         train_transforms, val_transforms = self.get_transform()
 
         if valimgDir == '':
 
-            #print('* First split the data with 8:2.')
+            print('No validation dataset. Split the data with 8:2.')
 
             dataset =  self.Get_Images(imgDir)
 
             newClassNames = list(dataset.class_to_idx.keys())
 
-            train_size = int(len(dataset)*split[0])
-            val_size = int(len(dataset)*split[1])
+            train_size = int(len(dataset)*self.random_split[0])
+            val_size   = int(len(dataset)*self.random_split[1])
 
             train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
 
-            train_dataset = MyLazyDataset(train_dataset, train_transforms)
-            val_dataset   = MyLazyDataset(val_dataset, val_transforms)
+            self.train_dataset = CustomDataset(train_dataset, train_transforms)
+            self.val_dataset   = CustomDataset(val_dataset,   val_transforms)
 
         else:
 
-            train_dataset = Get_Images(imgDir, train_transforms)
-            val_dataset   = Get_Images(valimgDir, val_transforms)
+            self.train_dataset = Get_Images(imgDir, train_transforms)
+            self.val_dataset   = Get_Images(valimgDir, val_transforms)
         
 
             newClassNames = list(train_dataset.class_to_idx.keys())
         
-
-        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size= self.batch_size, shuffle=True, num_workers=4)
-        self.val_loader = torch.utils.data.DataLoader(val_dataset, batch_size = self.batch_size, shuffle=False, num_workers=4)
-
-
         self.classNames = newClassNames
 
         print('The names of the classes are: ', self.classNames)
         
-        # change the number of output class
-        self.model.reset_classifier(len(self.classNames))
 
 
-    def train(self, lr=0.01, epochs=10, plot=False):
+    def train(self, lr=0.01, batch_size=64, epochs=10, plot=False):
 
+        if not hasattr(ImageClassifier, 'self.train_dataset'):
+            print ("No training data. Please provide the directory to training dataset when you initialize the ImageClassifier.")
+            return
+
+        ############################################################
+        self.train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size= batch_size, shuffle=True, num_workers=4)
+        self.val_loader   = torch.utils.data.DataLoader(self.val_dataset,     batch_size = batch_size, shuffle=False, num_workers=4)
+
+
+        ############################################################
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), lr=lr, momentum=0.9)
 
         scheduler = StepLR(optimizer, step_size=10, gamma=0.95)
@@ -396,16 +437,15 @@ class ImageClassifier:
             plt.show()
 
 
-        ## 5. Save model
-
-        # Save the model in the current folder 
+        # Save the model in the working folder 
         self.save() 
 
         modelDetails = {
                 'modelName' : self.modelName,
-                'classNames' : self.classNames
+                'classNames' : self.classNames,
+                'final train accuracy': all_train_acc[-1],
+                'final val accuracy': all_val_acc[-1]
             }
-
 
         with open(self.modelDetailFile, 'w') as outfile:
             json.dump(modelDetails, outfile)
@@ -445,7 +485,7 @@ class ImageClassifier:
 
         cnf_matrix = confusion_matrix(predictions, ground_truths)
 
-        print ("Confusion Matrix")
+        print ("validation Confusion Matrix")
         print (cnf_matrix)
 
         if self.printConfusionMatrix:
@@ -462,7 +502,7 @@ class ImageClassifier:
 
 def main():
         
-    # Please refer to https://fastai.github.io/timmdocs/ for supported models
+    # Please refer to https://github.com/rwightman/pytorch-image-models for supported models
     # imgDir/valimgDir: directories for training/validation images. Arranged in this way:
 
     #    root/dog/xxx.png
@@ -473,15 +513,15 @@ def main():
     #    root/cat/nsdf3.png
     #    root/cat/[...]/asd932_.png
 
-    work = ImageClassifier(modelName='resnet18', imgDir="/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType", valimgDir='', batch_size=64)
+    work = ImageClassifier(modelName='resnet18', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
 
+    work.train(lr=0.01, batch_size=64, epochs=5)
 
-    #work.train(lr=0.01, epochs=10)
+    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat")
 
-    #work.predictOne("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png")
+    #work.predictOneImage("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png")
 
-    work.predictMulti(["/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png", "/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.96240924000001x38.94450328.png"])
-
+    #work.predictMultipleImages(["/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png", "/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.96240924000001x38.94450328.png"])
 
 
 if __name__ == '__main__':
