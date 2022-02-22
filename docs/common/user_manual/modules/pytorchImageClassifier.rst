@@ -1,6 +1,6 @@
-.. _lbl-genericImageClassifier:
+.. _lbl-pytorchImageClassifier:
 
-Generic Image Classifier
+Pytorch Image Classifier
 ========================
 
 The Generic Image Classifier is a class that can be used for creating user defined classifier. 
