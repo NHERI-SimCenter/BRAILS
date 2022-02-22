@@ -89,6 +89,7 @@ The predictions obtained when the script runs will look like following:
           pip install -U BRAILS --upgrade
 
 
+    #. As will be shown in :ref:`lbl-understand`, it is important to review sample results and possible retrain the model yourself.
 
 
    

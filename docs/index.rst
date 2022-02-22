@@ -42,19 +42,6 @@ The software framework Building Recognition using AI at Large-Scale, |app|, is  
    common/technical_manual/understand
 
 
-.. _lbl-developer-manual:
-
-.. toctree::
-   :caption: Developer Manual
-   :maxdepth: 1
-   :numbered: 2
-
-   common/developer_manual/how_to_extend/how_to_build
-   common/developer_manual/how_to_extend/architecture
-   common/developer_manual/how_to_extend/how_to_extend
-   common/developer_manual/coding_style/coding_style
- 
-
 How to cite
 ---------------------------
 

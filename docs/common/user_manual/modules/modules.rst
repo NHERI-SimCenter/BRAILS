@@ -15,6 +15,7 @@ The following is the set of current modules available in BRAILS:
    :maxdepth: 1
 
    genericImageClassifier
+   pytorchImageClassifier
    roofClassifier
    occupancyClassifier
    nFloorDetector
