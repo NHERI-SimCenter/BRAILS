@@ -3,74 +3,67 @@
 Pytorch Image Classifier
 ========================
 
-The Generic Image Classifier is a class that can be used for creating user defined classifier. 
+The Pytorch Generic Image Classifier is a class that can be used for creating user defined classifier. It can be used for training and evaluating the model.
 
 .. container:: toggle
-	       
+         
    .. container:: header
 
        **Methods**
 
    #. **init**
       
-      #. **modelName** Path to model
-      #. **classNames** List of class names
-      #. **resultFile** default = preds.csv
-      #. **workDir** default = tmp
-      #. **printRes** default=True
+      #. **modelName** Name of the model default = 'rooftype_resnet18_v1'
+      #. **imgDir** Directories for training data
+      #. **valimgDir** Directories for validation data
+      #. **random_split** Ratio to split the data into a training set and a validation set if validation data is not provided.
+      #. **resultFile** Name of the result file for predicting multple images. default = preds.csv
+      #. **workDir** The working directory default = tmp
+      #. **printRes** Show the probability and prediction default=True      
+      #. **printConfusionMatrix** Whether to print the confusion matrix or not default=False    
 
-   #.  train
+   #.  **train**
 
-      #. **baseModel**: default='InceptionV3'
-      #. **lr1**: default=0.0001
-      #. **initial_epochs**: default==10,
-      #. **fine_tune_at**: default==300,
-      #. **lr2**: default=0.00001,
-      #. **fine_tune_epochs:** default==50,
-      #. **color_mode default**: ='rgb',
-      #. **horizontalFlip**: default=False,
-      #. **verticalFlip**: default=False,
-      #. **dropout**: default=0.6
-      #. **randomRotation**: default=0.0,
-      #. **callbacks**: default==[],
-      #. **plot**: default==True
+      #. **lr1**: default=0.01
+      #. **epochs**: default==10
+      #. **batch_size**: default==64
+      #. **plot**: default==False
+     
+   #. **predictOneImage**
+   
+      #. **imagePath**: Path to a single image
 
-   #. **predict**
+   #. **predictMultipleImages**
+  
+      #. **imagePathList**: A list of image paths
+      #. **resultFile**: The name of the result filename default=None
+                   
+   #. **predictOneDirectory**
 
-      #. **image**: single image or list of images
-      #. **color_mode**: default='rgb'
-
-   #.  loadData
-
-      #. **imgDir**:
-      #. **valimgDir**: default=''
-      #. **randomseed**: default=1993,
-      #. **color_mode** default='rgb',
-      #. **image_size** default=(256, 256),
-      #. **batch_size**: default = 32,
-      #. **split**: default=[0.8,0.2]):   	       	 
-
+      #. **directory_name**: Directory for saving all the images
+      #. **resultFile**: The name of the result filename default=None
+                   
 
 Decription
 ----------
 
-This class implements the abstraction of an image classifier, it can be first used to train the classifier and save the data needed by the classifier locally. Once trained, the classifier can be used to predict the class of each image given a set of images. The user provides categorized images to the classifier so that it can be initially trained.
+This class implements the abstraction of an image classifier, it can be first used to train the classifier. Once trained, the classifier can be used to predict the class of each image given a set of images. This class can also be used to load a pre-trained model to make predications. 
 
 Example
 -------
 
 The following is an example, in which a classifier is created and trained.
 
-The image dataset for this example contains street view images categorized according to construction materials.
+The image dataset for this example contains satellite images categorized according to roof type.
 
-The dataset can be downloaded `here <https://zenodo.org/record/4416845/files/building_materials.zip>`_.
+The dataset can be downloaded `here <https://zenodo.org/record/6231341/files/roofType.zip>`_.
 
-When unzipped, the file gives the 'building_materials' which is a directory that contains the images for training:
+When unzipped, the file gives the 'roofType'. You need to set ``imgDir'' to the corresponding directory.  The roofType directory contains the images for training:
 
 
 .. code-block:: none 
 
-    building_materials
+    roofType
     │── class_1
     │       └── *.png
     │── class_2
@@ -88,14 +81,10 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.modules import ImageClassifier
+    from brails.modules import PytorchImageClassifier
 
-    # initialize the classifier, give it a name
-    materialClassifier = ImageClassifier(modelName='materialClassifierV0.1')
-
-    # load data
-    materialClassifier.loadData('building_materials')
-
+    # initialize the classifier, give it a name and a directory
+    roofClassifier = PytorchImageClassifier(modelName='rooftype_resnet18_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
 
 
 Train the model
@@ -103,72 +92,38 @@ Train the model
 
 .. code-block:: none 
 
-    # train the base model for 50 epochs and then fine tune for 200 epochs
-    materialClassifier.train(baseModel='InceptionV3', initial_epochs=50,fine_tune_epochs=200)
+    # train the base model for 5 epochs with an initial learning rate of 0.01. 
+    roofClassifier.train(lr=0.01, batch_size=64, epochs=5)
 
 
 It is recommended to run the above example on a GPU machine.
 
-The following ML model training options are available for selection as the baseModel key:
-
-.. code-block:: none 
-
-    'Xception',
-    'VGG16',
-    'VGG19',
-    'ResNet50',
-    'ResNet101',
-    'ResNet152',
-    'ResNet50V2',
-    'ResNet101V2',	
-    'ResNet152V2',	
-    'InceptionV3',	
-    'InceptionResNetV2',
-    'MobileNet',
-    'MobileNetV2',	
-    'DenseNet121',	
-    'DenseNet169',	
-    'DenseNet201',	
-    'NASNetMobile',
-    'NASNetLarge',	
-    'EfficientNetB0',	
-    'EfficientNetB1',	
-    'EfficientNetB2',	
-    'EfficientNetB3',	
-    'EfficientNetB4',	
-    'EfficientNetB5',	
-    'EfficientNetB6',	
-    'EfficientNetB7'
-
+Please refer to https://github.com/rwightman/pytorch-image-models for supported models. You may need to first install timm via pip: pip install timm.
 
 
 Classify Images Based on Model
 ------------------------------
 
-Now you can use the trained model to predict the (building materials) class for a given image.
+Now you can use the trained model to predict the (roofType) class for a given image.
 
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.GenericImageClassifier import ImageClassifier
-    materialClassifier = ImageClassifier(modelName='materialClassifierV0.1')
+    from brails.PytorchGenericModelClassifier import PytorchImageClassifier
+    roofClassifier = PytorchImageClassifier(modelName='rooftype_resnet18_v1')
                                             
     # define the paths of images in a list
-    imgs = ['building_materials/concrete/469 VAN BUREN AVE Oakland2.jpg',
-            'building_materials/masonry/101 FAIRMOUNT AVE Oakland2.jpg',
-            'building_materials/wood/41 MOSS AVE Oakland2.jpg']
+    imgs = ["/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png",   
+         "/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.96240924000001x38.94450328.png"]
 
     # use the model to predict
-    predictions = materialClassifier.predict(imgs)
+    predictions_dataframe = roofClassifier.predictMultipleImages(imgs)
 
 
-The predictions will be written in preds.csv under the current directory.
+The predictions will be written in preds.csv under the working directory.
 
 .. note::
     The generic image classifier is intended to illustrate the overall process of model training and prediction.
     The classifier takes an image as the input and will always produce a prediction. 
     Since the classifier is trained to classify only a specific category of images, its prediction is meaningful only if 
     the input image belongs to the category the model is trained for.
-
-
-
