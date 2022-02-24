@@ -60,7 +60,7 @@ class CustomDataset(Dataset):
         return len(self.dataset)
 
 
-class ImageClassifier:
+class PytorchImageClassifier:
     """ A Generic Image Classifier. Can be used for training and evaluating the model. """
 
     def __init__(self, modelName=None, imgDir='', valimgDir='', random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
@@ -80,8 +80,13 @@ class ImageClassifier:
 
         if not modelName:
 
-            modelName = 'resnet18'
+            modelName = 'resnet18_v1'
+            arch = 'resnet18'
             print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
+        else:
+
+            task, arch, version = modelName.split("_")
+
 
         # the name of the trained model
         modelFile = os.path.join(workDir,'{}.pickle'.format(modelName))
@@ -101,17 +106,17 @@ class ImageClassifier:
         self.classNames = None
         #######################################################
         # create model
-        self.model = timm.create_model(modelName, pretrained=True)
+        self.model = timm.create_model(arch, pretrained=True)
 
         #######################################################
 
-        if imgDir != '':
-            
+        if imgDir:
+            print ("Loading data")
             self.loadData(imgDir=imgDir, valimgDir=valimgDir)
 
             self.model.reset_classifier(len(self.classNames))
 
-        
+            
         self.criterion =  nn.CrossEntropyLoss()
 
         # load local model
@@ -119,7 +124,7 @@ class ImageClassifier:
         if os.path.exists(modelFile):
             print('Model found locally: {} '.format(modelFile))
 
-            if imgDir != '':
+            if imgDir:
                 print ("You are going to fine-tune the local model.")
 
 
@@ -136,7 +141,7 @@ class ImageClassifier:
 
         else:
 
-            if imgDir != '':
+            if imgDir:
                 
                 print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
             else:
@@ -305,7 +310,7 @@ class ImageClassifier:
 
         train_transforms, val_transforms = self.get_transform()
 
-        if valimgDir == '':
+        if not valimgDir:
 
             print('No validation dataset. Split the data with 8:2.')
 
@@ -335,10 +340,9 @@ class ImageClassifier:
         print('The names of the classes are: ', self.classNames)
         
 
-
     def train(self, lr=0.01, batch_size=64, epochs=10, plot=False):
 
-        if not hasattr(ImageClassifier, 'self.train_dataset'):
+        if not hasattr(self, 'train_dataset'):
             print ("No training data. Please provide the directory to training dataset when you initialize the ImageClassifier.")
             return
 
@@ -513,7 +517,7 @@ def main():
     #    root/cat/nsdf3.png
     #    root/cat/[...]/asd932_.png
 
-    work = ImageClassifier(modelName='resnet18', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    work = PytorchImageClassifier(modelName='rooftype_resnet18_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
 
     work.train(lr=0.01, batch_size=64, epochs=5)
 
@@ -526,7 +530,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
