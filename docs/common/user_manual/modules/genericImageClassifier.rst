@@ -3,19 +3,61 @@
 Generic Image Classifier
 ========================
 
-The Generic Image Classifier is a module that can be used for creating user defined classifier.
+The Generic Image Classifier is a class that can be used for creating user defined classifier. 
 
-The user provides categorized images to this module. 
+.. container:: toggle
+	       
+   .. container:: header
 
-An image classifier will be built automatically based on the images provided.
+       **Methods**
 
-The classifier is then trained and saved locally.
+   #. **init**
+      
+      #. **modelName** Path to model
+      #. **classNames** List of class names
+      #. **resultFile** default = preds.csv
+      #. **workDir** default = tmp
+      #. **printRes** default=True
 
-The trained classifier can readily be used for inference readily and can be shared with other users.
+   #.  train
 
-During the inference stage, the classifier takes a list of images as the input, and predicts the classes of the images. 
+      #. **baseModel**: default='InceptionV3'
+      #. **lr1**: default=0.0001
+      #. **initial_epochs**: default==10,
+      #. **fine_tune_at**: default==300,
+      #. **lr2**: default=0.00001,
+      #. **fine_tune_epochs:** default==50,
+      #. **color_mode default**: ='rgb',
+      #. **horizontalFlip**: default=False,
+      #. **verticalFlip**: default=False,
+      #. **dropout**: default=0.6
+      #. **randomRotation**: default=0.0,
+      #. **callbacks**: default==[],
+      #. **plot**: default==True
+
+   #. **predict**
+
+      #. **image**: single image or list of images
+      #. **color_mode**: default='rgb'
+
+   #.  loadData
+
+      #. **imgDir**:
+      #. **valimgDir**: default=''
+      #. **randomseed**: default=1993,
+      #. **color_mode** default='rgb',
+      #. **image_size** default=(256, 256),
+      #. **batch_size**: default = 32,
+      #. **split**: default=[0.8,0.2]):   	       	 
 
 
+Decription
+----------
+
+This class implements the abstraction of an image classifier, it can be first used to train the classifier and save the data needed by the classifier locally. Once trained, the classifier can be used to predict the class of each image given a set of images. The user provides categorized images to the classifier so that it can be initially trained.
+
+Example
+-------
 
 The following is an example, in which a classifier is created and trained.
 
@@ -41,8 +83,7 @@ When unzipped, the file gives the 'building_materials' which is a directory that
 
 
 Construct the image classifier 
-------------------------------------
-
+-------------------------------
 
 .. code-block:: none 
 
@@ -57,11 +98,8 @@ Construct the image classifier
 
 
 
-
-
-
 Train the model
----------------------
+---------------
 
 .. code-block:: none 
 
@@ -104,9 +142,8 @@ The following ML model training options are available for selection as the baseM
 
 
 
-Use the model
----------------------
-
+Classify Images Based on Model
+------------------------------
 
 Now you can use the trained model to predict the (building materials) class for a given image.
 
@@ -126,7 +163,6 @@ Now you can use the trained model to predict the (building materials) class for 
 
 
 The predictions will be written in preds.csv under the current directory.
-
 
 .. note::
     The generic image classifier is intended to illustrate the overall process of model training and prediction.
