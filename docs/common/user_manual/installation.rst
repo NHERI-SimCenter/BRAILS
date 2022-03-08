@@ -4,11 +4,11 @@ Installation
 ================
 
 BRAILS is developed in Python3. 
-You can install BRAILS using pip3 (you can use pip is your default pip is pip3):
+You can install BRAILS using :command:`pip` package management system by issuing the command:
 
 .. code-block:: none 
 
-    pip3 install -U BRAILS
+    pip install git+https://github.com/NHERI-SimCenter/BRAILS
 
 
 Windows users may experience difficulties because of two dependencies required: GDAL and Fiona. 
