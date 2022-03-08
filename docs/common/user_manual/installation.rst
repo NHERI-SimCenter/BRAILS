@@ -4,7 +4,7 @@ Installation
 ================
 
 BRAILS is developed in Python3. 
-You can install BRAILS using :command:`pip` package management system by issuing the command:
+You can install BRAILS using `pip <https://pip.pypa.io/en/stable/installation/>`_ package management system by issuing the command:
 
 .. code-block:: none 
 
