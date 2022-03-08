@@ -115,12 +115,16 @@ class NFloorDetector():
         # Define the Model Architecture
         coeff = self.system_dict["train"]["model"]["compCoeff"]
         
-        model_path = os.path.join(f"pretrained_weights','efficientdet-d{coeff}.pth")
+        model_path = os.path.join('pretrained_weights',f"efficientdet-d{coeff}.pth")
         
         if not os.path.isfile(model_path):
             print('Loading default floor detector model file to the pretrained folder...')
             torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',
                                            model_path, progress=False)
+            
+        gtf.set_model(model_name=f"efficientdet-d{coeff}.pth",
+                      num_gpus=self.system_dict["train"]["model"]["nGPU"],
+                      freeze_head=self.system_dict["train"]["model"]["topOnly"])
         
         # Set Model Hyperparameters    
         gtf.set_hyperparams(optimizer=self.system_dict["train"]["model"]["optim"], 
