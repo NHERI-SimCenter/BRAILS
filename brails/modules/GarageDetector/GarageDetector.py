@@ -17,7 +17,7 @@ if torch.cuda.is_available():
 else:    
     useGPU=False
     
-class NFloorDetector():
+class GarageDetector():
     def __init__(self):
         self.system_dict = {}
         self.system_dict["train"] = {}
