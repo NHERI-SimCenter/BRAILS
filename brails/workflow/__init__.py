@@ -34,6 +34,4 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Author:
-# Chaofeng Wang, c_w@berkeley
-
-
+# NHERI SimCenter

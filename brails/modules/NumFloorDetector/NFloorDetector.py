@@ -87,6 +87,56 @@ class NFloorDetector():
         gtf.train(num_epochs=self.system_dict["train"]["model"]["numEpochs"],
                   val_interval=self.system_dict["train"]["model"]["valInterval"],
                   save_interval=self.system_dict["train"]["model"]["saveInterval"])
+        
+    def retrain(self, optim="adamw", lr=1e-4, numEpochs=25, nGPU=1):
+        self.system_dict["train"]["model"]["compCoeff"] = 4
+        self.system_dict["train"]["model"]["topOnly"] = False
+        self.system_dict["train"]["model"]["optim"] = optim          
+        self.system_dict["train"]["model"]["lr"] = lr
+        self.system_dict["train"]["model"]["numEpochs"] = numEpochs
+        self.system_dict["train"]["model"]["nGPU"] = nGPU        
+        
+        # Create the Object Detector Object
+        gtf = Detector()
+
+        gtf.set_train_dataset(self.system_dict["train"]["data"]["rootDir"],
+                              "",
+                              "",
+                              self.system_dict["train"]["data"]["trainSet"],
+                              classes_list=self.system_dict["train"]["data"]["classes"],
+                              batch_size=self.system_dict["train"]["data"]["batchSize"],
+                              num_workers=self.system_dict["train"]["data"]["nWorkers"])        
+
+        gtf.set_val_dataset(self.system_dict["train"]["data"]["rootDir"],
+                            "",
+                            "",
+                            self.system_dict["train"]["data"]["validSet"])
+        
+        # Define the Model Architecture
+        coeff = self.system_dict["train"]["model"]["compCoeff"]
+        
+        model_path = os.path.join('pretrained_weights',f"efficientdet-d{coeff}.pth")
+        
+        os.makedirs('pretrained_weights',exist_ok=True)
+        if not os.path.isfile(model_path):
+            print('Loading default floor detector model file to the pretrained folder...')
+            torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',
+                                           model_path, progress=False)
+            
+        gtf.set_model(model_name=f"efficientdet-d{coeff}.pth",
+                      num_gpus=self.system_dict["train"]["model"]["nGPU"],
+                      freeze_head=self.system_dict["train"]["model"]["topOnly"])
+        
+        # Set Model Hyperparameters    
+        gtf.set_hyperparams(optimizer=self.system_dict["train"]["model"]["optim"], 
+                            lr=self.system_dict["train"]["model"]["lr"],
+                            es_min_delta=self.system_dict["train"]["model"]["esMinDelta"], 
+                            es_patience=self.system_dict["train"]["model"]["esPatience"])
+        
+        # Train    
+        gtf.train(num_epochs=self.system_dict["train"]["model"]["numEpochs"],
+                  val_interval=self.system_dict["train"]["model"]["valInterval"],
+                  save_interval=self.system_dict["train"]["model"]["saveInterval"])        
 
     def predict(self, images, modelPath="models/efficientdet-d4_trained.pth", gpuEnabled=useGPU, outFile="nFloorPredict.csv"):
         self.system_dict["infer"]["images"] = images
