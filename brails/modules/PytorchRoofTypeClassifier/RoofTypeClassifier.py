@@ -34,13 +34,12 @@
 # Yunhui Guo
 
 
-from brails.modules.PytorchModelZoo import zoo
+from brails.modules.PytorchRoofTypeClassifier.RooftypeModelZoo import zoo
 from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import *
 
+#from RooftypeModelZoo import zoo
 #import sys
 #sys.path.insert(0,'..')
-
-#from PytorchModelZoo import zoo
 #from PytorchGenericModelClassifier.GenericImageClassifier import *
 
 import wget 
@@ -48,7 +47,7 @@ import os
 
 class PytorchRoofClassifier(PytorchImageClassifier):
     """
-    A Roof Type Classifier.
+    A Roof Type Classifier. Classes: hipped, gabled, flat
     
     Parameters
     ----------
@@ -58,7 +57,6 @@ class PytorchRoofClassifier(PytorchImageClassifier):
     resultFile: name of the result file for predicting multple images.
     workDir: the working directory
     printRes: show the probability and prediction
-
     """
 
     def __init__(self, 
@@ -70,29 +68,47 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             printRes=True
     ):
 
-        if not os.path.exists(workDir):
-            os.makedirs(workDir)
-
         if not modelName:
+
             modelName = 'transformer_rooftype_v1'
             print('A default roof type model will be used: {}.'.format(modelName))
 
-        modelFile = os.path.join(workDir,'{}.pkl'.format(modelName))
 
         if download:
-            
-            print('Downloading the model ...')
-            
-            classnames = self.download_model(modelFile)
 
-            self.classNames = classnames
+            if modelName != 'transformer_rooftype_v1':
+                print ("Try to download pre-trained model. Currently only support transformer_rooftype_v1")  
+                exit()
+
+            if not os.path.exists("./BRAILS_pretrained_model/"):
+                os.makedirs("./BRAILS_pretrained_model/")
+
+
+            modelFile = os.path.join("./BRAILS_pretrained_model/", '{}.pkl'.format(modelName))
+
+            if not os.path.exists(modelFile):
+
+                print('Downloading the model ...')
+                
+                self.download_model(modelFile)
+
+            else:
+                print('Pre-trained model exists locally.')
+
+            self.classNames = zoo['roofType']['classNames']
+
 
         else:
-            print('Pre-trained  will not be downloaded. You need to provide training data for training the model')
+
+            if imgDir == "":
+                print('Pre-trained will not be downloaded. You need to provide training data for training the model')
+                exit()
+
 
         PytorchImageClassifier.__init__(self,
             modelName=modelName,
             imgDir=imgDir,
+            download=download,
             resultFile=resultFile,
             workDir=workDir,
             printRes=printRes
@@ -102,15 +118,14 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
         fileURL = zoo['roofType']['fileURL']
 
-        classNames = zoo['roofType']['classNames']
-
         wget.download(fileURL, out=modelFile)
 
-        return classNames
 
 if __name__ == '__main__':
     
-    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1')
+    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=False, imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    work = PytorchRoofClassifier(modelName='resnet18_rooftype_v1', download=False)
 
-    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat")
+    work.train(lr=0.01, batch_size=16, epochs=5)
+    #work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat")
 
