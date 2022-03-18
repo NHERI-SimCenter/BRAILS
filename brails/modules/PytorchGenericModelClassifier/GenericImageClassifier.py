@@ -124,31 +124,42 @@ class PytorchImageClassifier:
     random_split: ratio to split the data into a training set and validation set if validation data is not provided.
     resultFile: name of the result file for predicting multple images.
     workDir: the working directory
+    download: False,
     printRes: show the probability and prediction
     printConfusionMatrix: whether to print the confusion matrix or not
 
     """
 
-    def __init__(self, modelName=None, imgDir='', valimgDir='', random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
+    def __init__(self, modelName=None, imgDir='', valimgDir='', download=False, random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
 
         if not os.path.exists(workDir): 
             os.makedirs(workDir)
 
         if not modelName:
 
-            modelName = 'resnet18_v1'
-            arch = 'resnet18'
+            modelName = 'transformer_rooftype_v1'
+            arch = 'transformer'
             print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
+        
         else:
 
             arch, task, version = modelName.split("_")
 
 
-        # the name of the trained model
-        modelFile = os.path.join(workDir,'{}.pkl'.format(modelName))
-        
-        # meta data contains model name, 
-        modelDetailFile = os.path.join(workDir,'{}.json'.format(modelName))
+        if not download:
+
+            # the name of the trained model
+            modelFile = os.path.join(workDir,'{}.pkl'.format(modelName))
+
+            # meta data contains model name, 
+            modelDetailFile = os.path.join(workDir,'{}.json'.format(modelName))
+
+        else:
+
+            modelFile = os.path.join("./BRAILS_pretrained_model/", '{}.pkl'.format(modelName))
+
+            # meta data contains model name, 
+            modelDetailFile = os.path.join("./BRAILS_pretrained_model/", '{}.json'.format(modelName))
 
 
         self.workDir = workDir
@@ -176,29 +187,31 @@ class PytorchImageClassifier:
             print ("Loading data")
             self.loadData(imgDir=imgDir, valimgDir=valimgDir)
 
-            self.model.reset_classifier(len(self.classNames))
-
             
         self.criterion =  nn.CrossEntropyLoss()
 
         # load local model
-
         if os.path.exists(modelFile):
 
             print('\nModel found locally: {} '.format(modelFile))
 
             if imgDir:
+
                 print ("You are going to fine-tune the local model.")
+
 
 
             # check if a local definition of the model exists.
             if os.path.exists(self.modelDetailFile):
+                
                 with open(self.modelDetailFile) as f:
+                    
                     self.classNames = json.load(f)['classNames']
+                    
                     print('Class names found in the detail file: {} '.format(self.classNames))
 
-            # change the number of output class
 
+            # change the number of output class
             self.model.reset_classifier(len(self.classNames))
             
             self.model = nn.DataParallel(self.model)
@@ -206,6 +219,8 @@ class PytorchImageClassifier:
             self.load_model(modelFile)
 
         else:
+                
+            self.model.reset_classifier(len(self.classNames))
 
             if imgDir:
                 
@@ -231,7 +246,13 @@ class PytorchImageClassifier:
         """
         print ("Loading ", modelFile)
 
-        state_dict = torch.load(modelFile)
+        if torch.cuda.is_available():
+
+            state_dict = torch.load(modelFile)
+
+        else:
+
+            state_dict = torch.load(modelFile, map_location='cpu')
 
         self.model.load_state_dict(state_dict)
 
@@ -436,8 +457,6 @@ class PytorchImageClassifier:
 
         """
 
-
-
         if not directory_name:
             print ("Please provide the directory for saving the images.")
             return
@@ -563,7 +582,6 @@ class PytorchImageClassifier:
         Returns
         -------
         
-
         """
 
         if not hasattr(self, 'train_dataset'):
@@ -572,7 +590,7 @@ class PytorchImageClassifier:
 
         ############################################################
         self.train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size= batch_size, shuffle=True, num_workers=4)
-        self.val_loader   = torch.utils.data.DataLoader(self.val_dataset,     batch_size = batch_size, shuffle=False, num_workers=4)
+        self.val_loader   = torch.utils.data.DataLoader(self.val_dataset,   batch_size = batch_size, shuffle=False, num_workers=4)
 
 
         ############################################################
@@ -586,6 +604,7 @@ class PytorchImageClassifier:
 
         all_val_acc = []
         all_val_loss = []
+
         for epoch in range(epochs):
 
             print ("Epoch: ", epoch)
@@ -753,7 +772,6 @@ class PytorchImageClassifier:
         Returns
         -------
             
-
         """
 
         torch.save(self.model.state_dict(), self.modelFile)
