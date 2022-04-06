@@ -6,21 +6,29 @@
 
 ## What is BRAILS
 
-BRAILS is the acronym for Building Recognition using AI at Large-Scale, 
-which is an AI-based pipeline for city-scale building information modeling (BIM).
+BRAILS (Building Recognition using AI at Large-Scale) is an AI-based pipeline for regional-level building information modeling.
 
 ## How to install
 
+The easiest way to install the latest version of BRAILS is using ``pip``:
 ```
 pip install git+https://github.com/NHERI-SimCenter/BRAILS
+```
+To install an earlier release of BRAILS using ``pip``:
+```
+pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/{Release Tag}/BRAILS-{Release Tag}.zip
+```
+For example, to install v1.9.0 of BRAILS:
+```
+pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/v1.9.0/BRAILS-v1.9.0.zip
 ```
 
 If you have difficulty installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
 
 
-## Documents
+## Documentation
 
-Read the online documentation <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">here</a>.
+Online documentation is available at <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">https://nheri-simcenter.github.io/BRAILS-Documentation</a>.
 
 
 ## Quickstart

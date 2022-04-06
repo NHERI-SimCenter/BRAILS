@@ -1,9 +1,9 @@
-.. _lbl-pytorchImageClassifier:
+.. _lbl-pytorchRoofTypeClassifier:
 
-Pytorch Image Classifier
+Pytorch Roof Type Classifier
 ========================
 
-The Pytorch Generic Image Classifier is a class that can be used for creating user defined classifier. It can be used for training and evaluating the model.
+The Pytorch roof type Image Classifier is a subclass of Pytorch generic image classifier. It can be used for inference and fine-tuning.
 
 .. container:: toggle
          
@@ -15,12 +15,9 @@ The Pytorch Generic Image Classifier is a class that can be used for creating us
       
       #. **modelName** Name of the model default = 'rooftype_resnet18_v1'
       #. **imgDir** Directories for training data
-      #. **valimgDir** Directories for validation data
-      #. **random_split** Ratio to split the data into a training set and a validation set if validation data is not provided.
       #. **resultFile** Name of the result file for predicting multple images. default = preds.csv
       #. **workDir** The working directory default = tmp
       #. **printRes** Show the probability and prediction default=True      
-      #. **printConfusionMatrix** Whether to print the confusion matrix or not default=False    
 
    #.  **train**
 
@@ -47,12 +44,12 @@ The Pytorch Generic Image Classifier is a class that can be used for creating us
 Description
 ----------
 
-This class implements the abstraction of an image classifier, it can be first used to train the classifier. Once trained, the classifier can be used to predict the class of each image given a set of images. This class can also be used to load a pre-trained model to make predictions. 
+This class implements a roof type classifier which is a subsclass of Pytorch generic classifier. It will download the pretrained model for inference. It can also be used for fine-tuning the pre-trained model if training data is provided.
 
 Example
 -------
 
-The following is an example, in which a classifier is created and trained.
+The following is an example, in which a roof type classifier is created.
 
 The image dataset for this example contains satellite images categorized according to roof type.
 
@@ -81,27 +78,13 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.modules import PytorchImageClassifier
+    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
 
     # initialize the classifier, give it a name and a directory
-    roofClassifier = PytorchImageClassifier(modelName='rooftype_resnet18_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1')
 
 
-Train the model
----------------
-
-.. code-block:: none 
-
-    # train the base model for 5 epochs with an initial learning rate of 0.01. 
-    roofClassifier.train(lr=0.01, batch_size=64, epochs=5)
-
-
-It is recommended to run the above example on a GPU machine.
-
-Please refer to https://github.com/rwightman/pytorch-image-models for supported models. You may need to first install timm via pip: pip install timm.
-
-
-Classify Images Based on the Model
+Classify Images Based on Model
 ------------------------------
 
 Now you can use the trained model to predict the (roofType) class for a given image.
@@ -109,8 +92,8 @@ Now you can use the trained model to predict the (roofType) class for a given im
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.PytorchGenericModelClassifier import PytorchImageClassifier
-    roofClassifier = PytorchImageClassifier(modelName='rooftype_resnet18_v1')
+    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
+    roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1')
                                             
     # define the paths of images in a list
     imgs = ["/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png",   
@@ -122,8 +105,22 @@ Now you can use the trained model to predict the (roofType) class for a given im
 
 The predictions will be written in preds.csv under the working directory.
 
-.. note::
-    The generic image classifier is intended to illustrate the overall process of model training and prediction.
-    The classifier takes an image as the input and will always produce a prediction. 
-    Since the classifier is trained to classify only a specific category of images, its prediction is meaningful only if 
-    the input image belongs to the category the model is trained for.
+
+Fine-tune the model for transfer learning. You need to provide the training data.
+---------------
+
+.. code-block:: none 
+
+    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
+    roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+
+    # train the base model for 5 epochs with an initial learning rate of 0.01. 
+    
+    roofClassifier.train(lr=0.01, batch_size=64, epochs=5)
+
+
+It is recommended to run the above example on a GPU machine.
+
+Please refer to https://github.com/rwightman/pytorch-image-models for supported models. You may need to first install timm via pip: pip install timm. Currently, BRAILS only provides pre-trained roof type model based on Transformer.
+
+

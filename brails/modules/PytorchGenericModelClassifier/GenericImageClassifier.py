@@ -1,13 +1,51 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022 The Regents of the University of California
+#
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+# Contributors:
+# Yunhui Guo
+
+
 """
-/*------------------------------------------------------*
-|                         BRAILS                        |
-|                                                       |
-| Author: Yunhui Guo,  UC Berkeley, yunhui@berkeley.edu  |
-|                                                       |
-| Date:    2/17/2022                                   |
-*------------------------------------------------------*/
+This module has classes and methods for training and evaluating models.
+
+.. rubric:: Contents
+
+.. autosummary::
+
+    CustomDataset
+    PytorchImageClassifier
+
 """
+
 
 import os
 import json
@@ -43,6 +81,18 @@ from sklearn.metrics import confusion_matrix
 
 
 class CustomDataset(Dataset):
+   
+    """
+    A customized dataset for constructing validation set
+
+    
+    Parameters
+    ----------
+    dataset: a Pytorch dataset object
+    transform: the transformations that can be applied on the input
+
+    """
+
     def __init__(self, dataset, transform=None):
         self.dataset = dataset
         self.transform = transform
@@ -61,19 +111,25 @@ class CustomDataset(Dataset):
 
 
 class PytorchImageClassifier:
-    """ A Generic Image Classifier. Can be used for training and evaluating the model. """
+
+    """
+    A Generic Image Classifier. Can be used for training and evaluating the model. 
+
+    
+    Parameters
+    ----------
+    modelName: architecture of the model. Please refer to https://github.com/rwightman/pytorch-image-models for supported models.
+    imgDir: directories for training data
+    valimgDir: directories for validation data
+    random_split: ratio to split the data into a training set and validation set if validation data is not provided.
+    resultFile: name of the result file for predicting multple images.
+    workDir: the working directory
+    printRes: show the probability and prediction
+    printConfusionMatrix: whether to print the confusion matrix or not
+
+    """
 
     def __init__(self, modelName=None, imgDir='', valimgDir='', random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
-        '''
-        modelName: architecture of the model. Please refer to https://github.com/rwightman/pytorch-image-models for supported models.
-        imgDir: directories for training data
-        valimgDir: directories for validation data
-        random_split: ratio to split the data into a training set and validation set if validation data is not provided.
-        resultFile: name of the result file for predicting multple images.
-        workDir: the working directory
-        printRes: show the probability and prediction
-        printConfusionMatrix: whether to print the confusion matrix or not
-        '''
 
         if not os.path.exists(workDir): 
             os.makedirs(workDir)
@@ -85,11 +141,11 @@ class PytorchImageClassifier:
             print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
         else:
 
-            task, arch, version = modelName.split("_")
+            arch, task, version = modelName.split("_")
 
 
         # the name of the trained model
-        modelFile = os.path.join(workDir,'{}.pickle'.format(modelName))
+        modelFile = os.path.join(workDir,'{}.pkl'.format(modelName))
         
         # meta data contains model name, 
         modelDetailFile = os.path.join(workDir,'{}.json'.format(modelName))
@@ -103,14 +159,20 @@ class PytorchImageClassifier:
         self.printRes = printRes
         self.printConfusionMatrix = printConfusionMatrix
         self.random_split = random_split
-        self.classNames = None
         #######################################################
         # create model
-        self.model = timm.create_model(arch, pretrained=True)
+
+        if arch == 'transformer':
+
+            self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
+
+        else:
+            self.model = timm.create_model(arch, pretrained=True)
 
         #######################################################
 
         if imgDir:
+
             print ("Loading data")
             self.loadData(imgDir=imgDir, valimgDir=valimgDir)
 
@@ -122,7 +184,8 @@ class PytorchImageClassifier:
         # load local model
 
         if os.path.exists(modelFile):
-            print('Model found locally: {} '.format(modelFile))
+
+            print('\nModel found locally: {} '.format(modelFile))
 
             if imgDir:
                 print ("You are going to fine-tune the local model.")
@@ -135,7 +198,10 @@ class PytorchImageClassifier:
                     print('Class names found in the detail file: {} '.format(self.classNames))
 
             # change the number of output class
+
             self.model.reset_classifier(len(self.classNames))
+            
+            self.model = nn.DataParallel(self.model)
 
             self.load_model(modelFile)
 
@@ -144,9 +210,7 @@ class PytorchImageClassifier:
             if imgDir:
                 
                 print('Model file {} doesn\'t exist locally. You are going to train your own model.'.format(modelFile))
-            else:
-                print ("Pre-trained model does not exist. Need to provide training data.")
-                exit()
+
 
         #######################################################
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -156,12 +220,45 @@ class PytorchImageClassifier:
 
     def load_model(self, modelFile):
 
+        """
+        Load a pre-trained model given the path of the model.
+        
+        Parameters
+        ----------
+        modelFile: string
+            The path to the pre-trained model
+
+        """
+        print ("Loading ", modelFile)
+
         state_dict = torch.load(modelFile)
 
         self.model.load_state_dict(state_dict)
 
 
     def predictOneImage(self, imagePath):
+
+        """
+        Predict the labels of one image given the image path
+        
+        Parameters
+        ----------
+        imagePath: string
+            The path to the image
+
+
+        Returns
+        -------
+        imagePath: string 
+            The path to the image
+
+        prediction: int or string
+            The predicton of the model on the image
+
+        prob: float
+            The probabilty of the prediction
+        """
+
 
         image = Image.open(imagePath).convert("RGB")
 
@@ -191,8 +288,27 @@ class PytorchImageClassifier:
         return [imagePath, prediction, prob]
 
 
-    def predictMultipleImages(self,imagePathList, resultFile=None):
+    def predictMultipleImages(self, imagePathList, resultFile=None):
         
+        """
+        Predict the labels of mutiple images given the image paths
+        
+        Parameters
+        ----------
+         imagePathList: list
+            A list of image paths
+         
+         resultFile: string
+            The name of the result file. If not given, use the default name
+        
+        Returns
+        -------
+        df: pandas dataframe
+
+            The pandas dataframe which contains all the predictions
+
+        """
+
         if resultFile:
 
             self.resultFile = os.path.join(self.workDir, resultFile)
@@ -256,6 +372,24 @@ class PytorchImageClassifier:
 
     def get_transform(self):
 
+        """
+        The transformations that are used for training and testing
+        
+        
+        Returns
+        -------
+        train_transforms: pytorch transformations
+        
+            The transformations used for training
+
+        val_transforms: pytorch transformations
+        
+            The transformations used for validation
+
+        """
+
+
+
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
 
@@ -282,6 +416,28 @@ class PytorchImageClassifier:
 
     def predictOneDirectory(self, directory_name=None, resultFile=None):
 
+        """
+        Predict the labels of all the images in one directory
+        
+        Parameters
+        ----------
+          directory_name: string
+            The directory which has all the images
+         
+         resultFile: string
+            The name of the result file. If not given, use the default name
+        
+        Returns
+        -------
+
+        df: pandas dataframe
+
+            The pandas dataframe which contains all the predictions
+
+        """
+
+
+
         if not directory_name:
             print ("Please provide the directory for saving the images.")
             return
@@ -300,13 +456,57 @@ class PytorchImageClassifier:
 
 
     def Get_Images(self, root_dir):
+ 
+        """
+        Load the training images
         
+        Parameters
+        ----------
+          root_dir: string
+            The directory which has all the training images
+        
+        Returns
+        -------
+        
+        data: Pytorch ImageFolder class
+
+            A generic data loader where the images are arranged in this way by default:
+
+                root/dog/xxx.png
+                root/dog/xxy.png
+                root/dog/[...]/xxz.png
+
+                root/cat/123.png
+                root/cat/nsdf3.png
+                root/cat/[...]/asd932_.png
+
+        """
+
+
+       
         data = torchvision.datasets.ImageFolder(root=root_dir)
 
         return data
 
 
     def loadData(self, imgDir="", valimgDir=''):
+
+        """
+        Load the training images. If valimgDir is not given, split the images into a training set and validation set
+        
+        Parameters
+        ----------
+          imgDir: string
+            The directory which has all the images
+        
+          valimgDir: string
+            The directory which has validation images
+
+        Returns
+        -------
+
+        """
+
 
         train_transforms, val_transforms = self.get_transform()
 
@@ -342,9 +542,33 @@ class PytorchImageClassifier:
 
     def train(self, lr=0.01, batch_size=64, epochs=10, plot=False):
 
+        """
+        Training the model with the training set and evaluate on the validation set. The model and metadata will be saved. 
+        
+        Parameters
+        ----------
+          lr: float
+            The learning rate for training the model
+    
+          batch_size: int
+            The batch size for training the model. 
+        
+          epoch: int
+            The number of epochs to training the model
+
+          plot: bool
+
+            Whether or not to plot the training accuracy and validation accuracy
+
+        Returns
+        -------
+        
+
+        """
+
         if not hasattr(self, 'train_dataset'):
             print ("No training data. Please provide the directory to training dataset when you initialize the ImageClassifier.")
-            return
+            exit()
 
         ############################################################
         self.train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size= batch_size, shuffle=True, num_workers=4)
@@ -459,6 +683,25 @@ class PytorchImageClassifier:
 
     def evaluate(self):
 
+        """
+        Evaluate the performance of the model on the validation set        
+
+        Parameters
+        ----------
+
+
+        Returns
+        -------
+            
+        validation accuracy: float
+            The accuracy on the validation set
+
+
+        validation loss: float
+            The avarage loss on the validation set
+        """
+
+
         self.model.eval()
 
         predictions = []
@@ -493,11 +736,25 @@ class PytorchImageClassifier:
         print (cnf_matrix)
 
         if self.printConfusionMatrix:
-            plot_confusion_matrix(cnf_matrix, classes=self.class_names, title='Confusion matrix',normalize=True,xlabel='Labels',ylabel='Predictions')
+            plot_confusion_matrix(cnf_matrix, classes=self.classNames, title='Confusion matrix',normalize=True, xlabel='Labels', ylabel='Predictions')
 
         return 100.0 * correct / len(self.val_loader.dataset), avg_loss / len(self.val_loader)
 
     def save(self):
+
+
+        """
+        Save the model with the name of self.modelFile
+
+        Parameters
+        ----------
+
+
+        Returns
+        -------
+            
+
+        """
 
         torch.save(self.model.state_dict(), self.modelFile)
 
@@ -517,7 +774,7 @@ def main():
     #    root/cat/nsdf3.png
     #    root/cat/[...]/asd932_.png
 
-    work = PytorchImageClassifier(modelName='rooftype_resnet18_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    work = PytorchImageClassifier(modelName='resnet18_rooftype_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
 
     work.train(lr=0.01, batch_size=64, epochs=5)
 

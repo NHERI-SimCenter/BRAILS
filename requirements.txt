@@ -21,6 +21,7 @@ pycocotools
 pyyaml
 torch
 torchvision
+timm
 yacs
 Pillow
 python-csv

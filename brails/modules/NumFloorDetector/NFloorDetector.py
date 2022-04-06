@@ -117,6 +117,7 @@ class NFloorDetector():
         
         model_path = os.path.join('pretrained_weights',f"efficientdet-d{coeff}.pth")
         
+        os.makedirs('pretrained_weights',exist_ok=True)
         if not os.path.isfile(model_path):
             print('Loading default floor detector model file to the pretrained folder...')
             torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',

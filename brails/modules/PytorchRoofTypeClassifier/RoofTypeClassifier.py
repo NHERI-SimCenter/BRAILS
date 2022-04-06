@@ -34,22 +34,27 @@
 # Yunhui Guo
 
 
-from brails.modules.ModelZoo import zoo
-from brails.modules.GenericImageClassifier.GenericImageClassifier import *
+from brails.modules.PytorchModelZoo import zoo
+from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import *
+
+#import sys
+#sys.path.insert(0,'..')
+
+#from PytorchModelZoo import zoo
+#from PytorchGenericModelClassifier.GenericImageClassifier import *
+
 import wget 
 import os
 
-class RoofClassifier(ImageClassifier):
+class PytorchRoofClassifier(PytorchImageClassifier):
     """
-    A Roof Type Classifier. 
-
+    A Roof Type Classifier.
     
     Parameters
     ----------
     modelName: architecture of the model. Please refer to https://github.com/rwightman/pytorch-image-models for supported models.
+    download: dowbload the pre-trained roof type classifier
     imgDir: directories for training data
-    valimgDir: directories for validation data
-    random_split: ratio to split the data into a training set and validation set if validation data is not provided.
     resultFile: name of the result file for predicting multple images.
     workDir: the working directory
     printRes: show the probability and prediction
@@ -58,53 +63,54 @@ class RoofClassifier(ImageClassifier):
 
     def __init__(self, 
             modelName=None, 
-            classNames=None, 
+            imgDir='',
+            download=True, 
             resultFile='roofType_preds.csv', 
-            workDir='tmp', 
+            workDir='./tmp',
             printRes=True
     ):
-        '''
-        modelFile: path to the model
-        classNames: a list of classnames
-        '''
 
         if not os.path.exists(workDir):
             os.makedirs(workDir)
 
-        fileURL = zoo['roofType']['fileURL']
-        
-        if not classNames:
-            classNames = zoo['roofType']['classNames']
-
         if not modelName:
-            #modelName = 'roof_classifier_v0.1'
-            modelName = 'rooftype_ResNet50_V0.2'
+            modelName = 'transformer_rooftype_v1'
             print('A default roof type model will be used: {}.'.format(modelName))
 
-        modelFile = os.path.join(workDir,'{}.h5'.format(modelName))
+        modelFile = os.path.join(workDir,'{}.pkl'.format(modelName))
 
-
-        if not os.path.exists(modelFile): # download
+        if download:
+            
             print('Downloading the model ...')
-            downloadedModelFile = wget.download(fileURL, out=modelFile)
+            
+            classnames = self.download_model(modelFile)
 
-        ImageClassifier.__init__(self,
+            self.classNames = classnames
+
+        else:
+            print('Pre-trained  will not be downloaded. You need to provide training data for training the model')
+
+        PytorchImageClassifier.__init__(self,
             modelName=modelName,
-            classNames=classNames,
+            imgDir=imgDir,
             resultFile=resultFile,
             workDir=workDir,
             printRes=printRes
         )
 
+    def download_model(self, modelFile):
 
+        fileURL = zoo['roofType']['fileURL']
+
+        classNames = zoo['roofType']['classNames']
+
+        wget.download(fileURL, out=modelFile)
+
+        return classNames
 
 if __name__ == '__main__':
-    main()
+    
+    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1')
 
-
-
-'''
-Potential errors:
-https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
-'''
+    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat")
 
