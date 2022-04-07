@@ -32,7 +32,7 @@ setup(
     zip_safe=False,
     install_requires=read_requirements('requirements.txt'),
     include_package_data=True,
-    package_data={'': ['brails/modules/Foundation_Classification/csail_segmentation_tool/csail_seg/data/color150.mat']},
+    package_data={'': ['brails/modules/FoundationClassifier/csail_segmentation_tool/csail_seg/data/color150.mat']},
     license="BSD 3-Clause",
     keywords=['brails', 'bim', 'brails framework'],
     classifiers=[
