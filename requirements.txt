@@ -1,5 +1,5 @@
 six
-h5py~=2.10.0
+h5py~=2.9.0
 matplotlib
 tensorflow>=2.4.1
 numpy
