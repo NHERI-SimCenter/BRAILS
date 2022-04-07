@@ -29,6 +29,8 @@ setup(
     url='https://github.com/NHERI-SimCenter/BRAILS',
     #packages=['brails'],
     packages=find_packages(),
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     zip_safe=False,
     install_requires=read_requirements('requirements.txt'),
     include_package_data=True,
