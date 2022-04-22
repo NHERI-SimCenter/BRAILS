@@ -469,7 +469,22 @@ class PytorchImageClassifier:
         self.printRes = False
         train_transforms, val_transforms = self.get_transform()
 
-        image_path = list( pathlib.Path(directory_name).rglob('*.[pP][nN][gG]') )
+        image_path  = []
+
+        valid_images = [".jpg",".gif",".png",".tga"]
+        for f in os.listdir(directory_name):
+            ext = os.path.splitext(f)[1]
+            if ext.lower() not in valid_images:
+                continue
+
+            image_path .append(os.path.join(directory_name, f))
+
+        if len(image_path ) == 0:
+
+            print ("Not image files.")
+            exit()
+        else:
+            print ("Found %d images." % (len(image_path)))
 
         self.predictMultipleImages(image_path)
 
