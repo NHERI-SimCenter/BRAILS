@@ -34,10 +34,10 @@
 # Yunhui Guo
 
 
-from brails.modules.PytorchRoofTypeClassifier.RooftypeModelZoo import zoo
+from brails.modules.PytorchOccupancyClassClassifier.OccupancyModelZoo import zoo
 from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import *
 
-#from RooftypeModelZoo import zoo
+#from OccupancyModelZoo import zoo
 #import sys
 #sys.path.insert(0,'..')
 #from PytorchGenericModelClassifier.GenericImageClassifier import *
@@ -45,14 +45,14 @@ from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import 
 import wget 
 import os
 
-class PytorchRoofClassifier(PytorchImageClassifier):
+class PytorchOccupancyClassifier(PytorchImageClassifier):
     """
-    A Roof Type Classifier. Classes: hipped, gabled, flat
+    An Occupancy Classifier. Classes: hipped, gabled, flat
     
     Parameters
     ----------
     modelName: architecture of the model. Please refer to https://github.com/rwightman/pytorch-image-models for supported models.
-    download: dowbload the pre-trained roof type classifier
+    download: dowbload the pre-trained occupancy classifier
     imgDir: directories for training data
     resultFile: name of the result file for predicting multple images.
     workDir: the working directory
@@ -63,21 +63,21 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             modelName=None, 
             imgDir='',
             download=True, 
-            resultFile='roofType_preds.csv', 
+            resultFile='Occupancy_preds.csv', 
             workDir='./tmp',
             printRes=True
     ):
 
         if not modelName:
 
-            modelName = 'transformer_rooftype_v1'
+            modelName = 'transformer_occupancy_v1'
             print('A default roof type model will be used: {}.'.format(modelName))
 
 
         if download:
 
-            if modelName != 'transformer_rooftype_v1':
-                print ("Try to download pre-trained model. Currently only support transformer_rooftype_v1")  
+            if modelName != 'transformer_occupancy_v1':
+                print ("Try to download pre-trained model. Currently only support transformer_occupancy_v1")  
                 exit()
 
             if not os.path.exists("./BRAILS_pretrained_model/"):
@@ -95,7 +95,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             else:
                 print('Pre-trained model exists locally.')
 
-            self.classNames = zoo['roofType']['classNames']
+            self.classNames = zoo['Occupancy']['classNames']
 
 
         else:
@@ -116,17 +116,15 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
     def download_model(self, modelFile):
 
-        fileURL = zoo['roofType']['fileURL']
+        fileURL = zoo['Occupancy']['fileURL']
 
         wget.download(fileURL, out=modelFile)
 
 
 if __name__ == '__main__':
     
-    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=False, imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
-    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
+    work = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
 
     #work.train(lr=0.01, batch_size=16, epochs=5)
-    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/newRoofTypeImages")
-
+    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/Occupancy_test")
 
