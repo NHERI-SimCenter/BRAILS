@@ -54,6 +54,7 @@ import random
 import pathlib
 import argparse
 import warnings
+from tqdm import tqdm
 from glob import glob
 
 
@@ -102,6 +103,7 @@ class CustomDataset(Dataset):
             x = self.transform(self.dataset[index][0])
         else:
             x = self.dataset[index][0]
+        
         y = self.dataset[index][1]
         return x, y
     
@@ -409,8 +411,6 @@ class PytorchImageClassifier:
 
         """
 
-
-
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
 
@@ -516,8 +516,6 @@ class PytorchImageClassifier:
 
         """
 
-
-       
         data = torchvision.datasets.ImageFolder(root=root_dir)
 
         return data
@@ -541,7 +539,6 @@ class PytorchImageClassifier:
 
         """
 
-
         train_transforms, val_transforms = self.get_transform()
 
         if not valimgDir:
@@ -550,26 +547,25 @@ class PytorchImageClassifier:
 
             dataset =  self.Get_Images(imgDir)
 
-            newClassNames = list(dataset.class_to_idx.keys())
 
             train_size = int(len(dataset)*self.random_split[0])
             val_size   = int(len(dataset)*self.random_split[1])
 
             train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
-
-            self.train_dataset = CustomDataset(train_dataset, train_transforms)
-            self.val_dataset   = CustomDataset(val_dataset,   val_transforms)
-
         else:
 
-            self.train_dataset = Get_Images(imgDir, train_transforms)
-            self.val_dataset   = Get_Images(valimgDir, val_transforms)
-        
+            train_dataset = self.Get_Images(imgDir)
+            val_dataset   = self.Get_Images(valimgDir)
 
-            newClassNames = list(train_dataset.class_to_idx.keys())
-        
-        self.classNames = newClassNames
+        print ('The class name to index: ', train_dataset.class_to_idx)
+
+        self.train_dataset = CustomDataset(train_dataset, train_transforms)
+        self.val_dataset   = CustomDataset(val_dataset,   val_transforms)
+
+    
+
+        #self.classNames = newClassNames
 
         print('The names of the classes are: ', self.classNames)
         
@@ -632,7 +628,7 @@ class PytorchImageClassifier:
 
             avg_loss = 0
 
-            for i, (images, labels ) in enumerate(self.train_loader):
+            for i, (images, labels) in enumerate(tqdm(self.train_loader)):
 
                 images = images.to(self.device)
                 labels = labels.to(self.device)
@@ -807,15 +803,15 @@ def main():
     #    root/cat/nsdf3.png
     #    root/cat/[...]/asd932_.png
 
-    work = PytorchImageClassifier(modelName='resnet18_rooftype_v1', imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    work = PytorchImageClassifier(modelName='resnet18_rooftype_v1', imgDir='./roofType/')
 
     work.train(lr=0.01, batch_size=64, epochs=5)
 
-    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat")
+    work.predictOneDirectory("./roofType/flat")
 
-    #work.predictOneImage("/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png")
+    #work.predictOneImage("./roofType/flat/TopViewx-76.84779286x38.81642318.png")
 
-    #work.predictMultipleImages(["/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.84779286x38.81642318.png", "/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/flat/TopViewx-76.96240924000001x38.94450328.png"])
+    #work.predictMultipleImages(["./roofType/flat/TopViewx-76.84779286x38.81642318.png", "./roofType/flat/TopViewx-76.96240924000001x38.94450328.png"])
 
 
 if __name__ == '__main__':
