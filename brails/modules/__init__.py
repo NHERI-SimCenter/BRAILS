@@ -40,8 +40,9 @@
 # Qian Yu
 # Chaofeng Wang
 
-from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
 from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import PytorchImageClassifier
+from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
+from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
 from brails.modules.GarageDetector.GarageDetector import GarageDetector
 from brails.modules.ChimneyDetector.ChimneyDetector import ChimneyDetector
