@@ -62,6 +62,7 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
     def __init__(self, 
             modelName=None, 
             imgDir='',
+            valimgDir = '',
             download=True, 
             resultFile='Occupancy_preds.csv', 
             workDir='./tmp',
@@ -97,7 +98,6 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
 
             self.classNames = zoo['Occupancy']['classNames']
 
-
         else:
 
             if imgDir == "":
@@ -108,6 +108,7 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
         PytorchImageClassifier.__init__(self,
             modelName=modelName,
             imgDir=imgDir,
+            valimgDir=valimgDir,
             download=download,
             resultFile=resultFile,
             workDir=workDir,
@@ -123,8 +124,8 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
 
 if __name__ == '__main__':
     
-    work = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
+    work = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True, imgDir="./occupancy_val/")
 
     #work.train(lr=0.01, batch_size=16, epochs=5)
-    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/Occupancy_test")
+    work.predictOneDirectory("./occupancy_val/OTH/")
 
