@@ -13,6 +13,6 @@
 zoo = {
     'Occupancy':{
         'fileURL' : 'https://zenodo.org/record/6476102/files/transformer_occupancy_v1.pkl',
-        'classNames' : ['RRE', 'OTH']
+        'classNames' : ['OTH', 'RRE']
     } 
 }

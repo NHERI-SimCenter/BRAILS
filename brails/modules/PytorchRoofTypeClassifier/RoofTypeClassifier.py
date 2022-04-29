@@ -62,6 +62,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
     def __init__(self, 
             modelName=None, 
             imgDir='',
+            valimgDir = '',
             download=True, 
             resultFile='roofType_preds.csv', 
             workDir='./tmp',
@@ -108,6 +109,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
         PytorchImageClassifier.__init__(self,
             modelName=modelName,
             imgDir=imgDir,
+            valimgDir=valimgDir,
             download=download,
             resultFile=resultFile,
             workDir=workDir,
@@ -123,10 +125,10 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
 if __name__ == '__main__':
     
-    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=False, imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
+    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=False, imgDir='./roofType/')
     work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
 
     #work.train(lr=0.01, batch_size=16, epochs=5)
-    work.predictOneDirectory("/home/yunhui/SimCenter/train_BRAILS_models/datasets/newRoofTypeImages")
+    work.predictOneDirectory("./roofType/flat/")
 
 
