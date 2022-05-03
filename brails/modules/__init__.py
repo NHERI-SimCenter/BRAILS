@@ -49,6 +49,6 @@ from brails.modules.ChimneyDetector.ChimneyDetector import ChimneyDetector
 from brails.modules.FoundationClassifier.FoundationClassifier import FoundationHeightClassifier
 from brails.modules.YearBuiltClassifier.YearBuiltClassifier import YearBuiltClassifier
 from brails.modules.SoftstoryClassifier.SoftstoryClassifier import SoftstoryClassifier as SoftstoryClassifier
-from brails.modules.GenericImageClassifier.GenericImageClassifier import ImageClassifier
-from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
-from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
+#from brails.modules.GenericImageClassifier.GenericImageClassifier import ImageClassifier
+#from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier as RoofClassifier
+#from brails.modules.OccupancyClassClassifier.OccupancyClassClassifier import OccupancyClassifier as OccupancyClassifier
