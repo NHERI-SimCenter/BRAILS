@@ -64,7 +64,11 @@ class InventoryGenerator:
         
         # Get footprint data:
         fpHandler = FootprintHandler()
-        fpHandler.load_footprint_data(self.location)
+        if 'geojson' in location:
+            fpHandler.load_footprint_data(self.location)
+        else:
+            fpHandler.fetch_footprint_data(self.location)
+            
         if self.randomSelection==True:
             self.footprints = random.sample(fpHandler.footprints, nbldgs)
         else: 
