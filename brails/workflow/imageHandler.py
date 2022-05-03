@@ -175,7 +175,7 @@ class ImageHandler:
             return zoom
         
         self.footprints = footprints
-        os.makedirs('images/satellite',exist_ok=True)
+        os.makedirs('tmp/images/satellite',exist_ok=True)
         for count, fp in enumerate(footprints):
             # Compute the centroid of the footprint polygon: 
             fp_cent = Polygon(fp).centroid
@@ -671,10 +671,10 @@ class ImageHandler:
                 heading = None
             return refLine, imagePlane, scale, fov, heading
 
-        os.makedirs('images/street',exist_ok=True)
+        os.makedirs('tmp/images/street',exist_ok=True)
         for count, footprint in enumerate(footprints):
             fp = np.fliplr(np.squeeze(np.array(footprint)))
-            refLine, imagePlane, scale, fov, heading = image_retrieve(fp,'images/street',count,self.apikey)
+            refLine, imagePlane, scale, fov, heading = image_retrieve(fp,'tmp/images/street',count,self.apikey)
             if isinstance(refLine, np.ndarray): 
                 self.refLines.append(refLine[:])
             else: 
