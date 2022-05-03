@@ -49,7 +49,7 @@ from brails.modules import (PytorchRoofClassifier, PytorchOccupancyClassifier,
                             SoftstoryClassifier, FoundationHeightClassifier, 
                             YearBuiltClassifier, NFloorDetector, 
                             GarageDetector, ChimneyDetector)
-from .workflow.ImageHandler import ImageHandler
+from .workflow.ImHandler import ImageHandler
 from .workflow.FootprintHandler import FootprintHandler
 
 class InventoryGenerator:
