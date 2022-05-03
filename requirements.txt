@@ -1,17 +1,12 @@
-six
-h5py
 matplotlib
-tensorflow>=2.4.1
 numpy
 argparse
 pandas
 requests
-geopandas
 scipy
 seaborn
 wget
 shapely
-osmnx==1.0.1
 opencv-python
 tqdm
 tensorboard
