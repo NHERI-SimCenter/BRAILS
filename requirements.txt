@@ -19,7 +19,6 @@ torchvision
 timm
 yacs
 Pillow
-python-csv
 sklearn
 
 

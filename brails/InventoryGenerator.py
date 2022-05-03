@@ -115,7 +115,6 @@ class InventoryGenerator:
                 elv = elv_df['prediction'].to_list()
                 elvProb = elv_df['probability'].to_list()
                 self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
-                self.BIM['elevated  Prob'] = self.BIM.apply(lambda x: elvProb[x['ID']], axis=1) 
 
             elif attribute.lower()=='numstories':
                 # Initialize the floor detector object
