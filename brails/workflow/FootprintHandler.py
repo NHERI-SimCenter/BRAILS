@@ -44,7 +44,7 @@ import sys
 import json
 
 class FootprintHandler:
-    def __init__(self,apikey: str): 
+    def __init__(self): 
         self.footprints = []
         self.queryarea = []
         
@@ -174,16 +174,4 @@ class FootprintHandler:
 
         self.footprints = []
         for count, loc in enumerate(data):
-            self.footprints.append(loc['geometry']['coordinates'][0][0])    
-
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
+            self.footprints.append(loc['geometry']['coordinates'][0][0])
