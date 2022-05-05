@@ -11,8 +11,7 @@ opencv-python
 tqdm
 tensorboard
 tensorboardX
-webcolors
-pycocotools  
+webcolors 
 pyyaml
 torch
 torchvision
