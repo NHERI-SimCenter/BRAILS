@@ -345,7 +345,7 @@ class PytorchImageClassifier:
 
         self.model.eval()
 
-        loader = transforms.Compose([transforms.Scale(224), transforms.ToTensor(), normalize])
+        loader = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), normalize])
 
         for imagePath in imagePathList:
 
