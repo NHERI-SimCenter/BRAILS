@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 from torch.utils.data import Dataset
-from coco import COCO
+from lib.efficientdet.coco import COCO
 import cv2
 
 
