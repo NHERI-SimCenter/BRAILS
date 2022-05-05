@@ -79,7 +79,7 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
+    from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
 
     # initialize the classifier, give it a name and a directory
     roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True))
@@ -93,7 +93,7 @@ Now you can use the trained model to predict the (roofType) class for a given im
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
+    from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
 
     roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
                                             
@@ -112,7 +112,7 @@ Fine-tune the model for transfer learning. You need to provide the training data
 
 .. code-block:: none 
 
-    from brails.modules.PytorchRoofTypeClassifier import PytorchRoofClassifier
+    from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
 
     roofClassifier = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True, imgDir='./roofType/')
 
