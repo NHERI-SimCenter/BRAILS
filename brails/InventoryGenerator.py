@@ -94,19 +94,19 @@ class InventoryGenerator:
                      'attribute entry. Attribute entries enabled are: chimney, ' + 
                      'elevated, garage, numstories, occupancy, roofshape, year')
 
-        self.inventory['satellite_images'] = image_handler.satellite_images
-        self.inventory['street_images'] = image_handler.street_images
+        #self.inventory['satellite_images'] = image_handler.satellite_images
+        #self.inventory['street_images'] = image_handler.street_images
         df = self.inventory.copy(deep=True)
         for attribute in self.attributes:
             if attribute.lower()=='roofshape':
                 roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
                 roofShape = roofModel.predictMultipleImages(imsat)
-                self.BIM['roofShape'] = self.BIM.apply(lambda x: roofShape[x['ID']], axis=1)
+                #self.BIM['roofShape'] = self.BIM.apply(lambda x: roofShape[x['ID']], axis=1)
 
             elif attribute.lower()=='occupancy':
                 occupancyModel = PytorchRoofClassifier(modelName='transformer_occupancy_v1', download=True)
                 occupancy = occupancyModel.predictMultipleImages(imstreet)
-                self.BIM['occupancy'] = self.BIM.apply(lambda x: occupancy[x['ID']], axis=1) 
+                #self.BIM['occupancy'] = self.BIM.apply(lambda x: occupancy[x['ID']], axis=1) 
            
             elif attribute.lower()=='elevated':
                 # initialize a foundation classifier
@@ -117,7 +117,7 @@ class InventoryGenerator:
 
                 elv = elv_df['prediction'].to_list()
                 elvProb = elv_df['probability'].to_list()
-                self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
+                #self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
 
             elif attribute.lower()=='numstories':
                 # Initialize the floor detector object
@@ -163,5 +163,7 @@ class InventoryGenerator:
                 year = year_df['prediction'].to_list()
                 yearProb = year_df['probability'].to_list()
                 self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
-                self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1)                 
+                self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
+           
+            self.inventory = df.copy(deep=True)
                 
