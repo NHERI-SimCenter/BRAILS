@@ -167,7 +167,7 @@ class GarageDetector():
                 imgList[imgno] = os.path.join(self.system_dict["infer"]["images"],imgList[imgno])
         except:
             imgList = self.system_dict["infer"]["images"]
-            
+   
         # Create and Define the Inference Model
         classes = ["garage"]
         
@@ -178,8 +178,8 @@ class GarageDetector():
         rows = []
         predictions = []
         for img in tqdm(imgList):
-            img = cv2.imread(img)
             bldgID = os.path.basename(img).split('.')[0]
+            img = cv2.imread(img)
             cv2.imwrite("input.jpg", img)
             scores, labels, boxes = gtfInfer.predict("input.jpg", threshold=0.35)
             if len(boxes)>=1:
