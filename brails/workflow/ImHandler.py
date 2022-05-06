@@ -97,6 +97,8 @@ class ImageHandler:
         self.streetScales = []
         self.streetFOVs = []
         self.streetHeadings = []
+        self.satellite_images = []
+        self.street_images = []
 
     def GetGoogleSatelliteImage(self,footprints):
      
@@ -175,6 +177,7 @@ class ImageHandler:
             return zoom
         
         self.footprints = footprints
+        self.satellite_images = []
         os.makedirs('tmp/images/satellite',exist_ok=True)
         for count, fp in enumerate(footprints):
             # Compute the centroid of the footprint polygon: 
@@ -191,8 +194,10 @@ class ImageHandler:
             query_url = ("https://maps.googleapis.com/maps/api/staticmap?center=" + 
                          f"{fp_cent.y},{fp_cent.x}&zoom={zoom}&size=640x640&maptype="+
                          f"satellite&format=png&key={self.apikey}")
-            with open(f"tmp/images/satellite/{count}.png",'wb') as f:
+            im_name = f"tmp/images/satellite/{count}.png"
+            with open(im_name,'wb') as f:
                 f.write(requests.get(query_url).content)
+            self.satellite_images.append(im_name)
 
     def GetGoogleStreetImage(self,footprints):
         # Function that downloads a file given its URL and the desired path to save it:
@@ -672,9 +677,14 @@ class ImageHandler:
             return refLine, imagePlane, scale, fov, heading
 
         os.makedirs('tmp/images/street',exist_ok=True)
+        self.street_images = []
         for count, footprint in enumerate(footprints):
             fp = np.fliplr(np.squeeze(np.array(footprint)))
             refLine, imagePlane, scale, fov, heading = image_retrieve(fp,'tmp/images/street',count,self.apikey)
+            if scale is not None:
+                self.street_images.append(f"tmp/images/satellite/{count}.png")
+            else:
+                self.street_images.append(None)
             if isinstance(refLine, np.ndarray): 
                 self.refLines.append(refLine[:])
             else: 
