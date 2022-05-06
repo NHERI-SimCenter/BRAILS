@@ -98,7 +98,6 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
             self.classNames = zoo['roofType']['classNames']
 
-
         else:
 
             if imgDir == "":
@@ -125,10 +124,10 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
 if __name__ == '__main__':
     
-    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=False, imgDir='./roofType/')
-    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
+    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True, imgDir='./roofType/')
+    #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
 
-    #work.train(lr=0.01, batch_size=16, epochs=5)
-    work.predictOneDirectory("./roofType/flat/")
+    work.train(lr=0.01, batch_size=16, epochs=5)
+    #work.predictOneDirectory("./roofType/flat/")
 
 

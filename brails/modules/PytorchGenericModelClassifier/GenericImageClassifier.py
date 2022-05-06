@@ -164,6 +164,7 @@ class PytorchImageClassifier:
             modelDetailFile = os.path.join("./BRAILS_pretrained_model/", '{}.json'.format(modelName))
 
 
+        self.download = download
         self.workDir = workDir
         self.modelFile = modelFile
         self.resultFile = os.path.join(workDir,resultFile)
@@ -202,7 +203,6 @@ class PytorchImageClassifier:
                 print ("You are going to fine-tune the local model.")
 
 
-
             # check if a local definition of the model exists.
             if os.path.exists(self.modelDetailFile):
                 
@@ -216,8 +216,6 @@ class PytorchImageClassifier:
             # change the number of output class
             self.model.reset_classifier(len(self.classNames))
             
-            self.model = nn.DataParallel(self.model)
-
             self.load_model(modelFile)
 
         else:
@@ -230,6 +228,7 @@ class PytorchImageClassifier:
 
 
         #######################################################
+        self.model = nn.DataParallel(self.model)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
 
@@ -547,27 +546,33 @@ class PytorchImageClassifier:
 
             dataset =  self.Get_Images(imgDir)
 
+            print ('The class name to index: ', dataset.class_to_idx)
+
+            self.classNames = list(dataset.class_to_idx.keys())
 
             train_size = int(len(dataset)*self.random_split[0])
             val_size   = int(len(dataset)*self.random_split[1])
 
             train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
+
         else:
 
             train_dataset = self.Get_Images(imgDir)
             val_dataset   = self.Get_Images(valimgDir)
 
-        print ('The class name to index: ', train_dataset.class_to_idx)
+            print ('The class name to index: ', train_dataset.class_to_idx)
+            
+            self.classNames = list(train_dataset.class_to_idx.keys())
+
 
         self.train_dataset = CustomDataset(train_dataset, train_transforms)
         self.val_dataset   = CustomDataset(val_dataset,   val_transforms)
 
-    
 
-        #self.classNames = newClassNames
+    def retrain(self, lr=0.01, batch_size=64, epochs=10, plot=False):
 
-        print('The names of the classes are: ', self.classNames)
+        self.train(lr=0.01, batch_size=64, epochs=10, plot=False)
         
 
     def train(self, lr=0.01, batch_size=64, epochs=10, plot=False):
@@ -803,7 +808,7 @@ def main():
     #    root/cat/nsdf3.png
     #    root/cat/[...]/asd932_.png
 
-    work = PytorchImageClassifier(modelName='resnet18_rooftype_v1', imgDir='./roofType/')
+    work = PytorchImageClassifier(modelName='transformer_rooftype_v1', imgDir='./roofType/')
 
     work.train(lr=0.01, batch_size=64, epochs=5)
 
