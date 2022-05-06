@@ -75,7 +75,7 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
-    from brails.modules.PytorchRoofOccupancyClassifier import PytorchOccupancyClassifier
+    from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 
     # initialize the classifier, give it a name and a directory
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
@@ -89,7 +89,7 @@ Now you can use the trained model to predict the (occupancy) class for a given i
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.modules.PytorchRoofOccupancyClassifier import PytorchOccupancyClassifier
+    from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
                                             
@@ -108,7 +108,7 @@ Fine-tune the model for transfer learning. You need to provide the training data
 
 .. code-block:: none 
 
-    from brails.modules.PytorchRoofOccupancyClassifier import PytorchOccupancyClassifier
+    from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True,  imgDir='./occupancy_val/)
 
