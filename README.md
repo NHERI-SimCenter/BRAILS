@@ -1,38 +1,23 @@
-# <img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/logo/Logo.png" alt="logo" height="80"/> <span style="color:#FFFFFF;background-color: #000000;">B</span>uilding <span style="color:#FFFFFF;background-color: #000000;">R</span>ecognition using <span style="color:#FFFFFF;background-color: #000000;">AI</span> at <span style="color:#FFFFFF;background-color: #000000;">L</span>arge-<span style="color:#FFFFFF;background-color: #000000;">S</span>cale.
 
-<img src="https://raw.githubusercontent.com/NHERI-SimCenter/BRAILS/master/docs/images/brails-demo.gif" alt="BRAILS" height="250"/>
-
-#
 
 ## What is BRAILS
 
-BRAILS (Building Recognition using AI at Large-Scale) is an AI-based pipeline for regional-level building information modeling.
-
-## How to install
-
-The easiest way to install the latest version of BRAILS is using ``pip``:
-```
-pip install git+https://github.com/NHERI-SimCenter/BRAILS
-```
-To install an earlier release of BRAILS using ``pip``:
-```
-pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/{Release Tag}/BRAILS-{Release Tag}.zip
-```
-For example, to install v1.9.0 of BRAILS:
-```
-pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/v1.9.0/BRAILS-v1.9.0.zip
-```
-
-If you have difficulty installing BRAILS, please check the [troubleshooting page](https://nheri-simcenter.github.io/BRAILS-Documentation/common/user_manual/troubleshooting.html).
-
+BRAILS (Building Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework will also provide turn-key applications that allow the users to put the individual modules together to determine multiple attributes in a single pass. 
 
 ## Documentation
 
 Online documentation is available at <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">https://nheri-simcenter.github.io/BRAILS-Documentation</a>.
 
+## Acknowledgements
+
+This work is based on material supported by the National Science Foundation under grants CMMI 1612843 and CMMI 2131111.
+
+
+## Contact
+
+NHERI-SimCenter nheri-simcenter@berkeley.edu
 
 ## Quickstart
-
 
 ### Example 1: Modules
 
@@ -163,10 +148,8 @@ index geometry	                                        |   ID	|   softStory	|   
 ```
 The pdf is <a href="https://www.researchgate.net/publication/346957248_Machine_Learning-based_Regional_Scale_Intelligent_Modeling_of_Building_Information_for_Natural_Hazard_Risk_Management">here</a>.
 
-## Acknowledgement
-This material is based upon work supported by the National Science Foundation under Grant No. 1612843.
 
-## Contact
-NHERI-SimCenter nheri-simcenter@berkeley.edu
+
+
 
 
