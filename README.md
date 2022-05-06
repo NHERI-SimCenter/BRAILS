@@ -12,6 +12,11 @@ Online documentation is available at <a href="https://nheri-simcenter.github.io/
 
 This work is based on material supported by the National Science Foundation under grants CMMI 1612843 and CMMI 2131111.
 
+
+## Contact
+
+NHERI-SimCenter nheri-simcenter@berkeley.edu
+
 ## Quickstart
 
 ### Example 1: Modules
@@ -143,10 +148,8 @@ index geometry	                                        |   ID	|   softStory	|   
 ```
 The pdf is <a href="https://www.researchgate.net/publication/346957248_Machine_Learning-based_Regional_Scale_Intelligent_Modeling_of_Building_Information_for_Natural_Hazard_Risk_Management">here</a>.
 
-## Acknowledgement
-This material is based upon work supported by the National Science Foundation under Grant No. 1612843.
 
-## Contact
-NHERI-SimCenter nheri-simcenter@berkeley.edu
+
+
 
 
