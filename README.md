@@ -8,6 +8,9 @@ BRAILS (Building Recognition using AI at Large-Scale) provides a set of Python m
 
 Online documentation is available at <a href="https://nheri-simcenter.github.io/BRAILS-Documentation/index.html">https://nheri-simcenter.github.io/BRAILS-Documentation</a>.
 
+## Acknowledgements
+
+This work is based on material supported by the National Science Foundation under grants CMMI 1612843 and CMMI 2131111.
 
 ## Quickstart
 
