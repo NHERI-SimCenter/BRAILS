@@ -41,8 +41,6 @@
 
 import random
 import sys
-import os
-from pathlib import Path
 import pandas as pd
 
 from brails.modules import (PytorchRoofClassifier, PytorchOccupancyClassifier, 
@@ -70,30 +68,35 @@ class InventoryGenerator:
             fpHandler.fetch_footprint_data(self.location)
             
         if self.randomSelection==True:
-            self.footprints = random.sample(fpHandler.footprints, nbldgs)
+            footprints = random.sample(fpHandler.footprints, nbldgs)
         else: 
-            self.footprints = fpHandler.footprints[:nbldgs]
-            
+            footprints = fpHandler.footprints[:nbldgs]
+        
+        self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
+        
         # Initialize the image handler to check if the provided API key is valid:
         image_handler = ImageHandler(self.apikey)
 
     def generate(self,attributes=['numstories','occupancy','roofshape']):
         self.attributes = attributes
-
+        footprints = self.inventory['footprint'].values.tolist()
         # Download required images
         image_handler = ImageHandler(self.apikey)
         if 'roofshape' in attributes:
-            image_handler.GetGoogleSatelliteImage(self.footprints)
-            imsat = ['tmp/images/satellite/' + im for im in os.listdir('tmp/images/satellite')]
+            image_handler.GetGoogleSatelliteImage(footprints)
+            imsat = [im for im in image_handler.satellite_images if im is not None]
         elif set.intersection(set(['chimney','elevated','garage','numstories',
                                    'occupancy','year']),attributes)!=set():            
-            image_handler.GetGoogleStreetImage(self.footprints)
-            imstreet = ['tmp/images/street/' + im for im in os.listdir('tmp/images/street')]
+            image_handler.GetGoogleStreetImage(footprints)
+            imstreet = [im for im in image_handler.street_images if im is not None]
         else:
             sys.exit('Defined list of attributes does not contain a correct' +
                      'attribute entry. Attribute entries enabled are: chimney, ' + 
                      'elevated, garage, numstories, occupancy, roofshape, year')
-        
+
+        self.inventory['satellite_images'] = image_handler.satellite_images
+        self.inventory['street_images'] = image_handler.street_images
+        df = self.inventory.copy(deep=True)
         for attribute in self.attributes:
             if attribute.lower()=='roofshape':
                 roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
@@ -124,8 +127,9 @@ class InventoryGenerator:
                 story_df = storyModel.predict(imstreet)
 
                 # Write the results to a dataframe
-                story = story_df['prediction'].to_list()
-                self.BIM['numStories'] = self.BIM.apply(lambda x: story[x['ID']], axis=1)
+                for index, row in story_df.iterrows():
+                    df.loc[df.index[df['street_images'] == row['image']],
+                           'nstories'] = row['prediction']
                 
             elif attribute.lower()=='garage':
                 # Initialize the garage detector object
@@ -135,8 +139,9 @@ class InventoryGenerator:
                 garage_df = garageModel.predict(imstreet)
 
                 # Write the results to a dataframe
-                garage = garage_df['prediction'].to_list()
-                self.BIM['garageExist'] = self.BIM.apply(lambda x: garage[x['ID']], axis=1)
+                for index, row in garage_df.iterrows():
+                    df.loc[df.index[df['street_images'] == row['image']],
+                           'garage_exists'] = row['prediction']
 
             elif attribute.lower()=='chimney':
                 # Initialize the chimney detector object
@@ -146,8 +151,9 @@ class InventoryGenerator:
                 chimney_df = chimneyModel.predict(imstreet)
 
                 # Write the results to a dataframe
-                chimney = chimney_df['prediction'].to_list()
-                self.BIM['chimneyExist'] = self.BIM.apply(lambda x: chimney[x['ID']], axis=1)
+                for index, row in chimney_df.iterrows():
+                    df.loc[df.index[df['street_images'] == row['image']],
+                           'chimney_exists'] = row['prediction']
                 
             elif attribute.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir,printRes=False)
