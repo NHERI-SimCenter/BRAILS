@@ -191,7 +191,7 @@ class ImageHandler:
             query_url = ("https://maps.googleapis.com/maps/api/staticmap?center=" + 
                          f"{fp_cent.y},{fp_cent.x}&zoom={zoom}&size=640x640&maptype="+
                          f"satellite&format=png&key={self.apikey}")
-            with open(f"images/satellite/{count}.png",'wb') as f:
+            with open(f"tmp/images/satellite/{count}.png",'wb') as f:
                 f.write(requests.get(query_url).content)
 
     def GetGoogleStreetImage(self,footprints):
