@@ -682,7 +682,7 @@ class ImageHandler:
             fp = np.fliplr(np.squeeze(np.array(footprint)))
             refLine, imagePlane, scale, fov, heading = image_retrieve(fp,'tmp/images/street',count,self.apikey)
             if scale is not None:
-                self.street_images.append(f"tmp/images/satellite/{count}.png")
+                self.street_images.append(f"tmp/images/street/{count}.png")
             else:
                 self.street_images.append(None)
             if isinstance(refLine, np.ndarray): 
