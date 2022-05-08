@@ -61,7 +61,7 @@ class FootprintHandler:
         def get_osm_footprints(queryarea):
             if isinstance(queryarea,str):
                 # Search for the query area using Nominatim API:
-                print(f"\nSearching for {queryarea.title()}...")
+                print(f"\nSearching for {queryarea}...")
                 queryarea_formatted = queryarea.replace(" ", "%")
                 
                 nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
@@ -72,16 +72,26 @@ class FootprintHandler:
                 
                 areafound = False
                 for data in datalist:
-                    if data['osm_type']=='relation':
-                        queryarea_turboid = data['osm_id'] + 3600000000
-                        queryarea_name = data['display_name']
-                        print(f"Found {queryarea_name}")
+                    queryarea_turboid = data['osm_id'] + 3600000000
+                    queryarea_name = data['display_name']
+                    if(data['osm_type']=='relation' and 
+                       'university' in queryarea.lower() and
+                       data['type']=='university'):
+                        areafound = True
+                        break
+                    elif (data['osm_type']=='relation' and 
+                         data['type']=='administrative'): 
                         areafound = True
                         break
                 
-                if areafound==False:
+                if areafound==True:
+                    print(f"Found {queryarea_name}")
+                else:
                     sys.exit(f"Could not locate an area named {queryarea}. " + 
-                             "Please check your location query to make sure it was entered correctly.")
+                             'Please check your location query to make sure' +
+                             'it was entered correctly.')
+                    
+                        
             elif isinstance(queryarea,tuple):
                 pass
             else:
@@ -143,7 +153,7 @@ class FootprintHandler:
                         footprint.append(nodedict[node])
                     footprints.append(footprint)
             
-            print(f"Found a total of {len(footprints)} footprints in {queryarea_printname}")
+            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
             return footprints
 
         self.queryarea = queryarea

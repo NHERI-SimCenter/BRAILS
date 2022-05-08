@@ -35,9 +35,13 @@
 #
 # Contributors:
 # Barbaros Cetiner
+# Yunhui Guo
+# Sascha Hornauer
+# Frank McKenna
+# Satish Rao
 #
 # Last updated:
-# 04-25-2022 
+# 05-08-2022 
 
 import random
 import sys
@@ -52,63 +56,179 @@ from .workflow.FootprintHandler import FootprintHandler
 
 class InventoryGenerator:
 
-    def __init__(self, location='', nbldgs=10, randomSelection=True,
+    def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  GoogleAPIKey=''):                
-        self.workdir = 'tmp'
+        self.apiKey = GoogleAPIKey
+        self.enabledAttributes = ['chimney','elevated','garage','numstories',
+                                  'occupancy','roofshape','year']
+        self.inventory = None
         self.location = location
         self.nbldgs = nbldgs
         self.randomSelection = randomSelection
-        self.apikey = GoogleAPIKey
+        self.workDir = 'tmp'
         
-        # Get footprint data:
+        
+        # Get footprint data for the defined location:
         fpHandler = FootprintHandler()
         if 'geojson' in location:
             fpHandler.load_footprint_data(self.location)
         else:
             fpHandler.fetch_footprint_data(self.location)
-            
+
+        # Randomly select nbldgs from the footprint data if randomSelection is 
+        # set to True:          
         if self.randomSelection==True:
             footprints = random.sample(fpHandler.footprints, nbldgs)
+            print(f'Randomly selected {nbldgs} buildings')
         else: 
             footprints = fpHandler.footprints[:nbldgs]
+            print(f'Selected the first {nbldgs} buildings')
         
+        # Initialize the inventory DataFrame with the obtained footprint data:
         self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
         
-        # Initialize the image handler to check if the provided API key is valid:
-        image_handler = ImageHandler(self.apikey)
+        # Initialize the image handler class  to check if the provided API key
+        # is valid:
+        image_handler = ImageHandler(self.apiKey)
+    
+    def enabled_attributes(self):
+        print('Here is the list of attributes currently enabled in InventoryGenerator:\n')
+        for attribute in self.enabledAttributes:
+            print(f'       {attribute}')
+        print('\nIf you want to get all of these attributes when you run '
+              "InventoryGenerator.generate, simply set attributes='all'")
 
     def generate(self,attributes=['numstories','occupancy','roofshape']):
-        self.attributes = attributes
+        
+        def write_to_dataframe(df,imagelist,predictionlist,column,
+                               imtype='street_images'):
+            """
+            Function that writes predictions of a model by going through the 
+            DataFrame, df, and finding the image name matches between the 
+            list of images corresponding to the predictions, i.e., imagelist,
+            then assigning the predictions  to df. The function only searches 
+            the column named im_type for image names in imagelist.
+            
+            Inputs: 
+                df: DataFrame
+                    A DataFrame containing at least a column of names of source
+                    images named either 'satellite_images' or 'street_images',
+                    depending on the value of im_type
+                imagelist: list
+                    List of image names. These names need to correspond to the
+                    predictions in predictionlist
+                predictionlist: list
+                    List of predictions. These predictions need to correspond
+                    to the image names in imagelist
+                imtype: string
+                    'satellite_images' or 'street_images' depending on the
+                    type of source images
+                column: Name of the column where the predictions will be written
+            
+            Output: An updated version of df that includes an extra column for 
+                    the predictions
+            """
+            
+            for ind, im in enumerate(imagelist):
+                df.loc[df.index[df[imtype] == im],column] = predictionlist[ind]
+            
+            return df
+        
+        # Pre-process the attribute entries such that incorrect entries are 
+        # removed:
+        if isinstance(attributes,str) and attributes=='all':    
+            self.attributes = self.enabledAttributes[:]
+        elif isinstance(attributes,list):
+            self.attributes = [attribute.lower() for attribute in attributes]
+            ignore_entries = []
+            for attribute in self.attributes:
+                if attribute not in self.enabledAttributes:
+                    ignore_entries.append(attribute)
+                    self.attributes.remove(attribute)
+            if len(ignore_entries)==1:
+                print('Found an entry in attributes that was not enabled in ' + 
+                      'InventoryGenerator.\nIgnoring entry: ' +
+                      ', '.join(ignore_entries))
+            elif len(ignore_entries)>1:
+                print('Found entries in attributes that were not enabled in ' + 
+                      'InventoryGenerator.\nIgnoring entries: ' +
+                      ', '.join(ignore_entries))
+        
+        if len(self.attributes)==0:
+            sys.exit('Defined list of attributes does not contain a ' + 
+                     'correct attribute entry. Attribute entries enabled' +
+                     ' are: ' + ', '.join(self.enabledAttributes))
+        
+        # Create a list of footprints for easier module calls:
         footprints = self.inventory['footprint'].values.tolist()
-        # Download required images
-        image_handler = ImageHandler(self.apikey)
-        if 'roofshape' in attributes:
+        
+        # Download the images required for the requested attributes:
+        image_handler = ImageHandler(self.apiKey)
+        if 'roofshape' in self.attributes:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
-        elif set.intersection(set(['chimney','elevated','garage','numstories',
-                                   'occupancy','year']),attributes)!=set():            
+            self.inventory['satellite_images'] = image_handler.satellite_images
+        if set.intersection(set(['chimney','elevated','garage','numstories',
+                                   'occupancy','year']),self.attributes)!=set():            
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
-        else:
-            sys.exit('Defined list of attributes does not contain a correct' +
-                     'attribute entry. Attribute entries enabled are: chimney, ' + 
-                     'elevated, garage, numstories, occupancy, roofshape, year')
-
-        #self.inventory['satellite_images'] = image_handler.satellite_images
-        #self.inventory['street_images'] = image_handler.street_images
-        df = self.inventory.copy(deep=True)
+            self.inventory['street_images'] = image_handler.street_images
+        
         for attribute in self.attributes:
-            if attribute.lower()=='roofshape':
+ 
+            if attribute=='chimney':
+                # Initialize the chimney detector object
+                chimneyModel = ChimneyDetector()
+
+                # Call the chimney detector to existence of chimneys
+                chimneyModel.predict(imstreet)
+
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,
+                                   chimneyModel.system_dict['infer']['images'],
+                                   chimneyModel.system_dict['infer']['predictions'],
+                                   'chimneyExists')
+
+            elif attribute=='garage':
+                # Initialize the garage detector object
+                garageModel = GarageDetector()
+
+                # Call the garage detector to determine the existence of garages
+                garageModel.predict(imstreet)
+
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,
+                                   garageModel.system_dict['infer']['images'],
+                                   garageModel.system_dict['infer']['predictions'],
+                                   'garageExists')
+
+            elif attribute=='numstories':
+                # Initialize the floor detector object
+                storyModel = NFloorDetector()
+
+                # Call the floor detector to determine number of floors of 
+                # buildings in each image:
+                storyModel.predict(imstreet)
+
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,
+                                   storyModel.system_dict['infer']['images'],
+                                   storyModel.system_dict['infer']['predictions'],
+                                   'nstories')
+
+            elif attribute=='occupancy':
+                occupancyModel = PytorchRoofClassifier(modelName='transformer_occupancy_v1', download=True)
+                occupancy = occupancyModel.predictMultipleImages(imstreet)
+                #self.BIM['occupancy'] = self.BIM.apply(lambda x: occupancy[x['ID']], axis=1) 
+
+            
+            elif attribute=='roofshape':
                 roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
                 roofShape = roofModel.predictMultipleImages(imsat)
                 #self.BIM['roofShape'] = self.BIM.apply(lambda x: roofShape[x['ID']], axis=1)
 
-            elif attribute.lower()=='occupancy':
-                occupancyModel = PytorchRoofClassifier(modelName='transformer_occupancy_v1', download=True)
-                occupancy = occupancyModel.predictMultipleImages(imstreet)
-                #self.BIM['occupancy'] = self.BIM.apply(lambda x: occupancy[x['ID']], axis=1) 
            
-            elif attribute.lower()=='elevated':
+            elif attribute=='elevated':
                 # initialize a foundation classifier
                 elvModel = FoundationHeightClassifier(workDir=self.workDir,printRes=False)
 
@@ -119,41 +239,6 @@ class InventoryGenerator:
                 elvProb = elv_df['probability'].to_list()
                 #self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
 
-            elif attribute.lower()=='numstories':
-                # Initialize the floor detector object
-                storyModel = NFloorDetector()
-
-                # Call the floor detector to determine number of floors
-                story_df = storyModel.predict(imstreet)
-
-                # Write the results to a dataframe
-                for index, row in story_df.iterrows():
-                    df.loc[df.index[df['street_images'] == row['image']],
-                           'nstories'] = row['prediction']
-                
-            elif attribute.lower()=='garage':
-                # Initialize the garage detector object
-                garageModel = GarageDetector()
-
-                # Call the garage detector to determine the existence of garages
-                garage_df = garageModel.predict(imstreet)
-
-                # Write the results to a dataframe
-                for index, row in garage_df.iterrows():
-                    df.loc[df.index[df['street_images'] == row['image']],
-                           'garage_exists'] = row['prediction']
-
-            elif attribute.lower()=='chimney':
-                # Initialize the chimney detector object
-                chimneyModel = ChimneyDetector()
-
-                # Call the chimney detector to existence of chimneys
-                chimney_df = chimneyModel.predict(imstreet)
-
-                # Write the results to a dataframe
-                for index, row in chimney_df.iterrows():
-                    df.loc[df.index[df['street_images'] == row['image']],
-                           'chimney_exists'] = row['prediction']
                 
             elif attribute.lower()=='year':
                 yearModel = YearBuiltClassifier(workDir=self.workDir,printRes=False)
@@ -164,6 +249,3 @@ class InventoryGenerator:
                 yearProb = year_df['probability'].to_list()
                 self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
                 self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
-           
-            self.inventory = df.copy(deep=True)
-                
