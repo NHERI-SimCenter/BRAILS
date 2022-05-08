@@ -72,20 +72,19 @@ class PytorchRoofClassifier(PytorchImageClassifier):
         if not modelName:
 
             modelName = 'transformer_rooftype_v1'
-            print('A default roof type model will be used: {}.'.format(modelName))
+            print('Default roof type classifier will be used: {}.'.format(modelName))
 
 
         if download:
 
             if modelName != 'transformer_rooftype_v1':
-                print ("Try to download pre-trained model. Currently only support transformer_rooftype_v1")  
+                print ('Please download pre-trained model. Currently only the'+
+                       'model titled transformer_rooftype_v1 is supported')  
                 exit()
 
-            if not os.path.exists("./BRAILS_pretrained_model/"):
-                os.makedirs("./BRAILS_pretrained_model/")
+            os.makedirs('./tmp/models/',exist_ok=True)
 
-
-            modelFile = os.path.join("./BRAILS_pretrained_model/", '{}.pkl'.format(modelName))
+            modelFile = os.path.join('./tmp/models/', '{}.pkl'.format(modelName))
 
             if not os.path.exists(modelFile):
 
@@ -129,5 +128,3 @@ if __name__ == '__main__':
 
     work.train(lr=0.01, batch_size=16, epochs=5)
     #work.predictOneDirectory("./roofType/flat/")
-
-
