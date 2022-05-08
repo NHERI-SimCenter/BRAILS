@@ -215,7 +215,8 @@ class PytorchImageClassifier:
 
             # change the number of output class
             self.model.reset_classifier(len(self.classNames))
-            
+            self.model = nn.DataParallel(self.model)
+
             self.load_model(modelFile)
 
         else:
@@ -228,8 +229,9 @@ class PytorchImageClassifier:
 
 
         #######################################################
-        self.model = nn.DataParallel(self.model)
+        
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        
         self.model.to(self.device)
 
         #######################################################
