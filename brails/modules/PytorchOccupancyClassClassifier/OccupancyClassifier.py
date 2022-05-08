@@ -72,29 +72,28 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
         if not modelName:
 
             modelName = 'transformer_occupancy_v1'
-            print('A default roof type model will be used: {}.'.format(modelName))
+            print('Default occupancy classifier will be used: {}.'.format(modelName))
 
-
+        print('\nDetermining the occupancy class for each building...')
         if download:
 
             if modelName != 'transformer_occupancy_v1':
-                print ("Try to download pre-trained model. Currently only support transformer_occupancy_v1")  
+                print ('Please download pre-trained model. Currently only the'+
+                       'model titled transformer_occupancy_v1 is supported')
                 exit()
 
-            if not os.path.exists("./BRAILS_pretrained_model/"):
-                os.makedirs("./BRAILS_pretrained_model/")
+            os.makedirs('./tmp/models/',exist_ok=True)
 
-
-            modelFile = os.path.join("./BRAILS_pretrained_model/", '{}.pkl'.format(modelName))
+            modelFile = os.path.join('./tmp/models/', '{}.pkl'.format(modelName))
 
             if not os.path.exists(modelFile):
 
-                print('Downloading the model ...')
+                print('Loading default occcupancy classifier model file to tmp/models folder...')
                 
                 self.download_model(modelFile)
 
             else:
-                print('Pre-trained model exists locally.')
+                print('Default occupancy classifier model at tmp/models loaded')
 
             self.classNames = zoo['Occupancy']['classNames']
 
@@ -124,8 +123,8 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
 
 if __name__ == '__main__':
     
-    work = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True, imgDir="./occupancy_val/")
+    work = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', 
+                                      download=True, imgDir="./occupancy_val/")
 
     #work.train(lr=0.01, batch_size=16, epochs=5)
     work.predictOneDirectory("./occupancy_val/OTH/")
-
