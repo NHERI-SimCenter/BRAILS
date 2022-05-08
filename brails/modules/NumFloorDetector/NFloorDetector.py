@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-08-2022 
+# 05-08-2022
 
 from .lib.train_detector import Detector
 import os
@@ -184,19 +184,21 @@ class NFloorDetector():
         self.system_dict["infer"]["gpuEnabled"] = gpuEnabled
         self.system_dict["infer"]['predictions'] = []
         
+        print('\nDetermining the number of floors for each building...')
+        
         def install_default_model(model_path):
             if model_path == 'tmp/models/efficientdet-d4_nfloorDetector.pth':
                 os.makedirs('tmp/models',exist_ok=True)
         
                 if not os.path.isfile(model_path):
-                    print('\nLoading default floor detector model file to tmp/models folder...')
+                    print('Loading default floor detector model file to tmp/models folder...')
                     torch.hub.download_url_to_file('https://zenodo.org/record/4421613/files/efficientdet-d4_trained.pth',
                                                    model_path, progress=False)
                     print('Default floor detector model loaded')
                 else: 
-                    print(f"\nDefault floor detector model at {model_path} loaded")
+                    print(f"Default floor detector model at {model_path} loaded")
             else:
-                print(f'\nInferences will be performed using the custom model at {model_path}')
+                print(f'Inferences will be performed using the custom model at {model_path}')
         
         def create_polygon(bb):
             polygon = Polygon([(bb[0], bb[1]), (bb[0], bb[3]),
@@ -362,7 +364,7 @@ class NFloorDetector():
         endTime = time.time()
         hours, rem = divmod(endTime-startTime, 3600)
         minutes, seconds = divmod(rem, 60)
-        print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}\n".format(int(hours),int(minutes),seconds))
+        print("Total execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
         
         # Cleanup the Root Folder
         if os.path.isfile("input.jpg"):
