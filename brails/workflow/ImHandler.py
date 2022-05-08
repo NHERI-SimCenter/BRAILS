@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-21-2022    
+# 05-08-2022    
 
 
 import os
@@ -228,7 +228,7 @@ class ImageHandler:
             image_url = streetViewBaseURL % (str(latlon)[1:-1].replace(" ", ""),str(heading),str(fov),key)
             r = requests.get(image_url)
             if r.status_code == 200:
-                with open(os.path.join(im_path,f"{imName}.jpg"), 'wb') as f:
+                with open(os.path.join(im_path,f"{imName}.png"), 'wb') as f:
                     f.write(r.content)
           
         # Function that checks if, given three colinear points p, q, r, point q lies on
