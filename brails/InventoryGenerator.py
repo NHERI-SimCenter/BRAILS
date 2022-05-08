@@ -100,8 +100,7 @@ class InventoryGenerator:
 
     def generate(self,attributes=['numstories','occupancy','roofshape']):
         
-        def write_to_dataframe(df,imagelist,predictionlist,column,
-                               imtype='street_images'):
+        def write_to_dataframe(df,predictions,column,imtype='street_images'):
             """
             Function that writes predictions of a model by going through the 
             DataFrame, df, and finding the image name matches between the 
@@ -114,12 +113,14 @@ class InventoryGenerator:
                     A DataFrame containing at least a column of names of source
                     images named either 'satellite_images' or 'street_images',
                     depending on the value of im_type
-                imagelist: list
-                    List of image names. These names need to correspond to the
-                    predictions in predictionlist
-                predictionlist: list
-                    List of predictions. These predictions need to correspond
-                    to the image names in imagelist
+                predictions: list or DataFrame
+                    A list consisting of two lists: 1) list of image names. 
+                    These names need to correspond to the predictions in 
+                    predictionlist 2) list of predictions. These predictions
+                    need to correspond to the image names in imagelist.
+                    Alternately, a Pandas DataFrame with a column titled image 
+                    for image names, and a column for the predictions titled
+                    predictions
                 imtype: string
                     'satellite_images' or 'street_images' depending on the
                     type of source images
@@ -128,10 +129,15 @@ class InventoryGenerator:
             Output: An updated version of df that includes an extra column for 
                     the predictions
             """
-            
-            for ind, im in enumerate(imagelist):
-                df.loc[df.index[df[imtype] == im],column] = predictionlist[ind]
-            
+            if isinstance(predictions,list):
+                imagelist = predictions[0][:]
+                predictionlist = predictions[1][:]
+                for ind, im in enumerate(imagelist):
+                    df.loc[df.index[df[imtype] == im],column] = predictionlist[ind]
+            else:    
+                for index, row in predictions.iterrows():
+                    df.loc[df.index[df[imtype] == row['image']],column] = row['prediction']
+                    
             return df
         
         # Pre-process the attribute entries such that incorrect entries are 
@@ -177,33 +183,33 @@ class InventoryGenerator:
         for attribute in self.attributes:
  
             if attribute=='chimney':
-                # Initialize the chimney detector object
+                # Initialize the chimney detector object:
                 chimneyModel = ChimneyDetector()
 
-                # Call the chimney detector to existence of chimneys
+                # Call the chimney detector to existence of chimneys:
                 chimneyModel.predict(imstreet)
 
                 # Write the results to the inventory DataFrame:
                 self.inventory = write_to_dataframe(self.inventory,
-                                   chimneyModel.system_dict['infer']['images'],
-                                   chimneyModel.system_dict['infer']['predictions'],
+                                   [chimneyModel.system_dict['infer']['images'],
+                                   chimneyModel.system_dict['infer']['predictions']],
                                    'chimneyExists')
 
             elif attribute=='garage':
-                # Initialize the garage detector object
+                # Initialize the garage detector object:
                 garageModel = GarageDetector()
 
-                # Call the garage detector to determine the existence of garages
+                # Call the garage detector to determine the existence of garages:
                 garageModel.predict(imstreet)
 
                 # Write the results to the inventory DataFrame:
                 self.inventory = write_to_dataframe(self.inventory,
-                                   garageModel.system_dict['infer']['images'],
-                                   garageModel.system_dict['infer']['predictions'],
+                                   [garageModel.system_dict['infer']['images'],
+                                   garageModel.system_dict['infer']['predictions']],
                                    'garageExists')
 
             elif attribute=='numstories':
-                # Initialize the floor detector object
+                # Initialize the floor detector object:
                 storyModel = NFloorDetector()
 
                 # Call the floor detector to determine number of floors of 
@@ -212,21 +218,36 @@ class InventoryGenerator:
 
                 # Write the results to the inventory DataFrame:
                 self.inventory = write_to_dataframe(self.inventory,
-                                   storyModel.system_dict['infer']['images'],
-                                   storyModel.system_dict['infer']['predictions'],
+                                   [storyModel.system_dict['infer']['images'],
+                                   storyModel.system_dict['infer']['predictions']],
                                    'nstories')
 
             elif attribute=='occupancy':
-                occupancyModel = PytorchRoofClassifier(modelName='transformer_occupancy_v1', download=True)
+                # Initialize the occupancy classifier object:
+                occupancyModel = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1',
+                                                            download=True)
+                
+                # Call the occupancy classifier to determine the occupancy 
+                # class of each building:
                 occupancy = occupancyModel.predictMultipleImages(imstreet)
-                #self.BIM['occupancy'] = self.BIM.apply(lambda x: occupancy[x['ID']], axis=1) 
-
+                
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,occupancy,
+                                                    'occupancy')
             
             elif attribute=='roofshape':
-                roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
-                roofShape = roofModel.predictMultipleImages(imsat)
-                #self.BIM['roofShape'] = self.BIM.apply(lambda x: roofShape[x['ID']], axis=1)
+                # Initialize the roof type classifier object:
+                roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1',
+                                                  download=True)
 
+                # Call the roof type classifier to determine the roof type of
+                # each building:                
+                roofShape = roofModel.predictMultipleImages(imsat)
+                
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,roofShape,
+                                                    'roofshape',
+                                                    'satellite_images')
            
             elif attribute=='elevated':
                 # initialize a foundation classifier
