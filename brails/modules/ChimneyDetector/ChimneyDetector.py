@@ -37,17 +37,15 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-06-2022   
+# 05-08-2022 
 
 from .lib.train_detector import Detector
 import os
-import csv
 import cv2
 from lib.infer_detector import Infer
 import torch
 import time
 from tqdm import tqdm
-import pandas as pd
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -174,26 +172,27 @@ class ChimneyDetector():
                   val_interval=self.system_dict["train"]["model"]["valInterval"],
                   save_interval=self.system_dict["train"]["model"]["saveInterval"])         
 
-    def predict(self, images, modelPath="models/efficientdet-d4_chimneyDetector.pth",
-                gpuEnabled=useGPU, outFile="chimneyOut.csv"):
+    def predict(self, images, 
+                modelPath="tmp/models/efficientdet-d4_chimneyDetector.pth",
+                gpuEnabled=useGPU):
         self.system_dict["infer"]["images"] = images
         self.system_dict["infer"]["modelPath"] = modelPath
         self.system_dict["infer"]["gpuEnabled"] = gpuEnabled
-        self.system_dict["infer"]["outFile"] = outFile
+        self.system_dict["infer"]['predictions'] = []
         
         def install_default_model(model_path):
-            if model_path == "models/efficientdet-d4_chimneyDetector.pth":
-                os.makedirs('models',exist_ok=True)
-                model_path = os.path.join('models','efficientdet-d4_chimneyDetector.pth')
+            if model_path == "tmp/models/efficientdet-d4_chimneyDetector.pth":
+                os.makedirs('tmp/models',exist_ok=True)
         
                 if not os.path.isfile(model_path):
-                    print('Loading default chimney detector model file to the models folder...')
+                    print('\nLoading default chimney detector model file to tmp/models folder...')
                     torch.hub.download_url_to_file('https://zenodo.org/record/5775292/files/efficientdet-d4_chimneyDetector.pth',
                                                    model_path, progress=False)
-                    print('Default chimney detector model loaded.')                    
+                    print('Default chimney detector model loaded')
+                else: 
+                    print(f"\nDefault chimney detector model at {model_path} loaded")                    
             else:
-                print(f'Inferences will be performed using the custom model at {model_path}.')
-        
+                print(f'\nInferences will be performed using the custom model at {model_path}')
         
         install_default_model(self.system_dict["infer"]["modelPath"])
         
@@ -211,51 +210,32 @@ class ChimneyDetector():
         # Create and Define the Inference Model
         classes = ["chimney"]
         
-        print("Performing inferences on images...")
+        print("Performing chimney detections...")
         gtfInfer = Infer()
         gtfInfer.load_model(self.system_dict["infer"]["modelPath"], classes, 
                             use_gpu=self.system_dict["infer"]["gpuEnabled"])
         
-        rows = []
         predictions = []
         for img in tqdm(imgList):
-            bldgID = os.path.basename(img).split('.')[0]
             img = cv2.imread(img)
             cv2.imwrite("input.jpg", img)
             scores, labels, boxes = gtfInfer.predict("input.jpg", threshold=0.35)
             if len(boxes)>=1:
-              rows.append([bldgID,1])
               predictions.append(1)
             else:
-              rows.append([bldgID,0])
               predictions.append(0)
-
-        nImages = len(imgList)               
-        if nImages!=1: 
-            with open(self.system_dict["infer"]["outFile"], 'w', newline='', 
-                      encoding='utf-8') as csvfile: 
-                # creating a csv writer object 
-                csvwriter = csv.writer(csvfile) 
-        
-                # writing the data rows 
-                rows.insert(0, "Image, chimneyExist")
-                csvwriter.writerows(rows)  
-        else:
-            print(f"Chimney exists: {bool(predictions)}\n")        
-        
-        df = pd.DataFrame(list(zip(imgList, predictions)), columns =['image', 
-                                                                     'prediction',])
+     
+        self.system_dict["infer"]['predictions'] = predictions
+        self.system_dict["infer"]["images"] = imgList
         
         # End Program Timer and Display Execution Time
         endTime = time.time()
         hours, rem = divmod(endTime-startTime, 3600)
         minutes, seconds = divmod(rem, 60)
-        print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+        print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}\n".format(int(hours),int(minutes),seconds))
         
         # Cleanup the Root Folder
         if os.path.isfile("input.jpg"):
             os.remove("input.jpg")
         if os.path.isfile("output.jpg"):
             os.remove("output.jpg")
-       
-        return df    
