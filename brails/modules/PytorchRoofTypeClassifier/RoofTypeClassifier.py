@@ -74,7 +74,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             modelName = 'transformer_rooftype_v1'
             print('Default roof type classifier will be used: {}.'.format(modelName))
 
-
+        print('\nDetermining the roof type for each building...')
         if download:
 
             if modelName != 'transformer_rooftype_v1':
@@ -88,12 +88,12 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
             if not os.path.exists(modelFile):
 
-                print('Downloading the model ...')
+                print('Loading default roof type classifier model file to tmp/models folder...')
                 
                 self.download_model(modelFile)
 
             else:
-                print('Pre-trained model exists locally.')
+                print('Default roof type classifier model at tmp/models loaded')
 
             self.classNames = zoo['roofType']['classNames']
 
@@ -123,7 +123,8 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 
 if __name__ == '__main__':
     
-    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True, imgDir='./roofType/')
+    work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', 
+                                 download=True, imgDir='./roofType/')
     #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
 
     work.train(lr=0.01, batch_size=16, epochs=5)
