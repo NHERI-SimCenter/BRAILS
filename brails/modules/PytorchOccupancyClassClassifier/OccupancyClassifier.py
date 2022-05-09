@@ -66,7 +66,7 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
             download=True, 
             resultFile='Occupancy_preds.csv', 
             workDir='./tmp',
-            printRes=True
+            printRes=False
     ):
 
         if not modelName:
