@@ -91,7 +91,8 @@ class YearBuiltClassifier():
         else:
             if not os.path.isfile(weight_file_path):
                 print(f'Loading default era of construction classifier model file to {self.checkpointsDir} folder...')
-                torch.hub.download_url_to_file('https://zenodo.org/record/4310463/files/model_best.pth', weight_file_path)
+                torch.hub.download_url_to_file('https://zenodo.org/record/4310463/files/model_best.pth',
+                                               weight_file_path, progress=False)
                 print('\nDefault era of construction classifier model loaded')
             else:
                 print(f"Default era of construction classifier model at {self.checkpointsDir} loaded")
@@ -142,7 +143,7 @@ class YearBuiltClassifier():
             p = prediction['probability']
             probs.append(p)
             if self.printRes: print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]} ({str(round(p*100,2))}%)")
-        
+        print('\n')
         pred_clear = []
         for prediction in predictions:
             if prediction==0:
