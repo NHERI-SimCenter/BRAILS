@@ -234,7 +234,7 @@ class GarageDetector():
         endTime = time.time()
         hours, rem = divmod(endTime-startTime, 3600)
         minutes, seconds = divmod(rem, 60)
-        print("Total execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+        print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
         
         # Cleanup the Root Folder
         if os.path.isfile("input.jpg"):
