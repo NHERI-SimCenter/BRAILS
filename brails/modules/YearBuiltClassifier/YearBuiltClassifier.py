@@ -1,17 +1,53 @@
-import argparse
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022 The Regents of the University of California
+#
+# This file is part of BRAILS.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# You should have received a copy of the BSD 3-Clause License along with
+# BRAILS. If not, see <http://www.opensource.org/licenses/>.
+#
+# Contributors:
+# Sascha Hornauer
+# Barbaros Cetiner
+#
+# Last updated:
+# 05-08-2022   
 
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import os
-import csv
 
-from PIL import Image
-from torch.utils.data import Dataset
 from torch.autograd.variable import Variable
 import torch.nn as nn
-import sklearn
-#from sklearn.metrics.classification import precision_recall_fscore_support
+from tqdm import tqdm
 
 import numpy as np
 import pandas as pd
@@ -28,7 +64,7 @@ sm = nn.Softmax()
 
 class YearBuiltClassifier():
 
-    def __init__(self, checkpoint='', onlycpu=False, workDir='tmp', resultFile='YearBuilt.csv', printRes=True):
+    def __init__(self, checkpoint='', onlycpu=False, workDir='tmp', printRes=False):
         '''
         checkpoint (str): Path to checkpoint. Defaults to best pretrained version.
         onlycpu (bool): Use CPU only, use GPU by default.
@@ -42,22 +78,25 @@ class YearBuiltClassifier():
         self.checkpoint = checkpoint
         self.onlycpu = onlycpu
         self.workDir = workDir
-        self.outFilePath = os.path.join(workDir, resultFile)
         self.printRes = printRes
 
-        self.checkpointsDir = os.path.join(workDir,'checkpoints')
+        self.checkpointsDir = os.path.join(workDir,'models')
         os.makedirs(self.checkpointsDir,exist_ok=True)
         weight_file_path = os.path.join(self.checkpointsDir,'yearBuiltv0.1.pth')
 
+        print('\nDetermining the era of construction for each building...')
         if self.checkpoint != '':
             self.modelFile = self.checkpoint
             
         else:
             if not os.path.isfile(weight_file_path):
-                print('Loading remote model file to the weights folder..')
+                print(f'Loading default era of construction classifier model file to {self.checkpointsDir} folder...')
                 torch.hub.download_url_to_file('https://zenodo.org/record/4310463/files/model_best.pth', weight_file_path)
+                print('\nDefault era of construction classifier model loaded')
+            else:
+                print(f"Default era of construction classifier model at {self.checkpointsDir} loaded")
             self.modelFile = weight_file_path
-
+            
         if not torch.cuda.is_available():
             self.model = torch.load(self.modelFile, map_location=torch.device('cpu'))
         else:
@@ -66,7 +105,7 @@ class YearBuiltClassifier():
 
         # test_transforms
         self.test_transforms = transforms.Compose([
-            transforms.Scale((550, 550)),
+            transforms.Resize((550, 550)),
             transforms.CenterCrop(448),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
@@ -95,19 +134,33 @@ class YearBuiltClassifier():
         imagePathList = []
 
         predictions_data = self.evaluate_to_stats(test_loader)
-
-        for prediction in predictions_data:
-            imagePathList.append(str(prediction['filename']))
+        
+        print("Performing construction era classifications...")
+        for prediction in tqdm(predictions_data):
+            imagePathList.append(str(prediction['filename']).replace('\\','/'))
             predictions.append(prediction['prediction'][0])
             p = prediction['probability']
             probs.append(p)
             if self.printRes: print(f"Image :  {str(prediction['filename'])}     Class : {prediction['prediction'][0]} ({str(round(p*100,2))}%)")
-
-        df = pd.DataFrame(list(zip(imagePathList, predictions, probs)), columns =['image', 'prediction', 'probability']) 
-        df.to_csv(self.outFilePath, index=False)
-        print(f'Results written in file {self.outFilePath}')
-
-        return df
+        
+        pred_clear = []
+        for prediction in predictions:
+            if prediction==0:
+                pred_str = 'Pre-1970'
+            elif prediction==1:
+                pred_str = '1970-1979'
+            elif prediction==2:
+                pred_str = '1980-1989'
+            elif prediction==3:
+                pred_str = '1990-1999'
+            elif prediction==4:
+                pred_str = '2000-2009'
+            else:
+                pred_str = 'Post-2010'
+            pred_clear.append(pred_str)
+            
+        df = pd.DataFrame(list(zip(imagePathList, pred_clear, probs)), columns =['image', 'prediction', 'probability']) 
+        self.results_df = df.copy()
         
     def evaluate_to_stats(self, testloader):
         self.model.eval()
@@ -143,33 +196,6 @@ class YearBuiltClassifier():
                 else:
                     predictions.append({'filename':y_fn,'prediction':y_pred,'probability':p})
 
-
-                if batch_idx % 50 == 0:
-                    print('Testing image {} from {}'.format(batch_idx,len(testloader)))
-
-            '''
-            if self.calc_perf:
-                y_gt = []
-                y_pred = []
-                for prediction in predictions:
-                    y_gt.append(prediction['ground truth'])
-                    y_pred.append(prediction['prediction'])
-
-                y_gt = np.array(y_gt,dtype=np.uint8)
-                y_pred = np.array(y_pred,dtype=np.uint8)
-
-                precision, recall, f1, support = precision_recall_fscore_support(y_gt,
-                                                                             y_pred, average='macro')
-
-                confusion_matrix = sklearn.metrics.confusion_matrix(y_gt, y_pred, labels=range(len(testloader.dataset.classes)))
-
-                cm_fig = construct_confusion_matrix_image(testloader.dataset.classes, confusion_matrix)
-
-                cm_fig.savefig('result_confusion_matrix.png',dpi=300)
-
-                print('F1 {}, precision, {}, recall, {}'.format(f1,precision,recall))   
-            '''
-
         return predictions
 
     def construct_confusion_matrix_image(classes, con_mat):
@@ -187,8 +213,3 @@ class YearBuiltClassifier():
         figure.canvas.draw()
 
         return figure
-
-
-
-if __name__ == '__main__':
-    main()
