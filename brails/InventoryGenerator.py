@@ -48,7 +48,6 @@ import sys
 import pandas as pd
 
 from brails.modules import (PytorchRoofClassifier, PytorchOccupancyClassifier, 
-                            SoftstoryClassifier, FoundationHeightClassifier, 
                             YearBuiltClassifier, NFloorDetector, 
                             GarageDetector, ChimneyDetector)
 from .workflow.ImHandler import ImageHandler
@@ -59,8 +58,8 @@ class InventoryGenerator:
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
-        self.enabledAttributes = ['chimney','elevated','garage','numstories',
-                                  'occupancy','roofshape','year']
+        self.enabledAttributes = ['chimney','erabuilt','garage',
+                                  'numstories','occupancy','roofshape']
         self.inventory = None
         self.location = location
         self.nbldgs = nbldgs
@@ -174,8 +173,10 @@ class InventoryGenerator:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
             self.inventory['satellite_images'] = image_handler.satellite_images
-        if set.intersection(set(['chimney','elevated','garage','numstories',
-                                   'occupancy','year']),self.attributes)!=set():            
+        
+        streetAttributes = self.enabledAttributes[:]
+        streetAttributes.remove('roofshape')
+        if set.intersection(set(streetAttributes),set(self.attributes))!=set():
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
             self.inventory['street_images'] = image_handler.street_images
@@ -186,7 +187,7 @@ class InventoryGenerator:
                 # Initialize the chimney detector object:
                 chimneyModel = ChimneyDetector()
 
-                # Call the chimney detector to existence of chimneys:
+                # Call the chimney detector to determine the existence of chimneys:
                 chimneyModel.predict(imstreet)
 
                 # Write the results to the inventory DataFrame:
@@ -194,6 +195,17 @@ class InventoryGenerator:
                                    [chimneyModel.system_dict['infer']['images'],
                                    chimneyModel.system_dict['infer']['predictions']],
                                    'chimneyExists')
+                
+            elif attribute=='erabuilt':
+                # Initialize the era of construction classifier:
+                yearModel = YearBuiltClassifier()
+                
+                # Call the classifier to determine the era of construction for
+                # each building:
+                yearModel.predict(imstreet)
+                
+                # Write the results to the inventory DataFrame:
+                write_to_dataframe(self.inventory,yearModel.results_df,'eraBuilt')
 
             elif attribute=='garage':
                 # Initialize the garage detector object:
@@ -248,25 +260,3 @@ class InventoryGenerator:
                 self.inventory = write_to_dataframe(self.inventory,roofShape,
                                                     'roofshape',
                                                     'satellite_images')
-           
-            elif attribute=='elevated':
-                # initialize a foundation classifier
-                elvModel = FoundationHeightClassifier(workDir=self.workDir,printRes=False)
-
-                # use the classifier 
-                elv_df = elvModel.predict(imstreet)
-
-                elv = elv_df['prediction'].to_list()
-                elvProb = elv_df['probability'].to_list()
-                #self.BIM['elevated'] = self.BIM.apply(lambda x: elv[x['ID']], axis=1)
-
-                
-            elif attribute.lower()=='year':
-                yearModel = YearBuiltClassifier(workDir=self.workDir,printRes=False)
-
-                year_df = yearModel.predict(imstreet)
-
-                year = year_df['prediction'].to_list()
-                yearProb = year_df['probability'].to_list()
-                self.BIM['year'] = self.BIM.apply(lambda x: year[x['ID']], axis=1)
-                self.BIM['yearProb'] = self.BIM.apply(lambda x: yearProb[x['ID']], axis=1) 
