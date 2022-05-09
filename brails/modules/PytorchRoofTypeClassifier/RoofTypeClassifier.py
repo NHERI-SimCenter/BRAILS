@@ -66,7 +66,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             download=True, 
             resultFile='roofType_preds.csv', 
             workDir='./tmp',
-            printRes=True
+            printRes=False
     ):
 
         if not modelName:
