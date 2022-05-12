@@ -47,9 +47,10 @@ import random
 import sys
 import pandas as pd
 
-from brails.modules import (PytorchRoofClassifier, PytorchOccupancyClassifier, 
-                            YearBuiltClassifier, NFloorDetector, 
-                            GarageDetector, ChimneyDetector)
+from brails.modules import (ChimneyDetector, GarageDetector, 
+                            NFloorDetector, PytorchRoofClassifier, 
+                            PytorchOccupancyClassifier, RoofCoverClassifier, 
+                            YearBuiltClassifier)
 from .workflow.ImHandler import ImageHandler
 from .workflow.FootprintHandler import FootprintHandler
 
@@ -59,7 +60,8 @@ class InventoryGenerator:
                  GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
         self.enabledAttributes = ['chimney','erabuilt','garage',
-                                  'numstories','occupancy','roofshape']
+                                  'numstories','occupancy','roofcover',
+                                  'roofshape']
         self.inventory = None
         self.location = location
         self.nbldgs = nbldgs
@@ -169,13 +171,14 @@ class InventoryGenerator:
         
         # Download the images required for the requested attributes:
         image_handler = ImageHandler(self.apiKey)
-        if 'roofshape' in self.attributes:
+        if 'roofshape' in self.attributes or 'roofcover' in self.attributes:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
             self.inventory['satellite_images'] = image_handler.satellite_images
         
         streetAttributes = self.enabledAttributes[:]
         streetAttributes.remove('roofshape')
+        streetAttributes.remove('roofcover')
         if set.intersection(set(streetAttributes),set(self.attributes))!=set():
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
@@ -246,6 +249,20 @@ class InventoryGenerator:
                 # Write the results to the inventory DataFrame:
                 self.inventory = write_to_dataframe(self.inventory,occupancy,
                                                     'occupancy')
+            
+            elif attribute=='roofcover':
+                # Initialize the roof cover classifier object:
+                roofCoverModel = RoofCoverClassifier()
+
+                # Call the roof cover classifier to classify roof cover type of
+                # each building:                
+                roofCoverModel.predict()
+
+                # Write the results to the inventory DataFrame:
+                self.inventory = write_to_dataframe(self.inventory,
+                                   [roofCoverModel.system_dict['infer']['images'],
+                                   roofCoverModel.system_dict['infer']['predictions']],
+                                   'roofCover')
             
             elif attribute=='roofshape':
                 # Initialize the roof type classifier object:
