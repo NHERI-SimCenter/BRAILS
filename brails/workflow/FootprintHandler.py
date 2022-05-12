@@ -37,11 +37,12 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-02-2022  
+# 05-12-2022  
 
 import requests
 import sys
 import json
+from itertools import groupby
 
 class FootprintHandler:
     def __init__(self): 
@@ -62,7 +63,14 @@ class FootprintHandler:
             if isinstance(queryarea,str):
                 # Search for the query area using Nominatim API:
                 print(f"\nSearching for {queryarea}...")
-                queryarea_formatted = queryarea.replace(" ", "%")
+                queryarea = queryarea.replace(" ", "+").replace(',','+')
+                
+                queryarea_formatted = ""
+                for i, j in groupby(queryarea):
+                    if i=='+':
+                        queryarea_formatted += i
+                    else:
+                        queryarea_formatted += ''.join(list(j))
                 
                 nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
                                   f"q={queryarea_formatted}&format=json")
