@@ -60,7 +60,7 @@ class RoofCoverClassifier():
         self.system_dict["infer"]["params"]['batch_size'] = 64
         self.system_dict["infer"]["params"]['nworkers'] = 0
                       
-    def predict(self, images='satellite', modelPath="tmp/models/weights_resnet_34.ckp"):
+    def predict(self, images='tmp/images/satellite', modelPath="tmp/models/weights_resnet_34.ckp"):
         self.system_dict["infer"]["images"] = images
         self.system_dict["infer"]["modelPath"] = modelPath
         self.system_dict["infer"]['predictions'] = []
@@ -165,3 +165,7 @@ class RoofCoverClassifier():
         hours, rem = divmod(endTime-startTime, 3600)
         minutes, seconds = divmod(rem, 60)
         print("\nTotal execution time: {:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+        
+        # Cleanup the Root Folder
+        if os.path.isfile('tmp_val_set.csv'):
+            os.remove('tmp_val_set.csv')
