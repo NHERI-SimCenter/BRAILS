@@ -46,6 +46,7 @@
 import random
 import sys
 import pandas as pd
+from shapely.geometry import Polygon
 
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, PytorchRoofClassifier, 
@@ -59,10 +60,16 @@ class InventoryGenerator:
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
+        """
         self.enabledAttributes = ['buildingheight','chimney','erabuilt',
                                   'garage','numstories','occupancy',
                                   'roofcover','roofeaveheight','roofshape',
                                   'roofpitch']
+        """
+        self.enabledAttributes = ['buildingheight','chimney','erabuilt',
+                                  'garage','numstories','roofeaveheight',
+                                  'roofshape','roofpitch']
+
         self.inventory = None
         self.location = location
         self.nbldgs = nbldgs
@@ -173,14 +180,14 @@ class InventoryGenerator:
         # Download the images required for the requested attributes:
         image_handler = ImageHandler(self.apiKey)
         
-        if 'roofshape' in self.attributes or 'roofcover' in self.attributes:
+        if 'roofshape' in self.attributes: #or 'roofcover' in self.attributes:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
             self.inventory['satellite_images'] = image_handler.satellite_images
         
         streetAttributes = self.enabledAttributes[:]
         streetAttributes.remove('roofshape')
-        streetAttributes.remove('roofcover')
+        #streetAttributes.remove('roofcover')
         if set.intersection(set(streetAttributes),set(self.attributes))!=set():
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
@@ -307,4 +314,11 @@ class InventoryGenerator:
                                                     [facadeParserModel.predictions['image'].to_list(),
                                                      facadeParserModel.predictions[attribute].to_list()],
                                                      attribute)    
-                
+        
+        dfout = self.inventory.copy(deep=True)
+        for index, row in self.inventory.iterrows():
+            dfout.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
+        dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
+                           errors='ignore')
+        dfout.to_csv('inventory.csv', index=False) 
+        print('Final inventory file available in inventory.csv')
