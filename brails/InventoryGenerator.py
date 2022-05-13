@@ -138,7 +138,7 @@ class InventoryGenerator:
             else:    
                 for index, row in predictions.iterrows():
                     df.loc[df.index[df[imtype] == row['image']],column] = row['prediction']
-                    
+                          
             return df
         
         # Pre-process the attribute entries such that incorrect entries are 
@@ -198,6 +198,7 @@ class InventoryGenerator:
                                    [chimneyModel.system_dict['infer']['images'],
                                    chimneyModel.system_dict['infer']['predictions']],
                                    'chimneyExists')
+                self.inventory['chimneyExists'] = self.inventory['chimneyExists'].astype(dtype="boolean")
                 
             elif attribute=='erabuilt':
                 # Initialize the era of construction classifier:
@@ -208,7 +209,8 @@ class InventoryGenerator:
                 yearModel.predict(imstreet)
                 
                 # Write the results to the inventory DataFrame:
-                write_to_dataframe(self.inventory,yearModel.results_df,'eraBuilt')
+                self.inventory = write_to_dataframe(self.inventory,yearModel.results_df,'eraBuilt')
+                self.inventory['eraBuilt'] = self.inventory['eraBuilt'].fillna('N/A')
 
             elif attribute=='garage':
                 # Initialize the garage detector object:
@@ -222,7 +224,8 @@ class InventoryGenerator:
                                    [garageModel.system_dict['infer']['images'],
                                    garageModel.system_dict['infer']['predictions']],
                                    'garageExists')
-
+                self.inventory['garageExists'] = self.inventory['garageExists'].astype(dtype="boolean")
+                
             elif attribute=='numstories':
                 # Initialize the floor detector object:
                 storyModel = NFloorDetector()
@@ -236,7 +239,8 @@ class InventoryGenerator:
                                    [storyModel.system_dict['infer']['images'],
                                    storyModel.system_dict['infer']['predictions']],
                                    'nstories')
-
+                self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
+                
             elif attribute=='occupancy':
                 # Initialize the occupancy classifier object:
                 occupancyModel = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1',
@@ -247,8 +251,10 @@ class InventoryGenerator:
                 occupancy = occupancyModel.predictMultipleImages(imstreet)
                 
                 # Write the results to the inventory DataFrame:
+                occupancy['prediction'] = occupancy['prediction'].replace({'RRE':'Residential', 'OTH':'Other'})
                 self.inventory = write_to_dataframe(self.inventory,occupancy,
                                                     'occupancy')
+                self.inventory['occupancy'] = self.inventory['occupancy'].fillna('N/A')
             
             elif attribute=='roofcover':
                 # Initialize the roof cover classifier object:
@@ -274,6 +280,7 @@ class InventoryGenerator:
                 roofShape = roofModel.predictMultipleImages(imsat)
                 
                 # Write the results to the inventory DataFrame:
+                roofShape['prediction'] = roofShape['prediction'].replace({'flat':'Flat', 'hipped':'Hip', 'gabled':'Gable'})
                 self.inventory = write_to_dataframe(self.inventory,roofShape,
                                                     'roofshape',
                                                     'satellite_images')
