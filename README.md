@@ -42,7 +42,7 @@ from brails.InventoryGenerator import InventoryGenerator
 # Initialize InventoryGenerator:
 invGenerator = InventoryGenerator(location='Berkeley, CA',
                                   nbldgs=100, randomSelection=True,
-								  GoogleAPIKey="")
+                                  GoogleAPIKey="")
 
 # Run InventoryGenerator to generate an inventory for the entered location:
 # To run InventoryGenerator for all enabled attributes set attributes='all':
