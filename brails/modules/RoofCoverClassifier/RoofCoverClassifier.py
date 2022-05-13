@@ -95,11 +95,21 @@ class RoofCoverClassifier():
         
         model.load_state_dict(cpu_state_dict)
         cudnn.benchmark = True
-         
-        RoofImages.to_csv_datasource(self.system_dict["infer"]["images"],
-                                     csv_filename='tmp_val_set.csv', 
-                                     calc_perf=True)
+        
+        # Get the Image List
+        try: 
+            imgList = os.listdir(self.system_dict["infer"]["images"])
+            for imgno in range(len(imgList)):
+                imgList[imgno] = os.path.join(self.system_dict["infer"]["images"],imgList[imgno])
+        except:
+            imgList = self.system_dict["infer"]["images"]
+        
+
+        df = pd.DataFrame()
+        df['coarse_class'] = [os.path.dirname(im) for im in imgList]
+        df['filenames'] = imgList
         valdir = 'tmp_val_set.csv'
+        df.to_csv(valdir,sep=',')
     
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
@@ -144,7 +154,7 @@ class RoofCoverClassifier():
         filenames = val_loader.dataset.data_df.iloc[all_indexes]['filenames']
         
         results = pd.DataFrame()
-        results['file'] = filenames        
+        results['image'] = filenames        
         preds = [val_loader.dataset.classes[y_class] for y_class in y_pred]
         preds_final = []
         for pred in preds:
@@ -159,6 +169,8 @@ class RoofCoverClassifier():
                 
         results['prediction']  = preds_final
         self.system_dict["infer"]['predictions'] = results
+        self.system_dict["infer"]["images"] = imgList
+        
         
         # End Program Timer and Display Execution Time
         endTime = time.time()

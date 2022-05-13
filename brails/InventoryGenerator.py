@@ -256,13 +256,13 @@ class InventoryGenerator:
 
                 # Call the roof cover classifier to classify roof cover type of
                 # each building:                
-                roofCoverModel.predict()
+                roofCoverModel.predict(imsat)
 
                 # Write the results to the inventory DataFrame:
                 self.inventory = write_to_dataframe(self.inventory,
-                                   [roofCoverModel.system_dict['infer']['images'],
-                                   roofCoverModel.system_dict['infer']['predictions']],
-                                   'roofCover')
+                                                    roofCoverModel.system_dict['infer']['predictions'],
+                                                    'roofCover',
+                                                    'satellite_images')
             
             elif attribute=='roofshape':
                 # Initialize the roof type classifier object:
