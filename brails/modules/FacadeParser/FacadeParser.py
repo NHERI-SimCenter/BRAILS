@@ -214,7 +214,7 @@ class FacadeParser:
             dev = 'cpu'
        
         # Load the trained model and set the model to evaluate mode
-        print('\nDetermining the height and roof slope for each building...')
+        print('\nDetermining the heights and roof pitch for each building...')
         install_default_model(self.model_path)
         model = torch.load(self.model_path,map_location=torch.device(dev))
         model.eval()
