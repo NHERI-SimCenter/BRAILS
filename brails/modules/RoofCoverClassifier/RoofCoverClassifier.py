@@ -49,7 +49,7 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
-from utils.datasets import RoofImages
+from .utils.datasets import RoofImages
 import torchvision.models as models
 
 class RoofCoverClassifier():
