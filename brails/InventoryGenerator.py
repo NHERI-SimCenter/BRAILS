@@ -47,7 +47,7 @@ import random
 import sys
 import pandas as pd
 
-from brails.modules import (ChimneyDetector, GarageDetector, 
+from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, PytorchRoofClassifier, 
                             PytorchOccupancyClassifier, RoofCoverClassifier, 
                             YearBuiltClassifier)
@@ -59,9 +59,10 @@ class InventoryGenerator:
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
-        self.enabledAttributes = ['chimney','erabuilt','garage',
-                                  'numstories','occupancy','roofcover',
-                                  'roofshape']
+        self.enabledAttributes = ['buildingheight','chimney','erabuilt',
+                                  'garage','numstories','occupancy',
+                                  'roofcover','roofeaveheight','roofshape',
+                                  'roofpitch']
         self.inventory = None
         self.location = location
         self.nbldgs = nbldgs
@@ -171,6 +172,7 @@ class InventoryGenerator:
         
         # Download the images required for the requested attributes:
         image_handler = ImageHandler(self.apiKey)
+        
         if 'roofshape' in self.attributes or 'roofcover' in self.attributes:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
@@ -251,7 +253,6 @@ class InventoryGenerator:
                 occupancy = occupancyModel.predictMultipleImages(imstreet)
                 
                 # Write the results to the inventory DataFrame:
-                occupancy['prediction'] = occupancy['prediction'].replace({'RRE':'Residential', 'OTH':'Other'})
                 self.inventory = write_to_dataframe(self.inventory,occupancy,
                                                     'occupancy')
                 self.inventory['occupancy'] = self.inventory['occupancy'].fillna('N/A')
@@ -284,3 +285,26 @@ class InventoryGenerator:
                 self.inventory = write_to_dataframe(self.inventory,roofShape,
                                                     'roofshape',
                                                     'satellite_images')
+                
+            elif attribute in ['buildingheight','roofeaveheight','roofpitch']:
+                if 'storyModel' not in locals():
+                    # Initialize the floor detector object:
+                    storyModel = NFloorDetector()
+
+                    # Call the floor detector to determine number of floors of 
+                    # buildings in each image:
+                    storyModel.predict(imstreet)    
+                
+                if 'facadeParserModel' not in locals():   
+                    # Initialize the facade parser object:
+                    facadeParserModel = FacadeParser()              
+                    
+                    # Call the facade parser to determine the requested 
+                    # attribute for each building:
+                    facadeParserModel.predict(image_handler,storyModel)
+                    
+                self.inventory = write_to_dataframe(self.inventory,
+                                                    [facadeParserModel.predictions['image'].to_list(),
+                                                     facadeParserModel.predictions[attribute].to_list()],
+                                                     attribute)    
+                
