@@ -44,6 +44,7 @@ from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import 
 
 import wget 
 import os
+from sys import exit
 
 class PytorchRoofClassifier(PytorchImageClassifier):
     """
