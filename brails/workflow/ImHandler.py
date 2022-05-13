@@ -667,6 +667,12 @@ class ImageHandler:
                     
                     # Download image for segmentation:
                     download_image(latlon,heading,fov,key,imName,im_path)
+                else:
+                    refLine = None
+                    imagePlane = None
+                    scale = None
+                    fov = None
+                    heading = None
                     
             else:
                 refLine = None
