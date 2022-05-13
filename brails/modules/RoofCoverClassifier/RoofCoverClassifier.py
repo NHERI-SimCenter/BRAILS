@@ -93,7 +93,7 @@ class RoofCoverClassifier():
             model.load_state_dict(cpu_state_dict)
         else:
             model = torch.nn.DataParallel(model).cuda()
-            model.load_state_dict(torch.load(modelPath))
+            model.load_state_dict(torch.load(modelPath),strict=False)
         
         cudnn.benchmark = True
         
