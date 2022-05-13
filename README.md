@@ -29,11 +29,11 @@ pip install git+https://github.com/NHERI-SimCenter/BRAILS
 
 ### Example: InventoryGenerator Workflow
 
-This example demonstrates how to use the InventoryGenerator method embedded in BRAILS to generate regional-level inventories. 
+This example demonstrates how to use the ``InventoryGenerator`` method embedded in BRAILS to generate regional-level inventories. 
 
-The primary input to InventoryGenerator is location. InventoryGenerator accepts four different location input: 1) region name, 2) list of region names, 3) bounding box of a region, 4) A GeoJSON file containing building footprints.
+The primary input to ``InventoryGenerator`` is location. ``InventoryGenerator`` accepts four different location input: 1) region name, 2) list of region names, 3) bounding box of a region, 4) A GeoJSON file containing building footprints.
 
-Please note that you will need a Google API Key to run InventoryGenerator.
+Please note that you will need a Google API Key to run ``InventoryGenerator``.
 
 ```python
 #import InventoryGenerator:
@@ -42,7 +42,7 @@ from brails.InventoryGenerator import InventoryGenerator
 # Initialize InventoryGenerator:
 invGenerator = InventoryGenerator(location='Berkeley, CA',
                                   nbldgs=100, randomSelection=True,
-                                 GoogleAPIKey="")
+								  GoogleAPIKey="")
 
 # Run InventoryGenerator to generate an inventory for the entered location:
 # To run InventoryGenerator for all enabled attributes set attributes='all':
