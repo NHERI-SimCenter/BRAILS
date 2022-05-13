@@ -74,28 +74,27 @@ class RoofCoverClassifier():
             torch.hub.download_url_to_file('https://zenodo.org/record/4394542/files/weights_resnet_34.ckp',
                                            self.system_dict["infer"]["modelPath"],
                                            progress=False)
-            print('Default roof classifier loaded')
+            print('Default roof cover classifier loaded')
         else: 
-            print(f"Default roof classifier at {modelPath} loaded")  
+            print(f"Default roof cover classifier at {modelPath} loaded")  
     
         # Create the classifier model from the downloaded checkpoint:
         model = models.__dict__['resnet34'](num_classes=4)
     
-        """
+        
         if not torch.cuda.is_available():
             print('Could not find a GPU accelerator, using CPU for inferences')
+            checkpoint = torch.load(modelPath, map_location=torch.device('cpu'))
+            from collections import OrderedDict
+            cpu_state_dict = OrderedDict()
+            for k, v in checkpoint['state_dict'].items():
+                name = k[7:] # remove module.
+                cpu_state_dict[name] = v
+            model.load_state_dict(cpu_state_dict)
         else:
             model = torch.nn.DataParallel(model).cuda()
-        """
+            model.load_state_dict(torch.load(modelPath))
         
-        checkpoint = torch.load(modelPath, map_location=torch.device('cpu'))
-        from collections import OrderedDict
-        cpu_state_dict = OrderedDict()
-        for k, v in checkpoint['state_dict'].items():
-            name = k[7:] # remove module.
-            cpu_state_dict[name] = v
-        
-        model.load_state_dict(cpu_state_dict)
         cudnn.benchmark = True
         
         # Get the Image List
