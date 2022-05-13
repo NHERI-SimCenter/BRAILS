@@ -321,3 +321,4 @@ class InventoryGenerator:
         dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                            errors='ignore')
         dfout.to_csv('inventory.csv', index=False) 
+        print('Final inventory file available in inventory.csv')
