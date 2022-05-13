@@ -81,10 +81,9 @@ class RoofCoverClassifier():
         # Create the classifier model from the downloaded checkpoint:
         model = models.__dict__['resnet34'](num_classes=4)
     
-        
+        checkpoint = torch.load(modelPath, map_location=torch.device('cpu'))
         if not torch.cuda.is_available():
             print('Could not find a GPU accelerator, using CPU for inferences')
-            checkpoint = torch.load(modelPath, map_location=torch.device('cpu'))
             from collections import OrderedDict
             cpu_state_dict = OrderedDict()
             for k, v in checkpoint['state_dict'].items():
