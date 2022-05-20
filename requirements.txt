@@ -13,7 +13,7 @@ tensorboard
 tensorboardX
 webcolors 
 pyyaml
-torch
+torch>=1.7
 torchvision
 timm
 yacs
