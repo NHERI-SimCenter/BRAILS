@@ -47,7 +47,10 @@ import random
 import sys
 import pandas as pd
 from shapely.geometry import Polygon
+import os
+import shutil
 
+import brails.models as models
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, PytorchRoofClassifier, 
                             PytorchOccupancyClassifier, RoofCoverClassifier, 
@@ -75,7 +78,15 @@ class InventoryGenerator:
         self.nbldgs = nbldgs
         self.randomSelection = randomSelection
         self.workDir = 'tmp'
-        
+        self.modelDir = 'tmp/models'
+
+        # Copy the model files to the current directory:
+        os.makedirs(self.modelDir,exist_ok=True)
+        model_dir_org = models.__path__[0]
+        model_files = [file for file in os.listdir(model_dir_org) if file.endswith(('pth','pkl'))]
+        for model_file in model_files:
+            shutil.copyfile(os.path.join(model_dir_org,model_file),
+                            os.path.join(self.modelDir,model_file))
         
         # Get footprint data for the defined location:
         fpHandler = FootprintHandler()
@@ -321,4 +332,4 @@ class InventoryGenerator:
         dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                            errors='ignore')
         dfout.to_csv('inventory.csv', index=False) 
-        print('Final inventory available in inventory.csv')
+        print('Final inventory file available in inventory.csv')
