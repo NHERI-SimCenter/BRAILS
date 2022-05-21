@@ -1,13 +1,12 @@
 matplotlib
 numpy
-argparse
 pandas
 requests
 scipy
 seaborn
 wget
 shapely
-opencv-python
+opencv-python>=4.5
 tqdm
 tensorboard
 tensorboardX
@@ -19,9 +18,3 @@ timm
 yacs
 Pillow
 sklearn
-
-
-
-
-
-
