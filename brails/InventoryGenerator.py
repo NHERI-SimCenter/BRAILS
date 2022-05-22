@@ -314,7 +314,14 @@ class InventoryGenerator:
 
                     # Call the floor detector to determine number of floors of 
                     # buildings in each image:
-                    storyModel.predict(imstreet)    
+                    storyModel.predict(imstreet)
+                    
+                    # Write the results to the inventory DataFrame:
+                    self.inventory = write_to_dataframe(self.inventory,
+                                       [storyModel.system_dict['infer']['images'],
+                                       storyModel.system_dict['infer']['predictions']],
+                                       'nstories')
+                    self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
                 
                 if 'facadeParserModel' not in locals():   
                     # Initialize the facade parser object:
