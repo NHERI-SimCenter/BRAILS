@@ -185,6 +185,9 @@ class InventoryGenerator:
                      'correct attribute entry. Attribute entries enabled' +
                      ' are: ' + ', '.join(self.enabledAttributes))
         
+        # Remove duplicate attribute entries:
+        self.attributes = sorted(list(set(self.attributes)))
+        
         # Create a list of footprints for easier module calls:
         footprints = self.inventory['footprint'].values.tolist()
         
@@ -246,7 +249,7 @@ class InventoryGenerator:
                                    'garageExists')
                 self.inventory['garageExists'] = self.inventory['garageExists'].astype(dtype="boolean")
                 
-            elif attribute=='numstories':
+            elif attribute=='numstories' and 'storyModel' not in locals():
                 # Initialize the floor detector object:
                 storyModel = NFloorDetector()
 

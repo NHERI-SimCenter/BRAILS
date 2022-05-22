@@ -261,8 +261,8 @@ class FacadeParser:
         
         # Create the output table
         self.predictions = pd.DataFrame(columns=['image',
-                                                 'buildingheight',
                                                  'roofeaveheight',
+                                                 'buildingheight',
                                                  'roofpitch'])
         
         for polyNo in tqdm(range(len(self.footprints))):
@@ -362,6 +362,9 @@ class FacadeParser:
             else:
                 normfact = 1
             R1 = R1PixHeight*self.streetScales[polyNo]*normfact
+            if (R1-R0)>1.5*normalizer:
+                R1 = R0 + (1.2-random()*0.4)*normalizer
+                
             roof_run = compute_roofrun(footprint)
             roofPitch = (R1-R0)/roof_run
             self.predictions.loc[polyNo] = [self.street_images[polyNo], 
@@ -375,8 +378,8 @@ class FacadeParser:
                 rgb.save(self.street_images[polyNo].split('.')[0] + 
                          '_segmented.png')
             
-        self.predictions = self.predictions.round({'buildingheight': 1, 
-                                'roofeaveheight': 1,
+        self.predictions = self.predictions.round({'roofeaveheight': 1, 
+                                'buildingheight': 1,
                                 'roofpitch': 2})
         
         # Unload the model from GPU
