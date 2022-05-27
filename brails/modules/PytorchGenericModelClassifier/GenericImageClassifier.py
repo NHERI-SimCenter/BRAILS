@@ -30,8 +30,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 #
-# Contributors:
-# Yunhui Guo
 
 
 """
@@ -134,20 +132,8 @@ class PytorchImageClassifier:
 
     def __init__(self, modelName=None, imgDir='', valimgDir='', download=False, random_split=[0.8, 0.2], resultFile='preds.csv', workDir='./tmp', printRes=True, printConfusionMatrix=False):
 
-        if not os.path.exists(workDir): 
-            os.makedirs(workDir)
 
-        if not modelName:
-
-            modelName = 'transformer_rooftype_v1'
-            arch = 'transformer'
-            print('You didn\'t specify modelName, a default one is assigned {}.'.format(modelName))
-        
-        else:
-
-            arch, task, version = modelName.split("_")
-
-
+        #######################################################
         if not download:
 
             # the name of the trained model
@@ -158,10 +144,11 @@ class PytorchImageClassifier:
 
         else:
 
-            modelFile = os.path.join("./BRAILS_pretrained_model/", '{}.pkl'.format(modelName))
+            modelFile = os.path.join(workDir + "/models/", '{}.pkl'.format(modelName))
 
             # meta data contains model name, 
-            modelDetailFile = os.path.join("./BRAILS_pretrained_model/", '{}.json'.format(modelName))
+            modelDetailFile = os.path.join(workDir + "/models/", '{}.json'.format(modelName))
+        #######################################################
 
 
         self.download = download
@@ -176,7 +163,7 @@ class PytorchImageClassifier:
         #######################################################
         # create model
 
-        if arch == 'transformer':
+        if self.arch == 'transformer':
 
             self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
 
