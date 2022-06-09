@@ -150,7 +150,6 @@ class PytorchImageClassifier:
             modelDetailFile = os.path.join(workDir + "/models/", '{}.json'.format(modelName))
         #######################################################
 
-
         self.download = download
         self.workDir = workDir
         self.modelFile = modelFile
@@ -258,7 +257,7 @@ class PytorchImageClassifier:
             The path to the image
 
 
-        Returns
+        Return
         -------
         imagePath: string 
             The path to the image
@@ -275,7 +274,6 @@ class PytorchImageClassifier:
 
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
-
 
         loader = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), normalize])
 
@@ -312,7 +310,7 @@ class PytorchImageClassifier:
          resultFile: string
             The name of the result file. If not given, use the default name
         
-        Returns
+        Return
         -------
         df: pandas dataframe
 
@@ -387,7 +385,7 @@ class PytorchImageClassifier:
         The transformations that are used for training and testing
         
         
-        Returns
+        Return
         -------
         train_transforms: pytorch transformations
         
@@ -436,7 +434,7 @@ class PytorchImageClassifier:
          resultFile: string
             The name of the result file. If not given, use the default name
         
-        Returns
+        Return
         -------
 
         df: pandas dataframe
@@ -487,7 +485,7 @@ class PytorchImageClassifier:
           root_dir: string
             The directory which has all the training images
         
-        Returns
+        Return
         -------
         
         data: Pytorch ImageFolder class
@@ -522,7 +520,7 @@ class PytorchImageClassifier:
           valimgDir: string
             The directory which has validation images
 
-        Returns
+        Return
         -------
 
         """
@@ -559,9 +557,31 @@ class PytorchImageClassifier:
         self.val_dataset   = CustomDataset(val_dataset,   val_transforms)
 
 
-    def retrain(self, lr=0.01, batch_size=64, epochs=10, plot=False):
+    def fine_tuning(self, lr=0.001, batch_size=32, epochs=10, plot=False):
+        """
+        Fine-tune the model using the provided images
+    
+        Parameters
+        ----------
+          lr: float
+            The learning rate for training the model
+    
+          batch_size: int
+            The batch size for training the model. 
+        
+          epoch: int
+            The number of epochs to training the model
 
-        self.train(lr=0.01, batch_size=64, epochs=10, plot=False)
+          plot: bool
+
+            Whether or not to plot the training accuracy and validation accuracy
+
+        Return
+        -------
+
+        """    
+
+        self.train(lr=lr, batch_size=batch_size, epochs=epochs, plot=False)
         
 
     def train(self, lr=0.01, batch_size=64, epochs=10, plot=False):
@@ -584,7 +604,7 @@ class PytorchImageClassifier:
 
             Whether or not to plot the training accuracy and validation accuracy
 
-        Returns
+        Return
         -------
         
         """
@@ -594,7 +614,7 @@ class PytorchImageClassifier:
             exit()
 
         ############################################################
-        self.train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size= batch_size, shuffle=True, num_workers=4)
+        self.train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size = batch_size, shuffle=True, num_workers=4)
         self.val_loader   = torch.utils.data.DataLoader(self.val_dataset,   batch_size = batch_size, shuffle=False, num_workers=4)
 
 
@@ -631,9 +651,7 @@ class PytorchImageClassifier:
 
                 output = self.model(images.float())
 
-
                 loss = self.criterion(output, labels)
-
     
                 loss.backward()
                 optimizer.step()
@@ -714,7 +732,7 @@ class PytorchImageClassifier:
         ----------
 
 
-        Returns
+        Return
         -------
             
         validation accuracy: float
@@ -736,7 +754,6 @@ class PytorchImageClassifier:
 
             images = images.to(self.device)
             labels = labels.to(self.device)
-
 
             output = self.model(images.float())
 
@@ -774,7 +791,7 @@ class PytorchImageClassifier:
         ----------
 
 
-        Returns
+        Return
         -------
             
         """
