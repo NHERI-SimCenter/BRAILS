@@ -816,7 +816,7 @@ def main():
 
     work = PytorchImageClassifier(modelName='transformer_rooftype_v1', imgDir='./roofType/')
 
-    work.train(lr=0.01, batch_size=64, epochs=5)
+    work.fine_tuning(lr=0.001, batch_size=64, epochs=5)
 
     work.predictOneDirectory("./roofType/flat")
 
