@@ -29,9 +29,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-#
-# Contributors:
-# Yunhui Guo
 
 
 from brails.modules.PytorchOccupancyClassClassifier.OccupancyModelZoo import zoo
@@ -48,7 +45,7 @@ from sys import exit
 
 class PytorchOccupancyClassifier(PytorchImageClassifier):
     """
-    An Occupancy Classifier. Classes: hipped, gabled, flat
+    An Occupancy Classifier. Classes: 'OTH', 'RRE'
     
     Parameters
     ----------
@@ -73,19 +70,25 @@ class PytorchOccupancyClassifier(PytorchImageClassifier):
         if not modelName:
 
             modelName = 'transformer_occupancy_v1'
+            self.arch = 'transformer'
             print('Default occupancy classifier will be used: {}.'.format(modelName))
+
+        else:
+
+            self.arch, self.task, self.version = modelName.split("_")
+
 
         print('\nDetermining the occupancy class for each building...')
         if download:
 
-            if modelName != 'transformer_occupancy_v1':
+            if self.arch != 'transformer':
                 print ('Please download pre-trained model. Currently only the'+
                        'model titled transformer_occupancy_v1 is supported')
                 exit()
 
-            os.makedirs('./tmp/models/',exist_ok=True)
+            os.makedirs(workDir + '/models/', exist_ok=True)
 
-            modelFile = os.path.join('./tmp/models/', '{}.pkl'.format(modelName))
+            modelFile = os.path.join(workDir + '/models/', '{}.pkl'.format(modelName))
 
             if not os.path.exists(modelFile):
 

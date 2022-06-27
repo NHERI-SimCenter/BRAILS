@@ -29,18 +29,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-#
-# Contributors:
-# Yunhui Guo
 
 
 from brails.modules.PytorchRoofTypeClassifier.RooftypeModelZoo import zoo
 from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import *
 
-#from RooftypeModelZoo import zoo
-#import sys
-#sys.path.insert(0,'..')
-#from PytorchGenericModelClassifier.GenericImageClassifier import *
+'''
+from RooftypeModelZoo import zoo
+import sys
+sys.path.insert(0,'..')
+from PytorchGenericModelClassifier.GenericImageClassifier import *
+'''
 
 import wget 
 import os
@@ -67,25 +66,30 @@ class PytorchRoofClassifier(PytorchImageClassifier):
             download=True, 
             resultFile='roofType_preds.csv', 
             workDir='./tmp',
-            printRes=False
-    ):
+            printRes=False): 
 
         if not modelName:
 
             modelName = 'transformer_rooftype_v1'
+            self.arch = 'transformer'
             print('Default roof type classifier will be used: {}.'.format(modelName))
+       
+        else:
+
+            self.arch, self.task, self.version = modelName.split("_")
+
 
         print('\nDetermining the roof type for each building...')
         if download:
 
-            if modelName != 'transformer_rooftype_v1':
+            if self.arch != 'transformer':
                 print ('Please download pre-trained model. Currently only the'+
                        'model titled transformer_rooftype_v1 is supported')  
                 exit()
 
-            os.makedirs('./tmp/models/',exist_ok=True)
+            os.makedirs(workDir + '/models/', exist_ok=True)
 
-            modelFile = os.path.join('./tmp/models/', '{}.pkl'.format(modelName))
+            modelFile = os.path.join(workDir + '/models/', '{}.pkl'.format(modelName))
 
             if not os.path.exists(modelFile):
 
@@ -94,6 +98,7 @@ class PytorchRoofClassifier(PytorchImageClassifier):
                 self.download_model(modelFile)
 
             else:
+
                 print('Default roof type classifier model at tmp/models loaded')
 
             self.classNames = zoo['roofType']['classNames']
@@ -125,8 +130,8 @@ class PytorchRoofClassifier(PytorchImageClassifier):
 if __name__ == '__main__':
     
     work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', 
-                                 download=True, imgDir='./roofType/')
+                                 download=False, imgDir='/home/yunhui/SimCenter/train_BRAILS_models/datasets/roofType/')
     #work = PytorchRoofClassifier(modelName='transformer_rooftype_v1', download=True)
 
-    work.train(lr=0.01, batch_size=16, epochs=5)
+    work.train(lr=0.01, batch_size=16, epochs=1)
     #work.predictOneDirectory("./roofType/flat/")
