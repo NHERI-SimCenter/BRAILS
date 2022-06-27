@@ -1,0 +1,600 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.2. Occupancy Classifier &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.3. Soft-story Building Classifier" href="softstory.html" />
+    <link rel="prev" title="2.1. Roof Classifier" href="roof.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="vnv.html">2. Validation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="roof.html">2.1. Roof Classifier</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.2. Occupancy Classifier</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-1-compare-with-openstreetmap-labels">Dataset 1: Compare with OpenStreetMap Labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-2-compare-with-njdep-dataset">Dataset 2: Compare with NJDEP Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="softstory.html">2.3. Soft-story Building Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nfloor.html">2.4. Number of Floors Detector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="vnv.html"><span class="section-number">2. </span>Validation</a> &raquo;</li>
+        
+      <li><span class="section-number">2.2. </span>Occupancy Classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/occupancy.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="occupancy-classifier">
+<span id="lbl-occupancyclassifier-vnv"></span><h1><span class="section-number">2.2. </span>Occupancy Classifier<a class="headerlink" href="#occupancy-classifier" title="Permalink to this headline">¶</a></h1>
+<p>The Occupancy Classifier’s methodology has been presented in <a class="reference internal" href="occupancyTheory.html#occupancytheory"><span class="std std-ref">Occupancy classifier</span></a>, and examples showing how to use it can be found in <a class="reference internal" href="../user_manual/modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">Occupancy Classifier</span></a>.
+This section presents its validation against two datasets.</p>
+<div class="section" id="dataset-1-compare-with-openstreetmap-labels">
+<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline">¶</a></h2>
+<p>The trained classifier is tested on a ground truth dataset that can be downloaded from <a class="reference external" href="https://zenodo.org/record/4553803/files/occupancy_validation_images.zip">here</a>.
+We firstly obtained a set of randomly selected buildings in the United States with occupancy tags found on OpenStreetMap.
+We then downloaded the street view images from Google Street View for each building.
+We removed images in which we didn’t clearly see there is a building.
+The dataset contains 98 single family buildings (RES1), 97 multi-family buildings (RES3) and 98 commercial buildings (COM).
+Examples of these street view images can be found in <a class="reference internal" href="../user_manual/modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">Occupancy Classifier</span></a>.</p>
+<p>Run the following python script to test on this dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># download the testing dataset</span>
+
+<span class="kn">import</span> <span class="nn">wget</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="n">wget</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s1">&#39;https://zenodo.org/record/4553803/files/occupancy_validation_images.zip&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s1">&#39;occupancy_validation_images.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="c1"># prepare the image lists</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RES3&#39;</span><span class="p">,</span> <span class="s1">&#39;COM&#39;</span> <span class="p">,</span><span class="s1">&#39;RES1&#39;</span><span class="p">]</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">clas</span> <span class="ow">in</span> <span class="n">class_names</span><span class="p">:</span>
+    <span class="n">imgs</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;occupancy_validation_images/</span><span class="si">{</span><span class="n">clas</span><span class="si">}</span><span class="s1">/*.jpg&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imgs</span><span class="p">:</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clas</span><span class="p">)</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="c1"># import the module</span>
+<span class="kn">from</span> <span class="nn">brails.modules</span> <span class="kn">import</span> <span class="n">OccupancyClassifier</span>
+
+<span class="c1"># initialize the classifier</span>
+<span class="n">occupancyModel</span> <span class="o">=</span> <span class="n">OccupancyClassifier</span><span class="p">()</span>
+
+<span class="c1"># use the model to predict</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">occupancyModel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="c1"># Plot results</span>
+<span class="kn">from</span> <span class="nn">brails.utils.plotUtils</span> <span class="kn">import</span> <span class="n">plot_confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Accuracy is   : </span><span class="si">{}</span><span class="s1">, Random guess is 0.33&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span><span class="n">labels</span><span class="p">)))</span>
+<span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Labels&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Predictions&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-occupancyv2"><span class="std std-numref">Fig. 2.2.1</span></a>.</p>
+<div class="figure align-default" id="id2">
+<span id="fig-confusion-occupancyv2"></span><a class="reference internal image-reference" href="../../_images/confusion_occupancy_v2.png"><img alt="Confusion matrix occupancy class" src="../../_images/confusion_occupancy_v2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2.2.1 </span><span class="caption-text">Confusion matrix - Occupancy Class classifier</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The accuracy for the two classes are:</p>
+<ul class="simple">
+<li><p>RES3: Accuracy = 0.97, F1 = 0.97</p></li>
+<li><p>COM: Accuracy = 0.97, F1 = 0.98</p></li>
+<li><p>RES1: Accuracy = 0.99, F1 = 0.97</p></li>
+</ul>
+</div>
+<div class="section" id="dataset-2-compare-with-njdep-dataset">
+<h2>Dataset 2: Compare with NJDEP Dataset<a class="headerlink" href="#dataset-2-compare-with-njdep-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The second validation dataset is from New Jersey Department of Environmental Protection (NJDEP).</p>
+<p>NJDEP developed a building inventory for flood hazard and risk analysis as part of its flood control and resilience mission.
+In this dataset, we can find building footprints with their occupancy types labelled.
+We randomly selected a subset of those records, for each we downloaded a street view image from Google Maps Static API.</p>
+<p>Examples of these satellite images can be found in <a class="reference internal" href="occupancyTheory.html#occupancytheory"><span class="std std-ref">Occupancy classifier</span></a>.</p>
+<p>The NJDEP occupancy data includes the following labels:</p>
+<ul class="simple">
+<li><p>RES1     26574</p></li>
+<li><p>RES3A     1714</p></li>
+<li><p>COM1      1110</p></li>
+<li><p>RES3B     1016</p></li>
+<li><p>RES3C      779</p></li>
+<li><p>RES3D      566</p></li>
+<li><p>COM8       187</p></li>
+<li><p>AGR1       113</p></li>
+<li><p>RES4       111</p></li>
+<li><p>COM4       100</p></li>
+<li><p>GOV1        90</p></li>
+<li><p>IND2        83</p></li>
+<li><p>COM3        74</p></li>
+<li><p>REL1        67</p></li>
+<li><p>RES3E       52</p></li>
+<li><p>EDU1        48</p></li>
+<li><p>IND3        37</p></li>
+<li><p>GOV2        24</p></li>
+<li><p>COM7        16</p></li>
+<li><p>RES3F       15</p></li>
+<li><p>IND1        13</p></li>
+<li><p>EDU2        11</p></li>
+<li><p>IND4        11</p></li>
+<li><p>IND5         6</p></li>
+<li><p>COM2         3</p></li>
+<li><p>COM10        3</p></li>
+<li><p>COM6         2</p></li>
+<li><p>IND6         2</p></li>
+<li><p>COM5         1</p></li>
+</ul>
+<p>The BRAILS occupancy system include the following classes:</p>
+<ul class="simple">
+<li><p>RES1</p></li>
+<li><p>RES3</p></li>
+<li><p>COM</p></li>
+</ul>
+<p>To compare these two systems, we renamed some NJDEP labels:</p>
+<ul class="simple">
+<li><p>RES1  -&gt; RES1</p></li>
+<li><p>RES3A -&gt; RES3</p></li>
+<li><p>RES3B -&gt; RES3</p></li>
+<li><p>RES3C -&gt; RES3</p></li>
+<li><p>RES3D -&gt; RES3</p></li>
+<li><p>RES3F -&gt; RES3</p></li>
+<li><p>RES3E -&gt; RES3</p></li>
+<li><p>COM1  -&gt; COM</p></li>
+<li><p>COM2  -&gt; COM</p></li>
+<li><p>COM3  -&gt; COM</p></li>
+<li><p>COM4  -&gt; COM</p></li>
+<li><p>COM5  -&gt; COM</p></li>
+<li><p>COM6  -&gt; COM</p></li>
+<li><p>COM7  -&gt; COM</p></li>
+<li><p>COM8  -&gt; COM</p></li>
+<li><p>COM10 -&gt; COM</p></li>
+</ul>
+<p>From the relabelled records, we selected the following for validation:</p>
+<ul class="simple">
+<li><p>RES1,    1,000 randomly selected from RES1</p></li>
+<li><p>RES3,    1,000 randomly selected from RES3</p></li>
+<li><p>COM,    1,000 randomly selected from COM</p></li>
+</ul>
+<p>You can download the labels, images, scripts for this validation from <a class="reference external" href="https://zenodo.org/record/4774367/files/AtlanticCountyNJDEP_Occupancy_Validation.zip">here</a>.</p>
+<p>The following shows the script to run this validation.
+At the end, the script will plot a confusion matrix and print the accuracy.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;AtlanticCountyBuildingInventory.csv&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">getCls</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;RES1&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;RES1&#39;</span>
+    <span class="k">elif</span> <span class="s1">&#39;RES3&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;RES3&#39;</span>
+    <span class="k">elif</span> <span class="s1">&#39;COM&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;COM&#39;</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="s1">&#39;remove&#39;</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;OccupancyClass&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">getCls</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="c1">#data=data[data[&#39;occupancy&#39;]!=&#39;remove&#39;]</span>
+<span class="n">RES1</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;RES1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1993</span><span class="p">)</span>
+<span class="n">RES3</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;RES3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1993</span><span class="p">)</span>
+<span class="n">COM</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;COM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1993</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">RES1</span><span class="p">,</span><span class="n">RES3</span><span class="p">,</span><span class="n">COM</span><span class="p">])</span>
+
+
+
+<span class="c1"># ### Use BRAILS to download street view images</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/Users/simcenter/Codes/SimCenter/BIM.AI&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">brails.workflow.Images</span> <span class="kn">import</span> <span class="n">getGoogleImagesByAddrOrCoord</span>
+
+<span class="n">addrs</span> <span class="o">=</span>  <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">,</span><span class="s1">&#39;Latitude&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+<span class="n">getGoogleImagesByAddrOrCoord</span><span class="p">(</span><span class="n">Addrs</span><span class="o">=</span><span class="n">addrs</span><span class="p">,</span> <span class="n">GoogleMapAPIKey</span><span class="o">=</span><span class="s1">&#39;Your-Key&#39;</span><span class="p">,</span>
+                             <span class="n">imageTypes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;StreetView&#39;</span><span class="p">],</span><span class="n">imgDir</span><span class="o">=</span><span class="s1">&#39;tmp/images&#39;</span><span class="p">,</span><span class="n">ncpu</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                             <span class="n">fov</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span><span class="n">pitch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reDownloadImgs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;StreetViewImg&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;tmp/images/StreetView/StreetViewx</span><span class="si">{</span><span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Latitude&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="c1"># Remove empty images</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;StreetViewImg&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">)]</span>
+<span class="c1"># Remove duplicates</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;StreetViewImg&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># ### Predict</span>
+
+<span class="kn">from</span> <span class="nn">brails.modules</span> <span class="kn">import</span> <span class="n">OccupancyClassifier</span>
+<span class="n">occupancyModel</span> <span class="o">=</span> <span class="n">OccupancyClassifier</span><span class="p">()</span>
+<span class="n">occupancyPreds</span> <span class="o">=</span> <span class="n">occupancyModel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;StreetViewImg&#39;</span><span class="p">]))</span>
+
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;Occupancy(BRAILS)&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">occupancyPreds</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">])</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;prob_Occupancy(BRAILS)&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">occupancyPreds</span><span class="p">[</span><span class="s1">&#39;probability&#39;</span><span class="p">])</span>
+
+
+<span class="c1"># ### Plot confusion matrix</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;matplotlib&#39;</span><span class="p">,</span> <span class="s1">&#39;inline&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">plotUtils</span> <span class="kn">import</span> <span class="n">plot_confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span><span class="p">,</span><span class="n">f1_score</span>
+
+<span class="n">class_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Occupancy(BRAILS)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Occupancy(BRAILS)&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span>
+
+<span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">predictions</span><span class="p">,</span><span class="n">labels</span><span class="o">=</span><span class="n">class_names</span><span class="p">)</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;BRAILS&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;NJDEP&#39;</span><span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">cname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">class_names</span><span class="p">):</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">TP</span> <span class="o">=</span> <span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">FP</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span><span class="o">-</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">FN</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span><span class="o">-</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">F1</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">TP</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">FP</span><span class="o">+</span><span class="n">FN</span><span class="p">)))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s1">: Accuracy = </span><span class="si">{</span><span class="n">accuracy</span><span class="si">}</span><span class="s1">, F1 = </span><span class="si">{</span><span class="n">F1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># ### Copy images to directories {label}-{prediction} for inspection</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="n">predDir</span> <span class="o">=</span> <span class="s1">&#39;tmp/images/occupancy_predictions&#39;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">predDir</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predDir</span><span class="p">)</span>
+
+<span class="n">falseNames</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">copyfiles</span><span class="p">(</span><span class="n">bim</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bim</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Occupancy(BRAILS)&#39;</span><span class="p">]</span>
+
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Latitude&#39;</span><span class="p">]</span>
+
+        <span class="n">oldfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tmp/images/StreetView/StreetViewx</span><span class="si">{</span><span class="n">lon</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s1">.png&#39;</span>
+        <span class="n">newfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predDir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s1">/StreetViewx</span><span class="si">{</span><span class="n">lon</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s1">.png&#39;</span>
+
+        <span class="n">thisFileDir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predDir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s1">/&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">thisFileDir</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">thisFileDir</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">oldfile</span><span class="p">,</span> <span class="n">newfile</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">oldfile</span><span class="p">)</span>
+
+<span class="n">copyfiles</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the files you downloaded, there are folders with names like RES-COM, which means those are images that are labelled as ‘RES’ in NJDEP dataset,
+but they are predicted as ‘COM’. You can browse through those images to investigate deeper.</p>
+<p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-occupancy-njdep-v2"><span class="std std-numref">Fig. 2.2.2</span></a>.</p>
+<div class="figure align-default" id="id3">
+<span id="fig-confusion-occupancy-njdep-v2"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_occupancy_njdep_v2.png"><img alt="Confusion matrix occupancy NJDEP" src="../../_images/fig_confusion_occupancy_njdep_v2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2.2.2 </span><span class="caption-text">Confusion matrix - Occupancy type classification for NJDEP</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The accuracy for the two classes are:</p>
+<ul class="simple">
+<li><p>RES1: Accuracy = 0.89, F1 = 0.86</p></li>
+<li><p>RES3: Accuracy = 0.92, F1 = 0.83</p></li>
+<li><p>COM: Accuracy = 0.67, F1 = 0.79</p></li>
+</ul>
+<p>Examples of false predictions are shown in <a class="reference internal" href="#atlantic-occupancy-examples-njdep-falsev2"><span class="std std-numref">Table 2.2.1</span></a>.</p>
+<span id="atlantic-occupancy-examples-njdep-falsev2"></span><table class="docutils align-default" id="id4">
+<caption><span class="caption-number">Table 2.2.1 </span><span class="caption-text">Example of false predictions</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="figure align-default" id="id5">
+<img alt="../../_images/StreetViewx-74.366315x39.422974.png" src="../../_images/StreetViewx-74.366315x39.422974.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.3 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id6">
+<img alt="../../_images/StreetViewx-74.366873x39.420778.png" src="../../_images/StreetViewx-74.366873x39.420778.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.4 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id7">
+<img alt="../../_images/StreetViewx-74.417573x39.372665.png" src="../../_images/StreetViewx-74.417573x39.372665.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.5 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id8">
+<img alt="../../_images/StreetViewx-74.418175x39.369580.png" src="../../_images/StreetViewx-74.418175x39.369580.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.6 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Bias in dataset is very common.
+This validation doesn’t consider the possible bias in the labels (examples can be found in <a class="reference internal" href="#njdep-occupancy-examples-biasv2"><span class="std std-numref">Table 2.2.2</span></a>), which also negatively influences the accuracy.</p>
+</div>
+<span id="njdep-occupancy-examples-biasv2"></span><table class="docutils align-default" id="id9">
+<caption><span class="caption-number">Table 2.2.2 </span><span class="caption-text">Example of street view images: Bias in the labels</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="figure align-default" id="id10">
+<img alt="../../_images/StreetViewx-74.544719x39.459546.png" src="../../_images/StreetViewx-74.544719x39.459546.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.7 </span><span class="caption-text">Label: RES1, BRAILS Prediction: COM</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id11">
+<img alt="../../_images/StreetViewx-74.358387x39.411702.png" src="../../_images/StreetViewx-74.358387x39.411702.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.8 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id12">
+<img alt="../../_images/StreetViewx-74.412689x39.368096.png" src="../../_images/StreetViewx-74.412689x39.368096.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.9 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id13">
+<img alt="../../_images/StreetViewx-74.406136x39.382882.png" src="../../_images/StreetViewx-74.406136x39.382882.png" />
+<p class="caption"><span class="caption-number">Fig. 2.2.10 </span><span class="caption-text">Label: RES3, BRAILS Prediction: RES1</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="softstory.html" class="btn btn-neutral float-right" title="2.3. Soft-story Building Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="roof.html" class="btn btn-neutral float-left" title="2.1. Roof Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

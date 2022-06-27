@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Train a model &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../technical_manual/theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../technical_manual/vnv.html">2. Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../technical_manual/understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Train a model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/user_manual/train.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="train-a-model">
+<span id="lbl-train"></span><h1>Train a model<a class="headerlink" href="#train-a-model" title="Permalink to this headline">¶</a></h1>
+<p>There are pretrained ConvNets released with BRAILS that can be used out of the box.</p>
+<p>However, if the user is interested in training his / her own ConvNets, the following is an example demonstrating
+how to train a classifier (for roof shape), and how to use the trained model in the BRAILS application.</p>
+<div class="section" id="train">
+<h2>Train<a class="headerlink" href="#train" title="Permalink to this headline">¶</a></h2>
+<p>The image data set for training has been prepared by SimCenter and can be download from here:</p>
+<p>Charles Wang. (2019). Random satellite images of buildings (Version v1.0) [Data set]. Zenodo. <a class="reference external" href="http://doi.org/10.5281/zenodo.3521067">http://doi.org/10.5281/zenodo.3521067</a>.</p>
+<p>To train on the downloaded data, run the following command in the terminal</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd src/training/
+python train_classifier.py --img_dir &lt;IMAGE_DIRECTORY&gt; --model_dir &lt;MODEL_DIRECTORY&gt;
+</pre></div>
+</div>
+<p>IMAGE_DIRECTORY is the directory where you have your images for training</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>IMAGE_DIRECTORY
+│── class_1
+│       └── *.png
+│── class_2
+|      └── *.png
+│── ...
+|
+└── class_n
+       └── *.png
+</pre></div>
+</div>
+<p>MODEL_DIRECTORY is the directory where the trained model will be saved.</p>
+<p>It is better to run the above code on a GPU machine.</p>
+</div>
+<div class="section" id="predict">
+<h2>Predict<a class="headerlink" href="#predict" title="Permalink to this headline">¶</a></h2>
+<p>Now we use the trained model to predict roof types based on satellite images.</p>
+<p>Firstly we need to download those images by calling Google API (will cost $).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd src/predicting
+python downloadRoofImages.py
+</pre></div>
+</div>
+<p>To save $, instead of running the above command, you can just download them from
+<a class="reference external" href="https://berkeley.box.com/shared/static/n8l9kusi9eszsnnkefq37fofz22680t2.zip">here</a>.</p>
+<p>Now predictions can be made using the trained model:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd src/predicting
+python predict.py --image_dir &lt;IMAGE_DIRECTORY&gt; --model_path &lt;MODEL_PATH&gt;
+</pre></div>
+</div>
+<p>IMAGE_DIRECTORY is the directory of your images. MODEL_PATH is the folder where you have your trained model saved.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

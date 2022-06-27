@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Testbed &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vnv.html">2. Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Testbed</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/testbed.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="testbed">
+<span id="lbl-vnv-testbed"></span><h1>Testbed<a class="headerlink" href="#testbed" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="application-example-atlantic-city-testbed">
+<h2>Application example: Atlantic City Testbed<a class="headerlink" href="#application-example-atlantic-city-testbed" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To repeat this example, please follow <a class="reference internal" href="../user_manual/userGuide.html#lbl-tutorial"><span class="std std-numref">Section 4</span></a>.</p>
+</div>
+<p>At the end of the workflow described in the previous sections,
+a regional building information database can be created.
+As a demonstration, this framework is applied to create a building inventory
+covering several coastal cities that are historically threatened by hurricanes in New Jersey.</p>
+<div class="align-center figure" id="id6">
+<span id="fig-tax-record"></span><img alt="../../_images/tax_record.png" src="../../_images/tax_record.png" />
+<p class="caption"><span class="caption-text">Building information inferred from tax assessment record</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this implementation, three sources of data are fused to form a hybrid initial database of buildings.
+The first source is the tax assessment records which are scraped from the administrative website of
+<a class="reference external" href="https://www.state.nj.us/treasury/taxation/lpt/TaxListSearchPublicWebpage.shtml">the Department of Treasure of New Jersey</a>
+as shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:tax_record</span></code>,
+including number of stories, year of construction, structure type, occupancy.
+The second source is the United State Building Footprint dataset <span id="id1">[<a class="reference internal" href="../../index.html#id49" title="Microsoft. US Building Footprints. URL: https://github.com/microsoft/USBuildingFootprints.">Mic</a>]</span>.
+The third source is satellite images, which can be download by calling Google Maps API.
+When evaluating the loss caused by hurricanes, the roof type (flat, gabled, or hipped) is an important parameter to be considered.
+To obtain the roof type of every building in these coastal cities,
+the authors trained a ConvNet classifier, which takes a satellite image of a building as
+input and predict the roof type as the output, as shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:roofClassifier</span></code>.
+The training data contains 6,000 satellite images (2,000 for each roof type).
+The ConvNet architecture used here is InceptionV3 <span id="id2">[<a class="reference internal" href="../../index.html#id60" title="Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew Wojna. Rethinking the inception architecture for computer vision. Proceedings of the IEEE conference on computer vision and pattern recognition, pages 2818–2826, 2016.">SVI+16</a>]</span>,
+which is a widely-used image recognition model that has been shown to attain greater than 78.1% accuracy on the ImageNet dataset.
+The model is the culmination of many ideas developed by multiple researchers over the years.
+The model itself is made up of symmetric and asymmetric building blocks,
+including convolutions, average pooling, max pooling, concats, dropouts, and fully connected layers.
+Batchnorm is used extensively throughout the model and applied to activation inputs.
+Loss is computed via Softmax. By using the InceptionV3 model pretrained on the large scale dataset ImageNet as a startpoint,
+transfer learning is performed to train a roof classifier based on the satellite images.
+The accuracy of the trained classifier tested on a ground truth dataset <span id="id3">[<a class="reference internal" href="../../index.html#id61" title="Charles Wang. Random satellite images of buildings. October 2019. URL: https://doi.org/10.5281/zenodo.3521067, doi:10.5281/zenodo.3521067.">Wan19</a>]</span> is 85%.</p>
+<div class="align-center figure" id="id7">
+<span id="fig-roofclassifier"></span><img alt="../../_images/roofCNN.png" src="../../_images/roofCNN.png" />
+<p class="caption"><span class="caption-text">Convolutional neural network for roof type classification</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>Using the proposed framework, the above data are fused and enhanced to form the regional BIM database.
+As shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:demo</span></code>, about 20,000 buildings are modeled within this region and
+the BIM of a typical building is shown on the right side of <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:demo</span></code>,
+in which several attributes are included: structure type, roof type, occupancy,
+number of stories, year of construction, footprint geometry.</p>
+<div class="align-center figure" id="id8">
+<span id="fig-demo"></span><img alt="../../_images/BIM.png" src="../../_images/BIM.png" />
+<p class="caption"><span class="caption-text">Regional scale BIM database</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>During the data enhancement period, the prediction errors for building attributes
+(using number of stories and year built as examples) are shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:stories_error</span></code> and <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:yearbuilt_error</span></code>.
+It can be seen that for the number of stories,
+the majority of the prediction errors are zero.
+For the year of construction, the majority of prediction errors are less than 10 years.
+Therefore, the prediction errors are considered as insignificant and the performance of SURF is believed to be satisfying.</p>
+<div class="align-center figure" id="id9">
+<span id="fig-stories-error"></span><img alt="../../_images/stories_Predictions_classification_error.png" src="../../_images/stories_Predictions_classification_error.png" />
+<p class="caption"><span class="caption-text">Prediction error plot against 45 degree line &amp; Histogram plot of prediction error (Number of stories)</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<div class="align-center figure" id="id10">
+<span id="fig-yearbuilt-error"></span><img alt="../../_images/yearBuilt-prediction-error.png" src="../../_images/yearBuilt-prediction-error.png" />
+<p class="caption"><span class="caption-text">Prediction error plot against 45 degree line &amp; Histogram plot of prediction error (Year of construction)</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>As shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:stories_error_correlation</span></code> and <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:yearbuilt_error_correlation</span></code>, the semivariograms of the predicted building attributes are calculated and plotted against the observed values. The curves agree with each other very well, indicating that the spatial variation in the original dataset are preserved during the simulations.</p>
+<div class="align-center figure" id="id11">
+<span id="fig-stories-error-correlation"></span><img alt="../../_images/correlation_numofstories_compare.png" src="../../_images/correlation_numofstories_compare.png" />
+<p class="caption"><span class="caption-text">Comparison of semivariograms between original data and simulated data (Number of stories)</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<div class="align-center figure" id="id12">
+<span id="fig-yearbuilt-error-correlation"></span><img alt="../../_images/correlation_yearbuilt_compare.png" src="../../_images/correlation_yearbuilt_compare.png" />
+<p class="caption"><span class="caption-text">Comparison of semivariograms between original data and simulated data (Year of construction)</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<p>It should be noted that, following the framework described in this documentation,
+one can add more building attributes of interests
+(e.g., window area, facade material, first floor elevation, and other features that are
+crucial to natural hazard loss estimation.) into the database by training ConvNets
+for each attribute as long as these attributes are visually comprehensible by the ConvNets.
+In addition to the semantic representations, geometric features (such as building outlines)
+can also be extracted from images using ConvNets-based segmentation <span id="id4">[<a class="reference internal" href="../../index.html#id58" title="Benjamin Bischke, Patrick Helber, Joachim Folz, Damian Borth, and Andreas Dengel. Multi-task learning for segmentation of building footprints with deep neural networks. 2019 IEEE International Conference on Image Processing (ICIP), pages 1480–1484, 2019.">BHF+19</a>]</span>.
+However, segmentation is not the focus of this study, therefore not elaborated here.
+The code, data, pre-trained ConvNets, and BIM database created by the implementation can be found in <span id="id5">[<a class="reference internal" href="../../index.html#id38" title="Charles Wang, Qian Yu, Frank McKenna, Barbaros Cetiner, Stella X. Yu, Ertugrul Taciroglu, and Kincho H. Law. Nheri-simcenter/brails: v1.0.1. October 2019. URL: https://doi.org/10.5281/zenodo.3483208, doi:10.5281/zenodo.3483208.">WYM+19</a>]</span>.</p>
+<p>The BIM information shown in <code class="xref std std-numref docutils literal notranslate"><span class="pre">fig:demo</span></code> is enough for describing a building
+when it comes to regional loss estimation of natural hazards, such as hurricanes.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

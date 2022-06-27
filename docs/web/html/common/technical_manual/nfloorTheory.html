@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Number of Floors Detector &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2. Validation" href="vnv.html" />
+    <link rel="prev" title="Soft-story" href="softstoryTheory.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="theory.html">1. Theory and Implementation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="framework.html">1.1. Framework</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modulesTheory.html">1.2. Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="roofTheory.html">Roof type classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="occupancyTheory.html">Occupancy classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="softstoryTheory.html">Soft-story</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Number of Floors Detector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vnv.html">2. Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="theory.html"><span class="section-number">1. </span>Theory and Implementation</a> &raquo;</li>
+        
+          <li><a href="modulesTheory.html"><span class="section-number">1.2. </span>Modules</a> &raquo;</li>
+        
+      <li>Number of Floors Detector</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/nfloorTheory.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="number-of-floors-detector">
+<span id="nfloortheory"></span><h1>Number of Floors Detector<a class="headerlink" href="#number-of-floors-detector" title="Permalink to this headline">¶</a></h1>
+<p>The Number of Floors Detector uses object detection for locating floors of a building in an image input.</p>
+<p>In general, all modern object detectors can be said to consist of three main components:</p>
+<ol class="arabic simple">
+<li><p>A backbone network that extracts features from the given image at different scales,</p></li>
+<li><p>A feature network that receives multiple levels of features from the backbone and returns a list of fused features that identify the dominant features of the image,</p></li>
+<li><p>A class and box network that takes the fused features as input to predict the class and location of each object, respectively.</p></li>
+</ol>
+<p>EfficientDet models use EfficientNets pretrained on ImageNet for their backbone network. For the feature network, EfficienDet models use a novel bidirectional feature pyramid network (BiFPN), which takes level 3 through 7 features from the backbone network and repeatedly fuses these features in top-down and bottom-up directions. Both BiFPN layers and class/box layers are repeated multiple times with the number of repetations depending on the compund coefficient of the architecture. <a class="reference internal" href="#fig-modelarch"><span class="std std-numref">Fig. 1.2.15</span></a>  provides and overview of the described structure. For further details please see the seminal work by <a class="reference external" href="https://arxiv.org/abs/1911.09070">Tan, Pang, and Le</a>.</p>
+<div class="figure align-default" id="id1">
+<span id="fig-modelarch"></span><a class="reference internal image-reference" href="../../_images/EfficientDetArch.png"><img alt="Model architecture" src="../../_images/EfficientDetArch.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1.2.15 </span><span class="caption-text">A high-level representation of the EfficientDet architecture</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Remarkable performance gains can be attained in image classification by jointly scaling up all dimensions of neural network width, depth, and input resolution, as noted in the study by <a class="reference external" href="https://arxiv.org/abs/1905.11946">Tan and Le</a>. Inspired by this work, EfficienDet utilizes a new compound scaling method for object detection that jointly increases all dimensions of the backbone network, BiFPN, class/box network, and input image resolution, using a simple compound coefficient, φ. A total of 8 compounding levels are defined for EffcienDet, i.e., φ = 0 to 7, with EfficientDet-D0 being the simplest and EfficientDet-D7 being the most complex of the network architectures.</p>
+<p>As shown in <a class="reference internal" href="#fig-efficientdetperf"><span class="std std-numref">Fig. 1.2.16</span></a>, at the time this work was published, EfficientDet object detection algorithms attained the state-of-the-art performance on the COCO dataset. Also suggested in Figure 3 is the more complex the network architecture is, the higher the detection performance will be. From a practical standpoint, however, architecture selection will depend on the availability of computational resources. For example, to train a model on an architecture with a compound coefficient higher than 4, a GPU with a memory of more than 11 GB will almost always be required.</p>
+<div class="figure align-default" id="id2">
+<span id="fig-efficientdetperf"></span><a class="reference internal image-reference" href="../../_images/EfficientDetPerf.png"><img alt="Detection performance" src="../../_images/EfficientDetPerf.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1.2.16 </span><span class="caption-text">A comparison of the performance and accuracy levels of EfficienDet models over other popular object detection architectures on the COCO dataset</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="vnv.html" class="btn btn-neutral float-right" title="2. Validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="softstoryTheory.html" class="btn btn-neutral float-left" title="Soft-story" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

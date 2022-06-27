@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Soft-story Building Classifier &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4.3. Workflow" href="../workflow.html" />
+    <link rel="prev" title="Chimney Detector" href="chimneyDetector.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../../index.html">
+
+
+  <img src="../../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">3. Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../userGuide.html">4. User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../dataPrep.html">4.1. Data Preperation for Training and Inference</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">4.2. Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="genericImageClassifier.html">Generic Image Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">Pytorch Image Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roofClassifier.html">Roof Shape Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="occupancyClassifier.html">Occupancy Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nFloorDetector.html">Number of Floors Detector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yearClassifier.html">Year Built Classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="foundationElevationClassifier.html">Raised Foundation Classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="garageDetector.html">Garage Detector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chimneyDetector.html">Chimney Detector</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Soft-story Building Classifier</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#use-the-module">Use the module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#retrain-the-model">Retrain the model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../workflow.html">4.3. Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../technical_manual/theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../technical_manual/vnv.html">2. Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../technical_manual/understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../userGuide.html"><span class="section-number">4. </span>User Guide</a> &raquo;</li>
+        
+          <li><a href="modules.html"><span class="section-number">4.2. </span>Modules</a> &raquo;</li>
+        
+      <li>Soft-story Building Classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/common/user_manual/modules/softstoryClassifier.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="soft-story-building-classifier">
+<span id="lbl-softstoryclassifier"></span><h1>Soft-story Building Classifier<a class="headerlink" href="#soft-story-building-classifier" title="Permalink to this headline">¶</a></h1>
+<p>The Soft-story Building Classifier is a module built upon the <a class="reference internal" href="genericImageClassifier.html#lbl-genericimageclassifier"><span class="std std-ref">Generic Image Classifier</span></a> module.</p>
+<p>The module is shipped with BRAILS,
+so you don’t have to install it standalone if you’ve installed BRAILS following the <a class="reference internal" href="../installation.html#lbl-install"><span class="std std-ref">Installation</span></a> instruction.</p>
+<p>It takes a list of street view images of buildings as the input, and classify the buildings into two categories: soft-story building and  other building.</p>
+<div class="section" id="use-the-module">
+<h2>Use the module<a class="headerlink" href="#use-the-module" title="Permalink to this headline">¶</a></h2>
+<p>A pretrained model is shipped with BRAILS. So you can use it directly without training your own model.</p>
+<p>The first time you initialize this model, it will download the model from the internet to your local computer.</p>
+<p>The images used in the example can be downloaded from <a class="reference external" href="https://zenodo.org/record/4562949/files/image_examples.zip">here</a>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># import the module
+from brails.modules import SoftstoryClassifier
+
+# initilize a soft-story classifier
+ssModel = SoftstoryClassifier()
+
+# define the paths of images in a list
+imgs = [&#39;image_examples/Softstory/Others/3110.jpg&#39;,
+        &#39;image_examples/Softstory/Softstory/901.jpg&#39;]
+
+# use the model to predict
+predictions = ssModel.predict(imgs)
+</pre></div>
+</div>
+<p>The predictions look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Image :  image_examples/Softstory/Others/3110.jpg     Class : others (96.13%)
+Image :  image_examples/Softstory/Softstory/901.jpg     Class : softstory (96.31%)
+Results written in file softstory_preds.csv
+</pre></div>
+</div>
+<p>Sample images used in this example are:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="figure align-default" id="id1">
+<img alt="../../../_images/3110.jpg" src="../../../_images/3110.jpg" />
+<p class="caption"><span class="caption-number">Fig. 4.2.14 </span><span class="caption-text">image_examples/Softstory/Others/3110.jpg Non-Soft-story Building</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id2">
+<img alt="../../../_images/901.jpg" src="../../../_images/901.jpg" />
+<p class="caption"><span class="caption-number">Fig. 4.2.15 </span><span class="caption-text">image_examples/Softstory/Softstory/901.jpg Soft-story Building</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The classifier takes an image as the input and will always produce a prediction.
+Since the classifier is trained to classify only a specific category of images,
+its prediction is meaningful only if the input image belongs to the category the model is trained for.</p>
+</div>
+</div>
+<div class="section" id="retrain-the-model">
+<h2>Retrain the model<a class="headerlink" href="#retrain-the-model" title="Permalink to this headline">¶</a></h2>
+<p>You can retrain the existing model with your own data.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Load images from a folder
+ssModel.loadData(&#39;folder-of-images&#39;)
+
+# Re-train it for only 1 epoch for this demo. You can increase it.
+ssModel.retrain(initial_epochs=1)
+
+# Test the re-trained model
+predictions = ssModel.predict(imgs)
+
+# Save the re-trained model
+ssModel.save(&#39;myCoolNewModelv0.1&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../workflow.html" class="btn btn-neutral float-right" title="4.3. Workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="chimneyDetector.html" class="btn btn-neutral float-left" title="Chimney Detector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

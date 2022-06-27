@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>3. Generalization &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="2.4. Number of Floors Detector" href="nfloor.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vnv.html">2. Validation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li><span class="section-number">3. </span>Generalization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/understand.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generalization">
+<span id="lbl-understand"></span><h1><span class="section-number">3. </span>Generalization<a class="headerlink" href="#generalization" title="Permalink to this headline">¶</a></h1>
+<p>When applying the pre-trained models or training models with your own data,
+it is important to review the results for a sample of the data. This is
+because how well these models perform to new and unseen data depends on how similar they are to the training data.
+Generalization of machine learning models remains an active research area.
+Users should exercise cautions when the modules are used beyond their intended purposes and trained model ability.</p>
+<p>In this section, we show an example to demonstrate that different training datasets can produce difference accuracies and how important it is to review sample results and retrain the models as necessary.</p>
+<p>We will demonstrate this through the example of our Occupancy classifier, <a class="reference internal" href="../user_manual/modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">Occupancy Classifier</span></a>, which is a classifier to predict the occupancy type of a building given the street view image of the building.</p>
+<p>The original training for this classifier was performed using OpenSeesMap (OSM). From  we collected images from random records of the United Sates building ineventory which had their from occupancy type labelled.  These labels include ‘detached’, ‘apartment’, and ‘commercial’. We renamed the labels to be consistent with the HAZUS naming system: ‘RES1’, ‘RES3’, ‘COM’, which was needed for our testbed. For each building a street view image was then downloaded from Google Street Maps. Buildings that were not clearly visible in the street view image were ignored.</p>
+<p>The image set was then split into a training and a testing set.</p>
+<p>The training set (OSM-1) included:</p>
+<ul class="simple">
+<li><p>2,868 RES1</p></li>
+<li><p>2,207 RES3</p></li>
+<li><p>2,418 COM</p></li>
+</ul>
+<p>The testing set (OSM-2) included:</p>
+<ul class="simple">
+<li><p>98 RES1</p></li>
+<li><p>97 RES3</p></li>
+<li><p>98 COM</p></li>
+</ul>
+<p>A ResNet50 model (model-1) is trained on the training set and tested on the testing set following the procedure described in <a class="reference internal" href="../user_manual/modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">Occupancy Classifier</span></a>. For each class the accuracy is 100%, as shown in the confusion matrix <a class="reference internal" href="#fig-confusion-x-occupancy-osm"><span class="std std-numref">Fig. 3.1</span></a>.</p>
+<div class="figure align-default" id="id1">
+<span id="fig-confusion-x-occupancy-osm"></span><a class="reference internal image-reference" href="../../_images/confusion_occupancy_v1.png"><img alt="Confusion matrix occupancy class" src="../../_images/confusion_occupancy_v1.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3.1 </span><span class="caption-text">Confusion matrix (model-1 on OSM-2)</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The performance is very high on the OSM testing set.</p>
+<p>We further obtained another dataset from New Jersey Department of Environmental Protection (NJDEP). This dataset only covers buildings from New Jersey, in which each building’s occupancy type is labeled. Form this inventory consisting over XX buildings, two sample sets weere chosen:</p>
+<p>The first set (NJDEP-1) contains:</p>
+<ul class="simple">
+<li><p>4,999 RES1</p></li>
+<li><p>2,867 RES3</p></li>
+<li><p>386 COM</p></li>
+</ul>
+<p>The second set (NJDEP-2) contains:</p>
+<ul class="simple">
+<li><p>812 RES1</p></li>
+<li><p>905 RES3</p></li>
+<li><p>837 COM</p></li>
+</ul>
+<p>We tested model-1 on the NJDEP-2 dataset. It’s performance is plotted in the confusion matrix <a class="reference internal" href="#fig-confusion-x-occupancy-njdep"><span class="std std-numref">Fig. 3.2</span></a>.
+The performance dropped significantly on this dataset.</p>
+<div class="figure align-default" id="id2">
+<span id="fig-confusion-x-occupancy-njdep"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_occupancy_njdep.png"><img alt="Confusion matrix occupancy class" src="../../_images/fig_confusion_occupancy_njdep.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3.2 </span><span class="caption-text">Confusion matrix (model-1 on NJDEP-2)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Later, another ResNet50 model (model-2) is trained on the combined dataset OSM-1 + NJDEP-1.
+The new model is tested on two datasets, OSM-2 and NJDEP-2, again.
+As shown in <a class="reference internal" href="#fig-confusion-x-occupancy-model2-osm2"><span class="std std-numref">Fig. 3.3</span></a> and <a class="reference internal" href="#fig-confusion-x-occupancy-model2-njdep2"><span class="std std-numref">Fig. 3.4</span></a>.
+The new models’ performance on the OSM-2 dataset drops a bit, while it improved significantly on the NJDEP-2 dataset.</p>
+<div class="figure align-default" id="id3">
+<span id="fig-confusion-x-occupancy-model2-osm2"></span><a class="reference internal image-reference" href="../../_images/confusion_occupancy_v2.png"><img alt="Confusion matrix occupancy class" src="../../_images/confusion_occupancy_v2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3.3 </span><span class="caption-text">Confusion matrix (model-2 on OSM-2)</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id4">
+<span id="fig-confusion-x-occupancy-model2-njdep2"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_occupancy_njdep_v2.png"><img alt="Confusion matrix occupancy class" src="../../_images/fig_confusion_occupancy_njdep_v2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3.4 </span><span class="caption-text">Confusion matrix (model-2 on NJDEP-2)</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="nfloor.html" class="btn btn-neutral float-left" title="2.4. Number of Floors Detector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

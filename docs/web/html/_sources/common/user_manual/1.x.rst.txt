@@ -1,0 +1,12 @@
+.. _lbl-1.x-tutorial:
+
+1.x User Guide (Legacy) 
+=======================
+
+.. toctree::
+   :maxdepth: 1
+   
+   preparedata
+   train
+   predict
+   enhance

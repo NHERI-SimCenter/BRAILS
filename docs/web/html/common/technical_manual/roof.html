@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.1. Roof Classifier &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.2. Occupancy Classifier" href="occupancy.html" />
+    <link rel="prev" title="2. Validation" href="vnv.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="vnv.html">2. Validation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.1. Roof Classifier</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-1-compare-with-openstreetmap-labels">Dataset 1: Compare with OpenStreetMap Labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-2-compare-with-steer-hurricane-laura-dataset">Dataset 2: Compare with StEER Hurricane Laura Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="occupancy.html">2.2. Occupancy Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="softstory.html">2.3. Soft-story Building Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nfloor.html">2.4. Number of Floors Detector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="vnv.html"><span class="section-number">2. </span>Validation</a> &raquo;</li>
+        
+      <li><span class="section-number">2.1. </span>Roof Classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/roof.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="roof-classifier">
+<span id="lbl-roofclassifier-vnv"></span><h1><span class="section-number">2.1. </span>Roof Classifier<a class="headerlink" href="#roof-classifier" title="Permalink to this headline">¶</a></h1>
+<p>The Roof Classifier’s methodology has been presented in <a class="reference internal" href="roofTheory.html#rooftheory"><span class="std std-ref">Roof type classifier</span></a>, and examples showing how to use it can be found in <a class="reference internal" href="../user_manual/modules/roofClassifier.html#lbl-roofclassifier"><span class="std std-ref">Roof Shape Classifier</span></a>. This section presents its validation against two datasets.</p>
+<div class="section" id="dataset-1-compare-with-openstreetmap-labels">
+<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline">¶</a></h2>
+<p>The trained classifier is first tested on a ground truth dataset that can be downloaded from <a class="reference external" href="http://doi.org/10.5281/zenodo.4520781">Zenodo</a>. This data set was obtained by randomly selecting from OpenStreetMap a series of buildings for which a <cite>roof:shape</cite> entry existed and it was one of: hipped, flat or gabled. Some options in <a class="reference external" href="https://wiki.openstreetmap.org/wiki/Key:roof:shape">Open Street Maps</a>  include: gambrel, pyramidal skillion, half-hipped, gambrel, dome, onion, round, sailbox. The google map API was then used to download satellite images of these buildings. From the downloaded images, images for which no roof was visible were removed, examples of removed images are as shown in <a class="reference internal" href="#random-roof-empty"><span class="std std-numref">Table 2.1.1</span></a>.</p>
+<span id="random-roof-empty"></span><table class="docutils align-default" id="id2">
+<caption><span class="caption-number">Table 2.1.1 </span><span class="caption-text">Images removed from the test dataset</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="figure align-default">
+<img alt="../../_images/TopViewx-76.78538744x38.978670699999995.png" src="../../_images/TopViewx-76.78538744x38.978670699999995.png" />
+</div>
+</td>
+<td><div class="figure align-default">
+<img alt="../../_images/TopViewx-76.84497884x38.71229606.png" src="../../_images/TopViewx-76.84497884x38.71229606.png" />
+</div>
+</td>
+<td><div class="figure align-default">
+<img alt="../../_images/TopViewx-76.93814628x39.06148106.png" src="../../_images/TopViewx-76.93814628x39.06148106.png" />
+</div>
+</td>
+<td><div class="figure align-default">
+<img alt="../../_images/TopViewx-76.86937465999999x39.10108044.png" src="../../_images/TopViewx-76.86937465999999x39.10108044.png" />
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The <a class="reference external" href="http://doi.org/10.5281/zenodo.4520781">resulting dataset</a> contained little over a hundred images: 32 flat, 40 gabled, 52 hipped. Examples of these satellite images are as shown below:</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-number">Table 2.1.2 </span><span class="caption-text">Example satellite images of different roof types</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="figure align-default" id="id4">
+<img alt="../../_images/94.png" src="../../_images/94.png" />
+<p class="caption"><span class="caption-number">Fig. 2.1.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id5">
+<img alt="../../_images/76.png" src="../../_images/76.png" />
+<p class="caption"><span class="caption-number">Fig. 2.1.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="figure align-default" id="id6">
+<img alt="../../_images/54.png" src="../../_images/54.png" />
+<p class="caption"><span class="caption-number">Fig. 2.1.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following code was then used to predict the roof shape.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">wget</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+
+<span class="c1"># download the testing dataset</span>
+<span class="n">wget</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s1">&#39;https://zenodo.org/record/4520781/files/satellite-images-val.zip&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s1">&#39;satellite-images-val.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="c1"># get images</span>
+<span class="n">flatList</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;satellite-images-val/flat/*.png&#39;</span><span class="p">)</span>
+<span class="n">gabledList</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;satellite-images-val/gabled/*.png&#39;</span><span class="p">)</span>
+<span class="n">hippedList</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;satellite-images-val/hipped/*.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># define the paths of images in a list</span>
+<span class="n">imgs</span><span class="o">=</span><span class="n">flatList</span><span class="o">+</span><span class="n">gabledList</span><span class="o">+</span><span class="n">hippedList</span>
+
+<span class="c1"># import the module</span>
+<span class="kn">from</span> <span class="nn">brails.modules</span> <span class="kn">import</span> <span class="n">RoofClassifier</span>
+
+<span class="c1"># initialize a roof classifier</span>
+<span class="n">roofModel</span> <span class="o">=</span> <span class="n">RoofClassifier</span><span class="p">()</span>
+
+<span class="c1"># use the model to predict</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">roofModel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;flat&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">flatList</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;gabled&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">gabledList</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;hipped&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">hippedList</span><span class="p">)</span>
+
+<span class="c1"># lot results</span>
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;flat&#39;</span><span class="p">,</span><span class="s1">&#39;gabled&#39;</span><span class="p">,</span> <span class="s1">&#39;hipped&#39;</span><span class="p">]</span>
+<span class="kn">from</span> <span class="nn">brails.utils.plotUtils</span> <span class="kn">import</span> <span class="n">plot_confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span>
+
+<span class="c1"># print</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Accuracy is   : </span><span class="si">{}</span><span class="s1">, Random guess is 0.33&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span><span class="n">label</span><span class="p">)))</span>
+<span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span><span class="n">label</span><span class="p">)</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Labels&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Predictions&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The code presented is similar to what was shown in the <a class="reference internal" href="../user_manual/modules/roofClassifier.html#lbl-roofclassifier"><span class="std std-ref">Roof Shape Classifier</span></a>. It demonstrates how python can be used to generate the list of images to be classified.</p>
+</div>
+<p>The prediction accuracy on this dataset is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.</p>
+<p>The confusion matrix for this validation is shown in <a class="reference internal" href="#fig-confusion-roof"><span class="std std-numref">Fig. 2.1.4</span></a>.</p>
+<div class="figure align-default" id="id7">
+<span id="fig-confusion-roof"></span><a class="reference internal image-reference" href="../../_images/confusion_roof.png"><img alt="Confusion matrix roof" src="../../_images/confusion_roof.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2.1.4 </span><span class="caption-text">Confusion matrix - Roof type classification for OpenStreetMap</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="dataset-2-compare-with-steer-hurricane-laura-dataset">
+<h2>Dataset 2: Compare with StEER Hurricane Laura Dataset<a class="headerlink" href="#dataset-2-compare-with-steer-hurricane-laura-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The second validation dataset was obtained from <a class="reference external" href="https://www.steer.network/">StEER</a>.
+From StEER, we obtained a list of addresses with their roof types labelled.
+For each address, we downloaded an satellite image from Google Maps Static API.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>This dataset contains satellite images of buildings, most images were taken before Hurricane Laura.</p></li>
+<li><p>The dataset is available from <a class="reference external" href="https://zenodo.org/record/4768487/files/Laura_roof_validation.zip">Zenodo</a>.</p></li>
+</ol>
+</div>
+<p>The labeling system of StEER is different from the BRAILS roof classification system.
+The StEER labels include the following classes:</p>
+<ul class="simple">
+<li><p>Gable/Hip Combo</p></li>
+<li><p>Hip</p></li>
+<li><p>Gable</p></li>
+<li><p>Complex</p></li>
+<li><p>Flat</p></li>
+</ul>
+<p>While the BRAILS roof types only include the following classes:</p>
+<ul class="simple">
+<li><p>gabled</p></li>
+<li><p>hipped</p></li>
+<li><p>flat</p></li>
+</ul>
+<p>To compare these two systems, from the StEER dataset we selected only addresses labeled as ‘Flat’, ‘Gable’, ‘Hip’. As a consequence, the set of buildings for which the validation was perfomed contained the following number of images:</p>
+<ul class="simple">
+<li><p>hipped,    33</p></li>
+<li><p>gabled,    21</p></li>
+<li><p>flat  ,     2</p></li>
+</ul>
+<p>The following shows the script to run this validation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ### Load labels and predictions from The Lake Charles Testbed</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;StEER_Laura.csv&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Hip&#39;</span><span class="p">)</span> <span class="o">|</span>
+              <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Gable&#39;</span><span class="p">)</span> <span class="o">|</span>
+              <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Flat&#39;</span><span class="p">)]</span>
+
+<span class="n">roofDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Gable&#39;</span><span class="p">:</span><span class="s1">&#39;gabled&#39;</span><span class="p">,</span><span class="s1">&#39;Flat&#39;</span><span class="p">:</span><span class="s1">&#39;flat&#39;</span><span class="p">,</span><span class="s1">&#39;Hip&#39;</span><span class="p">:</span><span class="s1">&#39;hipped&#39;</span><span class="p">}</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">roofDict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(Testbed)&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(Testbed)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">roofDict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+
+<span class="c1"># ### Plot confusion matrix</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">plotUtils</span> <span class="kn">import</span> <span class="n">plot_confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span><span class="p">,</span><span class="n">f1_score</span>
+
+<span class="n">class_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(Testbed)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(Testbed)&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span>
+
+<span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span><span class="n">predictions</span><span class="p">)</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;BRAILS&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;StEER&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">cname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">class_names</span><span class="p">):</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">TP</span> <span class="o">=</span> <span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">FP</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span><span class="o">-</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">FN</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span><span class="o">-</span><span class="n">cnf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">F1</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">TP</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">FP</span><span class="o">+</span><span class="n">FN</span><span class="p">)))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s1">: Accuracy = </span><span class="si">{</span><span class="n">accuracy</span><span class="si">}</span><span class="s1">, F1 = </span><span class="si">{</span><span class="n">F1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># ### Copy images to directories {label}-{prediction} for inspection</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="n">predDir</span> <span class="o">=</span> <span class="s1">&#39;tmp/images/roof_predictions&#39;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">predDir</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predDir</span><span class="p">)</span>
+
+<span class="n">falseNames</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">copyfiles</span><span class="p">(</span><span class="n">bim</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bim</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;RoofShape(StEER)&#39;</span><span class="p">]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;RoofShape(Testbed)&#39;</span><span class="p">]</span>
+
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Latitude&#39;</span><span class="p">]</span>
+
+        <span class="n">oldfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tmp/images/TopView/TopViewx</span><span class="si">{</span><span class="n">lon</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s1">.png&#39;</span>
+        <span class="n">newfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predDir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s1">/TopViewx</span><span class="si">{</span><span class="n">lon</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s1">.png&#39;</span>
+
+        <span class="n">thisFileDir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">predDir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s1">/&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">thisFileDir</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">thisFileDir</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">oldfile</span><span class="p">,</span> <span class="n">newfile</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">oldfile</span><span class="p">)</span>
+
+<span class="n">copyfiles</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-roof-laura"><span class="std std-numref">Fig. 2.1.5</span></a>.</p>
+<div class="figure align-default" id="id8">
+<span id="fig-confusion-roof-laura"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_roof_laura.png"><img alt="Confusion matrix roof Laura" src="../../_images/fig_confusion_roof_laura.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2.1.5 </span><span class="caption-text">Confusion matrix - Roof type classification for Hurricane Laura</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>The accuracy for the three classes are:</p>
+<ul class="simple">
+<li><p>flat: Accuracy = 1.0, F1 = 0.4</p></li>
+<li><p>hipped: Accuracy = 0.7, F1 = 0.7</p></li>
+<li><p>gabled: Accuracy = 0.7, F1 = 0.8</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="occupancy.html" class="btn btn-neutral float-right" title="2.2. Occupancy Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="vnv.html" class="btn btn-neutral float-left" title="2. Validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

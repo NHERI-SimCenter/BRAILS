@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.3. Soft-story Building Classifier &mdash; BRAILS 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.4. Number of Floors Detector" href="nfloor.html" />
+    <link rel="prev" title="2.2. Occupancy Classifier" href="occupancy.html" />
+<script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
+<style media="screen">.vega-actions a {margin-right: 5px;}</style>
+<link href="../../_static/css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #F2F2F2" >
+          
+<a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
+  <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
+</a>
+<hr style="margin: 0px;">
+
+  <a href="../../index.html">
+
+
+  <img src="../../_static/SimCenter_BRAILS_logo_solo.png" class="logo" alt="Logo"/>
+</a>
+
+
+  
+  
+
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/about.html">2. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/installation.html">3. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/userGuide.html">4. User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/troubleshooting.html">5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/bugs.html">7. Bugs &amp; Feature Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">8. Copyright and License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="theory.html">1. Theory and Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="vnv.html">2. Validation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="roof.html">2.1. Roof Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="occupancy.html">2.2. Occupancy Classifier</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.3. Soft-story Building Classifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nfloor.html">2.4. Number of Floors Detector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BRAILS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="vnv.html"><span class="section-number">2. </span>Validation</a> &raquo;</li>
+        
+      <li><span class="section-number">2.3. </span>Soft-story Building Classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/common/technical_manual/softstory.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="soft-story-building-classifier">
+<span id="lbl-softstoryclassifier-vnv"></span><h1><span class="section-number">2.3. </span>Soft-story Building Classifier<a class="headerlink" href="#soft-story-building-classifier" title="Permalink to this headline">¶</a></h1>
+<p>The Soft-story Building Classifier is validated here.</p>
+<p>The trained classifier is tested on a ground truth dataset that can be downloaded <a class="reference external" href="https://zenodo.org/record/4508433/files/softstory-buildings-val.zip">here</a>.
+Accuracy is 83.8%. Precision is 83.8%. Recall is 83.8%. F1 is 83.8%.</p>
+<p>Run the following python script to test on this dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># download the testing dataset</span>
+
+<span class="kn">import</span> <span class="nn">wget</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="n">wget</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s1">&#39;https://zenodo.org/record/4508433/files/softstory-buildings-val.zip&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s1">&#39;softstory-buildings-val.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="c1"># prepare the image lists</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="n">softstoryList</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;softstory-buildings-val/softstory/*.png&#39;</span><span class="p">)</span>
+<span class="n">othersList</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;softstory-buildings-val/others/*.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># define the paths of images in a list</span>
+<span class="n">imgs</span><span class="o">=</span><span class="n">softstoryList</span><span class="o">+</span><span class="n">othersList</span>
+
+<span class="c1"># import the module</span>
+<span class="kn">from</span> <span class="nn">brails.modules</span> <span class="kn">import</span> <span class="n">SoftstoryClassifier</span>
+
+<span class="c1"># initialize the classifier</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SoftstoryClassifier</span><span class="p">()</span>
+
+<span class="c1"># use the model to predict</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;softstory&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">softstoryList</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;others&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">othersList</span><span class="p">)</span>
+
+<span class="c1"># Plot results</span>
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;softstory&#39;</span><span class="p">,</span><span class="s1">&#39;others&#39;</span><span class="p">]</span>
+<span class="kn">from</span> <span class="nn">brails.utils.plotUtils</span> <span class="kn">import</span> <span class="n">plot_confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Accuracy is   : </span><span class="si">{}</span><span class="s1">, Random guess is 0.5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span><span class="n">label</span><span class="p">)))</span>
+<span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span><span class="n">label</span><span class="p">)</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Labels&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Predictions&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-softstory"><span class="std std-numref">Fig. 2.3.1</span></a>.</p>
+<div class="figure align-default" id="id1">
+<span id="fig-confusion-softstory"></span><a class="reference internal image-reference" href="../../_images/confusion_softstory.png"><img alt="Confusion matrix soft-story" src="../../_images/confusion_softstory.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2.3.1 </span><span class="caption-text">Confusion matrix - Soft-story building classifier</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="nfloor.html" class="btn btn-neutral float-right" title="2.4. Number of Floors Detector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="occupancy.html" class="btn btn-neutral float-left" title="2.2. Occupancy Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, NHERI SimCenter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>
