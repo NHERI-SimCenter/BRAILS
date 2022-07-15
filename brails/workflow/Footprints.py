@@ -16,10 +16,10 @@ import requests
 import json
 import shapely
 from sys import exit
-from brails.utils.geoDicts import *
+#from brails.utils.geoDicts import *
 from shapely.geometry import Point, Polygon, MultiPolygon
 from zipfile import ZipFile
-import geopandas as gpd
+#import geopandas as gpd
 import osmnx as ox
 import json
 

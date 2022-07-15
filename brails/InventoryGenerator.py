@@ -47,7 +47,10 @@ import random
 import sys
 import pandas as pd
 from shapely.geometry import Polygon
+#import os
+#import shutil
 
+#import brails.models as models
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, PytorchRoofClassifier, 
                             PytorchOccupancyClassifier, RoofCoverClassifier, 
@@ -75,7 +78,17 @@ class InventoryGenerator:
         self.nbldgs = nbldgs
         self.randomSelection = randomSelection
         self.workDir = 'tmp'
-        
+        self.modelDir = 'tmp/models'
+
+        """
+        # Copy the model files to the current directory:
+        os.makedirs(self.modelDir,exist_ok=True)
+        model_dir_org = models.__path__[0]
+        model_files = [file for file in os.listdir(model_dir_org) if file.endswith(('pth','pkl'))]
+        for model_file in model_files:
+            shutil.copyfile(os.path.join(model_dir_org,model_file),
+                            os.path.join(self.modelDir,model_file))
+        """
         
         # Get footprint data for the defined location:
         fpHandler = FootprintHandler()
@@ -174,6 +187,9 @@ class InventoryGenerator:
                      'correct attribute entry. Attribute entries enabled' +
                      ' are: ' + ', '.join(self.enabledAttributes))
         
+        # Remove duplicate attribute entries:
+        self.attributes = sorted(list(set(self.attributes)))
+        
         # Create a list of footprints for easier module calls:
         footprints = self.inventory['footprint'].values.tolist()
         
@@ -235,7 +251,7 @@ class InventoryGenerator:
                                    'garageExists')
                 self.inventory['garageExists'] = self.inventory['garageExists'].astype(dtype="boolean")
                 
-            elif attribute=='numstories':
+            elif attribute=='numstories' and 'storyModel' not in locals():
                 # Initialize the floor detector object:
                 storyModel = NFloorDetector()
 
@@ -300,7 +316,14 @@ class InventoryGenerator:
 
                     # Call the floor detector to determine number of floors of 
                     # buildings in each image:
-                    storyModel.predict(imstreet)    
+                    storyModel.predict(imstreet)
+                    
+                    # Write the results to the inventory DataFrame:
+                    self.inventory = write_to_dataframe(self.inventory,
+                                       [storyModel.system_dict['infer']['images'],
+                                       storyModel.system_dict['infer']['predictions']],
+                                       'nstories')
+                    self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
                 
                 if 'facadeParserModel' not in locals():   
                     # Initialize the facade parser object:

@@ -261,8 +261,8 @@ class FacadeParser:
         
         # Create the output table
         self.predictions = pd.DataFrame(columns=['image',
-                                                 'buildingheight',
                                                  'roofeaveheight',
+                                                 'buildingheight',
                                                  'roofpitch'])
         
         for polyNo in tqdm(range(len(self.footprints))):
@@ -307,26 +307,29 @@ class FacadeParser:
             # Find roof contours
             contours, _ = cv2.findContours(maskRoof,cv2.RETR_EXTERNAL,
                                            cv2.CHAIN_APPROX_SIMPLE)
-            try:
+            
+            if len(contours)!=0:
                 roofContour = max(contours, key = cv2.contourArea).squeeze()
-            except:
-                continue
+                
+                if roofContour.ndim==2:
+                    # Find the mimumum area rectangle that fits around the primary roof contour
+                    roofMinRect = cv2.minAreaRect(roofContour)
+                    roofMinRect = cv2.boxPoints(roofMinRect)
+                    roofMinRect = np.int0(roofMinRect)
+                    roofMinRectPoly = Polygon([(roofMinRect[0,0],roofMinRect[0,1]),
+                                                        (roofMinRect[1,0],roofMinRect[1,1]),
+                                                        (roofMinRect[2,0],roofMinRect[2,1]),
+                                                        (roofMinRect[3,0],roofMinRect[3,1])])
+                    x,y = roofMinRectPoly.exterior.xy
             
-            # Find the mimumum area rectangle that fits around the primary roof contour
-            roofMinRect = cv2.minAreaRect(roofContour)
-            roofMinRect = cv2.boxPoints(roofMinRect)
-            roofMinRect = np.int0(roofMinRect)
-            roofMinRectPoly = Polygon([(roofMinRect[0,0],roofMinRect[0,1]),
-                                                (roofMinRect[1,0],roofMinRect[1,1]),
-                                                (roofMinRect[2,0],roofMinRect[2,1]),
-                                                (roofMinRect[3,0],roofMinRect[3,1])])
-            x,y = roofMinRectPoly.exterior.xy
-
-            
-            roofBBoxPoly = gen_bbox(roofContour)
-            x,y = roofBBoxPoly.exterior.xy
-            roofPixHeight = max(y)-min(y)
-            
+                    
+                    roofBBoxPoly = gen_bbox(roofContour)
+                    x,y = roofBBoxPoly.exterior.xy
+                    roofPixHeight = max(y)-min(y)
+                else:
+                    roofPixHeight = 0
+            else:
+                roofPixHeight = 0
             
             # Find facade contours
             contours, _ = cv2.findContours(maskFacade,cv2.RETR_EXTERNAL,
@@ -359,6 +362,9 @@ class FacadeParser:
             else:
                 normfact = 1
             R1 = R1PixHeight*self.streetScales[polyNo]*normfact
+            if (R1-R0)>1.5*normalizer:
+                R1 = R0 + (1.2-random()*0.4)*normalizer
+                
             roof_run = compute_roofrun(footprint)
             roofPitch = (R1-R0)/roof_run
             self.predictions.loc[polyNo] = [self.street_images[polyNo], 
@@ -372,8 +378,8 @@ class FacadeParser:
                 rgb.save(self.street_images[polyNo].split('.')[0] + 
                          '_segmented.png')
             
-        self.predictions = self.predictions.round({'buildingheight': 1, 
-                                'roofeaveheight': 1,
+        self.predictions = self.predictions.round({'roofeaveheight': 1, 
+                                'buildingheight': 1,
                                 'roofpitch': 2})
         
         # Unload the model from GPU
