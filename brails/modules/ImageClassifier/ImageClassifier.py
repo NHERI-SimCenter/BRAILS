@@ -48,19 +48,22 @@ import os
 import copy
 from PIL import Image
 import sys
+import requests
+import zipfile
 
-class ImageClassifer:
+class ImageClassifier:
 
     def __init__(self, modelArch="efficientnetv2s"): 
     
         self.modelArch = modelArch
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
         self.batchSize = None
         self.nepochs = None
         self.trainDataDir = None
         self.testDataDir = None
         self.classes = None
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
-        
+        self.lossHistory = None
+        self.preds = None
         
         if "resnet" in modelArch:
             input_size = 224
@@ -72,6 +75,8 @@ class ImageClassifer:
                 input_size = 480
             elif 'l' in modelArch:
                 input_size = 480
+            else:
+                sys.exit("Model name or architecture not defined!")
             
         elif "convnext" in modelArch:
             if 's' in modelArch:
@@ -80,23 +85,45 @@ class ImageClassifer:
                 input_size = 480
             elif 'l' in modelArch:
                 input_size = 480
+            else:
+                sys.exit("Model name or architecture not defined!")
             
         elif "regnet" in modelArch:
+            if '16' in modelArch:
                 input_size = 384
+            elif '32' in modelArch:
+                input_size = 384
+            else:
+                sys.exit("Model name or architecture not defined!")
+
     
         elif "vit" in modelArch:
             if '14' in modelArch:
                 input_size = 518
             elif '16' in modelArch:
                 input_size = 512
+            else:
+                sys.exit("Model name or architecture not defined!")                
 
         else:
             sys.exit("Model name or architecture not defined!")
           
         self.modelInputSize = input_size          
 
-
     def train(self, trainDataDir='tmp/hymenoptera_data', batchSize=8, nepochs=100, plotLoss=True):
+        
+        if trainDataDir=='tmp/hymenoptera_data':
+            print('Downloading default dataset...')
+            url = 'https://download.pytorch.org/tutorial/hymenoptera_data.zip'
+            req = requests.get(url)
+            zipdir = os.path.join('tmp',url.split('/')[-1])
+            os.makedirs('tmp',exist_ok=True)
+            with open(zipdir,'wb') as output_file:
+                output_file.write(req.content)
+            print('Download complete.')
+
+        with zipfile.ZipFile(zipdir, 'r') as zip_ref:
+            zip_ref.extractall('tmp')
         
         def train_model(model, dataloaders, criterion, optimizer, num_epochs=100, es_tolerance=10):
             since = time.time()
@@ -153,7 +180,7 @@ class ImageClassifer:
                     epoch_loss = running_loss / len(dataloaders[phase].dataset)
                     epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
         
-                    print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
+                    print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase.capitalize(), epoch_loss, epoch_acc))
         
                     # deep copy the model
                     if phase == 'val' and epoch_acc > best_acc:
@@ -269,22 +296,23 @@ class ImageClassifer:
                         model_ft = models.vit_l_16(weights='IMAGENET1K_SWAG_E2E_V1')
                     else:
                         model_ft = models.vit_l_16()
+                    
         
             else:
                 sys.exit("Model name or architecture not defined!")
             
-            return model_ft, input_size                
+            return model_ft              
         
         self.batchSize = batchSize
         self.trainDataDir = trainDataDir
 
         classes = os.listdir(os.path.join(self.trainDataDir,'train'))        
-        num_classes = len(self.classes)
         self.classes = classes
+        num_classes = len(self.classes)
         
         if isinstance(nepochs, int):
-            nepochs_it = round((self.nepochs)/2)
-            nepochs_ft = self.nepochs - nepochs_it
+            nepochs_it = round(nepochs/2)
+            nepochs_ft = nepochs - nepochs_it
         elif isinstance(nepochs, list) and len(nepochs)>=2:
             nepochs_it = nepochs[0]
             nepochs_ft = nepochs[1]
@@ -294,7 +322,7 @@ class ImageClassifer:
         self.nepochs = [nepochs_it,nepochs_ft]
         
         # Initialize the model for this run
-        model_ft, input_size = initialize_model(self.modelArch, num_classes, feature_extract=False, use_pretrained=True)
+        model_ft = initialize_model(self.modelArch, num_classes, feature_extract=False, use_pretrained=True)
         
         # Data augmentation and normalization for training
         # Just normalization for validation
@@ -314,7 +342,7 @@ class ImageClassifer:
         }
         
         # Create training and validation datasets
-        image_datasets = {x: datasets.ImageFolder(os.path.join(self.dataDir, x), data_transforms[x]) for x in ['train', 'val']}
+        image_datasets = {x: datasets.ImageFolder(os.path.join(self.trainDataDir, x), data_transforms[x]) for x in ['train', 'val']}
         # Create training and validation dataloaders
         dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=4) for x in ['train', 'val']}
         
@@ -336,16 +364,17 @@ class ImageClassifer:
         
         # Train and evaluate
         model_ft, hist = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=nepochs_it)
-        print('New classifier head trained for the transferred features.')  
+        print('New classifier head trained using transfer learning.')  
         
         # Initialize the non-pretrained version of the model used for this run
-        print('Fine-tuning the model...')
+        print('\nFine-tuning the model...')
         set_parameter_requires_grad(model_ft,feature_extracting=False)
         final_model = model_ft.to(self.device)
         final_optimizer = optim.SGD(final_model.parameters(), lr=0.0001, momentum=0.9)
         final_criterion = nn.CrossEntropyLoss()
         _,final_hist = train_model(final_model, dataloaders_dict, final_criterion, final_optimizer, num_epochs=nepochs_ft)
         print('Training complete.')
+        os.makedirs('tmp/models', exist_ok=True)
         torch.save(final_model, 'tmp/models/trained_model.pth')
         self.modelPath = 'tmp/models/trained_model.pth'
         
@@ -353,20 +382,35 @@ class ImageClassifer:
         # Plot the training curves of validation accuracy vs. number 
         #  of training epochs for the transfer learning method and
         #  the model trained from scratch
-        if plotLoss:        
-            plothist = [h.cpu().numpy() for h in hist] + [h.cpu().numpy() for h in final_hist]
-    
+      
+        plothist = [h.cpu().numpy() for h in hist] + [h.cpu().numpy() for h in final_hist]
+        self.lossHistory = plothist
+        if plotLoss:      
             plt.title("Validation Accuracy vs. Number of Training Epochs")
             plt.xlabel("Training Epochs")
             plt.ylabel("Validation Accuracy")
             plt.plot(range(1,len(plothist)+1),plothist)
             plt.ylim((0.4,1.))
-            plt.xticks(np.arange(1, len(plothist)+1), 1.0)
+            plt.xticks(np.arange(1, len(plothist)+1, 1.0))
             plt.show()
 
     def retrain(self, modelPath='tmp/models/trained_model.pth', 
                 trainDataDir='tmp/hymenoptera_data', batchSize=8, 
                 nepochs=100, plotLoss=True):
+        
+        if trainDataDir=='tmp/hymenoptera_data':
+            print('Downloading default dataset...')
+            url = 'https://download.pytorch.org/tutorial/hymenoptera_data.zip'
+            req = requests.get(url)
+            zipdir = os.path.join('tmp',url.split('/')[-1])
+            os.makedirs('tmp',exist_ok=True)
+            with open(zipdir,'wb') as output_file:
+                output_file.write(req.content)
+            print('Download complete.')
+
+        with zipfile.ZipFile(zipdir, 'r') as zip_ref:
+            zip_ref.extractall('tmp')
+        
         def train_model(model, dataloaders, criterion, optimizer, num_epochs=100, es_tolerance=10):
             since = time.time()
         
@@ -422,7 +466,7 @@ class ImageClassifer:
                     epoch_loss = running_loss / len(dataloaders[phase].dataset)
                     epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
         
-                    print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
+                    print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase.capitalize(), epoch_loss, epoch_acc))
         
                     # deep copy the model
                     if phase == 'val' and epoch_acc > best_acc:
@@ -469,6 +513,12 @@ class ImageClassifer:
             ]),
         }
         
+        self.batchSize = batchSize
+        self.trainDataDir = trainDataDir
+
+        classes = os.listdir(os.path.join(self.trainDataDir,'train'))        
+        self.classes = classes
+        
         if isinstance(nepochs, int):
             self.nepochs = [0, nepochs]
         else:
@@ -476,7 +526,7 @@ class ImageClassifer:
 
         
         # Create training and validation datasets
-        image_datasets = {x: datasets.ImageFolder(os.path.join(self.dataDir, x), data_transforms[x]) for x in ['train', 'val']}
+        image_datasets = {x: datasets.ImageFolder(os.path.join(self.trainDataDir, x), data_transforms[x]) for x in ['train', 'val']}
         # Create training and validation dataloaders
         dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=4) for x in ['train', 'val']}
         
@@ -488,6 +538,7 @@ class ImageClassifer:
         final_criterion = nn.CrossEntropyLoss()
         _,final_hist = train_model(final_model, dataloaders_dict, final_criterion, final_optimizer, num_epochs=nepochs)
         print('Training complete.')
+        os.makedirs('tmp/models', exist_ok=True)
         torch.save(final_model, 'tmp/models/retrained_model.pth')
         self.modelPath = 'tmp/models/retrained_model.pth'
         
@@ -495,51 +546,55 @@ class ImageClassifer:
         # Plot the training curves of validation accuracy vs. number 
         #  of training epochs for the transfer learning method and
         #  the model trained from scratch
+        plothist = [h.cpu().numpy() for h in final_hist]
+        self.lossHistory = plothist
+        
         if plotLoss:        
-            plothist = [h.cpu().numpy() for h in final_hist]
-    
+            plt.plot(range(1,len(plothist)+1),plothist)
             plt.title("Validation Accuracy vs. Number of Training Epochs")
             plt.xlabel("Training Epochs")
             plt.ylabel("Validation Accuracy")
-            plt.plot(range(1,len(plothist)+1),plothist)
-            plt.ylim((0.4,1.))
-            plt.xticks(np.arange(1, len(plothist)+1), 1.0)
+            #plt.ylim((0.4,1.))
+            plt.xticks(np.arange(1, len(plothist)+1, 1.0))
             plt.show()    
 
-def predict(self, modelPath='tmp/models/trained_model.pth', 
-            testDataDir='tmp/hymenoptera_data/val/ants',
-            classes=['Ants','Bees']):
-    
-    self.modelPath = modelPath
-    self.testDataDir = testDataDir
-    self.classes = classes
-    
-    loader = transforms.Compose([
-            transforms.Resize(self.modelInpSize),
-            transforms.CenterCrop(self.modelInpSize),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-    
-    def image_loader(image_name):
-        image = Image.open(image_name)
-        image = loader(image).float()
-        image = image.unsqueeze(0)  
-        return image.to(self.device) 
-    
-    model = torch.load(modelPath)
-    model.eval()
-    
-    preds = []
-    if os.path.isdir(testDataDir):
-        for im in os.listdir(testDataDir):
-            if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
-                image = image_loader(os.path.join(testDataDir,im))
-                _, pred = torch.max(model(image),1)
-                preds.append((im, classes[pred]))       
-    elif os.path.isfile(testDataDir):
-        img = plt.imread(testDataDir)
-        plt.imshow(img)
-        image = image_loader(os.path.join(testDataDir))
-        _, pred = torch.max(model(image),1)
-        plt.title((f"Predicted class: {classes[pred].capitalize()}"))
-        plt.show()   
+    def predict(self, modelPath='tmp/models/trained_model.pth', 
+                testDataDir='tmp/hymenoptera_data/val/ants',
+                classes=['Ants','Bees']):
+        
+        self.modelPath = modelPath
+        self.testDataDir = testDataDir
+        self.classes = classes
+        
+        loader = transforms.Compose([
+                transforms.Resize(self.modelInputSize),
+                transforms.CenterCrop(self.modelInputSize),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        
+        def image_loader(image_name):
+            image = Image.open(image_name).convert("RGB")
+            image = loader(image).float()
+            image = image.unsqueeze(0)  
+            return image.to(self.device) 
+        
+        model = torch.load(modelPath)
+        model.eval()
+        
+        preds = []
+        if os.path.isdir(testDataDir):
+            for im in os.listdir(testDataDir):
+                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+                    image = image_loader(os.path.join(testDataDir,im))
+                    _, pred = torch.max(model(image),1)
+                    preds.append((im, classes[pred]))   
+            self.preds = preds
+        elif os.path.isfile(testDataDir):
+            img = plt.imread(testDataDir)[:,:,:3]
+            image = image_loader(testDataDir)
+            _, pred = torch.max(model(image),1)
+            plt.imshow(img)
+            plt.title((f"Predicted class: {classes[pred].capitalize()}"))
+            plt.show()
+            print((f"Predicted class: {classes[pred].capitalize()}"))
+            self.preds = pred
