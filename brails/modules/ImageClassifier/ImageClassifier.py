@@ -121,9 +121,8 @@ class ImageClassifier:
             with open(zipdir,'wb') as output_file:
                 output_file.write(req.content)
             print('Download complete.')
-
-        with zipfile.ZipFile(zipdir, 'r') as zip_ref:
-            zip_ref.extractall('tmp')
+            with zipfile.ZipFile(zipdir, 'r') as zip_ref:
+                zip_ref.extractall('tmp')
         
         def train_model(model, dataloaders, criterion, optimizer, num_epochs=100, es_tolerance=10):
             since = time.time()
@@ -407,9 +406,8 @@ class ImageClassifier:
             with open(zipdir,'wb') as output_file:
                 output_file.write(req.content)
             print('Download complete.')
-
-        with zipfile.ZipFile(zipdir, 'r') as zip_ref:
-            zip_ref.extractall('tmp')
+            with zipfile.ZipFile(zipdir, 'r') as zip_ref:
+                zip_ref.extractall('tmp')
         
         def train_model(model, dataloaders, criterion, optimizer, num_epochs=100, es_tolerance=10):
             since = time.time()
