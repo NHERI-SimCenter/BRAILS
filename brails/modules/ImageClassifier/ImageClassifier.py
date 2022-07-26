@@ -306,7 +306,7 @@ class ImageClassifier:
         self.trainDataDir = trainDataDir
 
         classes = os.listdir(os.path.join(self.trainDataDir,'train'))        
-        self.classes = classes
+        self.classes = sorted(classes)
         num_classes = len(self.classes)
         
         if isinstance(nepochs, int):
@@ -515,7 +515,7 @@ class ImageClassifier:
         self.trainDataDir = trainDataDir
 
         classes = os.listdir(os.path.join(self.trainDataDir,'train'))        
-        self.classes = classes
+        self.classes = sorted(classes)
         
         if isinstance(nepochs, int):
             self.nepochs = [0, nepochs]
@@ -562,7 +562,7 @@ class ImageClassifier:
         
         self.modelPath = modelPath
         self.testDataDir = testDataDir
-        self.classes = classes
+        self.classes = sorted(classes)
         
         loader = transforms.Compose([
                 transforms.Resize(self.modelInputSize),
