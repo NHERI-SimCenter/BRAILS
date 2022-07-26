@@ -591,8 +591,11 @@ class ImageClassifier:
             img = plt.imread(testDataDir)[:,:,:3]
             image = image_loader(testDataDir)
             _, pred = torch.max(model(image),1)
+            pred = classes[pred]
+            if pred.lower():
+                pred = pred.capitalize()
             plt.imshow(img)
-            plt.title((f"Predicted class: {classes[pred].capitalize()}"))
+            plt.title((f"Predicted class: {pred}"))
             plt.show()
-            print((f"Predicted class: {classes[pred].capitalize()}"))
+            print((f"Predicted class: {pred}"))
             self.preds = pred
