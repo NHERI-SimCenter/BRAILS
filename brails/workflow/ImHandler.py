@@ -101,7 +101,7 @@ class ImageHandler:
         self.street_images = []
 
     def GetGoogleSatelliteImage(self,footprints):
-     
+        self.footprints = footprints[:]
         def dist(p1,p2):
             """
             Function that calculates the distance between two points.
@@ -200,6 +200,7 @@ class ImageHandler:
             self.satellite_images.append(im_name)
 
     def GetGoogleStreetImage(self,footprints):
+        self.footprints = footprints[:]
         # Function that downloads a file given its URL and the desired path to save it:
         def download_url(url, save_path, chunk_size=128):
             r = requests.get(url, stream=True)
@@ -484,6 +485,13 @@ class ImageHandler:
                 premRefLine = np.array([[visibleLineSeg[0,0],visibleLineSeg[0,1]],
                                     [visibleLineSeg[0,2],visibleLineSeg[0,3]]])
                 #refLength = dist(Point(visibleLineSeg[0,0:2]),Point(visibleLineSeg[0,2:4]))
+            
+            if isinstance(premRefLine,np.ndarray):
+                slope = abs((premRefLine[0,1] - premRefLine[1,1])/(premRefLine[0,0] - premRefLine[1,0]))
+                if np.any(np.isnan(premRefLine)):
+                    premRefLine = None 
+                elif math.isnan(slope) or math.isinf(slope) or round(slope,4)==0:
+                    premRefLine = None    
             return premRefLine
         
         # Function to calculate the bearing of a line given the latitude/longitude
