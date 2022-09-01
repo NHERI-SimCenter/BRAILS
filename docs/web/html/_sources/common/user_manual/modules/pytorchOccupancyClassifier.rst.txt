@@ -1,9 +1,9 @@
 .. _lbl-pytorchOccupancyClassifier:
 
-Pytorch Occupancy Classifier
+PyTorch Occupancy Classifier
 ========================
 
-The Pytorch Occupancy Image Classifier is a subclass of Pytorch generic image classifier. It can be used for inference and fine-tuning.
+The PyTorch Occupancy Image Classifier is a subclass of PyTorch generic image classifier. It can be used for inference and fine-tuning.
 
 .. container:: toggle
          
@@ -26,7 +26,14 @@ The Pytorch Occupancy Image Classifier is a subclass of Pytorch generic image cl
       #. **epochs**: default==10
       #. **batch_size**: default==64
       #. **plot**: default==False
-     
+  
+   #.  **fine_tuning*
+
+      #. **lr1**: default=0.001
+      #. **epochs**: default==10
+      #. **batch_size**: default==32
+      #. **plot**: default==False
+
    #. **predictOneImage**
    
       #. **imagePath**: Path to a single image
@@ -56,7 +63,7 @@ The image dataset for this example contains street view images categorized accor
 
 The dataset can be downloaded `here <https://zenodo.org/record/6502302/files/occupancy_val.zip>`_.
 
-When unzipped, the file gives the 'occupancy_val'. You need to set ''imgDir'' to the corresponding directory.  The occupancy_val directory contains the images for inference:
+When unzipped, the file gives the 'occupancy_val'. You need to set ''imgDir'' to the corresponding directory. The occupancy_val directory contains the images for inference:
 
 
 .. code-block:: none 
@@ -75,9 +82,11 @@ Construct the image classifier
 .. code-block:: none 
 
     # import the module
+
     from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 
     # initialize the classifier, give it a name and a directory
+
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
 
 
@@ -89,11 +98,13 @@ Now you can use the trained model to predict the (occupancy) class for a given i
 .. code-block:: none 
 
     # If you are running the inference from another place, you need to initialize the classifier firstly:
-    from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
+   
+   from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True)
                                             
     # define the paths of images in a list
+    
     imgs = ["./occupancy_val/RRE/35856.jpg", "./occupancy_val/RRE/44325.jpg"]
 
     # use the model to predict
@@ -103,7 +114,7 @@ Now you can use the trained model to predict the (occupancy) class for a given i
 The predictions will be written in preds.csv under the working directory.
 
 
-Fine-tune the model for transfer learning. You need to provide the training data.
+Fine-tune the model for transfer learning. Transfer learning is a technique to overcome the distribution shift and adapt the model for the new task (https://ftp.cs.wisc.edu/machine-learning/shavlik-group/torrey.handbook09.pdf). You need to provide the training data.
 ---------------
 
 .. code-block:: none 
@@ -113,13 +124,11 @@ Fine-tune the model for transfer learning. You need to provide the training data
     occupancyClassifier = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1', download=True,  imgDir='./occupancy_val/)
 
 
-    # train the base model for 5 epochs with an initial learning rate of 0.01. 
+    # fine-tune the base model for 5 epochs with an initial learning rate of 0.001. 
     
-    occupancyClassifier.train(lr=0.01, batch_size=64, epochs=5)
+    occupancyClassifier.fine_tuning(lr=0.01, batch_size=64, epochs=5)
 
 
 It is recommended to run the above example on a GPU machine.
 
 Please refer to https://github.com/rwightman/pytorch-image-models for supported models. You may need to first install timm via pip: pip install timm. Currently, BRAILS only provides pre-trained roof type model based on Transformer.
-
-

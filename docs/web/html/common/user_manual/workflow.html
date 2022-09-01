@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>4.3. Workflow &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="5. Troubleshooting" href="troubleshooting.html" />
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">1. Acknowledgments</a></li>
@@ -128,75 +92,33 @@
 <li class="toctree-l1"><a class="reference internal" href="../technical_manual/understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="userGuide.html"><span class="section-number">4. </span>User Guide</a> &raquo;</li>
-        
       <li><span class="section-number">4.3. </span>Workflow</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/common/user_manual/workflow.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="workflow">
-<span id="lbl-workflow-tutorial"></span><h1><span class="section-number">4.3. </span>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="workflow">
+<span id="lbl-workflow-tutorial"></span><h1><span class="section-number">4.3. </span>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline"></a></h1>
 <p>The workflow is designed to facilitate the creation of regional building inventories.</p>
 <p>It is implemented in a class, CityBuilder.</p>
 <blockquote>
@@ -219,7 +141,7 @@
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">attributes (list)</dt>
-<dd class="field-odd"><p>A list of building attributes, such as [‘<a class="reference internal" href="modules/roofClassifier.html#lbl-roofclassifier"><span class="std std-ref">roofshape</span></a>’, ‘<a class="reference internal" href="modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">occupancy</span></a>’, ‘<a class="reference internal" href="modules/softstoryClassifier.html#lbl-softstoryclassifier"><span class="std std-ref">softstory</span></a>’, ‘<a class="reference internal" href="modules/foundationElevationClassifier.html#lbl-foundationelevationclassifier"><span class="std std-ref">elevated</span></a>’, ‘<a class="reference internal" href="modules/yearClassifier.html#lbl-yearclassifier"><span class="std std-ref">year</span></a>’, ‘<a class="reference internal" href="modules/nFloorDetector.html#lbl-nfloordetector"><span class="std std-ref">numstories</span></a>’], which are available in the current version.</p>
+<dd class="field-odd"><p>A list of building attributes, such as [’<a class="reference internal" href="modules/roofClassifier.html#lbl-roofclassifier"><span class="std std-ref">roofshape</span></a>’, ‘<a class="reference internal" href="modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">occupancy</span></a>’, ‘<a class="reference internal" href="modules/softstoryClassifier.html#lbl-softstoryclassifier"><span class="std std-ref">softstory</span></a>’, ‘<a class="reference internal" href="modules/foundationElevationClassifier.html#lbl-foundationelevationclassifier"><span class="std std-ref">elevated</span></a>’, ‘<a class="reference internal" href="modules/yearClassifier.html#lbl-yearclassifier"><span class="std std-ref">year</span></a>’, ‘<a class="reference internal" href="modules/nFloorDetector.html#lbl-nfloordetector"><span class="std std-ref">numstories</span></a>’], which are available in the current version.</p>
 </dd>
 <dt class="field-even">numBldg (int)</dt>
 <dd class="field-even"><p>Number of buildings to generate.</p>
@@ -255,8 +177,8 @@
 <dd class="field-even"><p>Re-download even an image exists locally. Default value is False.</p>
 </dd>
 </dl>
-<div class="section" id="specify-attributes-to-be-collected">
-<h2>Specify attributes to be collected<a class="headerlink" href="#specify-attributes-to-be-collected" title="Permalink to this headline">¶</a></h2>
+<section id="specify-attributes-to-be-collected">
+<h2>Specify attributes to be collected<a class="headerlink" href="#specify-attributes-to-be-collected" title="Permalink to this headline"></a></h2>
 <p>Use the key ‘attributes’ to specify a list of attributes you intend to collect for each building.
 Available ones in the current version include:
 [‘roofshape’,
@@ -274,86 +196,69 @@ These attributes will be inferred from images using specific <a class="reference
 <li><p>year is the year built, details can be found in <a class="reference internal" href="modules/yearClassifier.html#lbl-yearclassifier"><span class="std std-ref">Year Built Classification</span></a>.</p></li>
 <li><p>numstories is the number of stories, details can be found in <a class="reference internal" href="modules/nFloorDetector.html#lbl-nfloordetector"><span class="std std-ref">Number of Floors Detector</span></a>.</p></li>
 </ul>
-</div>
-<div class="section" id="limit-the-number-of-buildings-to-be-collected">
-<span id="limitthenumber"></span><h2>Limit the number of buildings to be collected<a class="headerlink" href="#limit-the-number-of-buildings-to-be-collected" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="limit-the-number-of-buildings-to-be-collected">
+<span id="limitthenumber"></span><h2>Limit the number of buildings to be collected<a class="headerlink" href="#limit-the-number-of-buildings-to-be-collected" title="Permalink to this headline"></a></h2>
 <p>The workflow will download a street view image and a satellite view image for each building.
 The images are downloaded from Google Maps using  your personal <a class="reference external" href="https://developers.google.com/maps/documentation/embed/get-api-key">Google API Keys</a>.
 The price of the API calls can be found <a class="reference external" href="https://cloud.google.com/maps-platform/pricing">here</a>.
 As of February 3, 2021, $7 per 1,000 street view images and $2 per 1,000 satellite images.
 Each Google account has $200 free monthly usage. Exceeding that limit will result in being charged by Google.</p>
 <p>You can use the key ‘numBldg’ to limit the number of buildings to be generated.</p>
-</div>
-<div class="section" id="control-the-selection-randomness">
-<h2>Control the selection randomness<a class="headerlink" href="#control-the-selection-randomness" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="control-the-selection-randomness">
+<h2>Control the selection randomness<a class="headerlink" href="#control-the-selection-randomness" title="Permalink to this headline"></a></h2>
 <p>In a region, numBldg of buildings will be generated.
 You can use the key ‘random’ to specify if you want to randomly select numBldg buildings from the database.
 If its value is False, BIM will be generated for the first numBldg buildings found in the footprint database.</p>
-</div>
-<div class="section" id="define-the-region-of-interest">
-<h2>Define the region of interest<a class="headerlink" href="#define-the-region-of-interest" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="define-the-region-of-interest">
+<h2>Define the region of interest<a class="headerlink" href="#define-the-region-of-interest" title="Permalink to this headline"></a></h2>
 <p>There are two options to define the region of interest: ‘bbox’ or ‘place’.</p>
 <p>If ‘bbox’ is provided, the workflow will retrieve numBldg buildings within the bounding box defined by ‘bbox’.</p>
 <p>If ‘bbox’ is empty and ‘place’ is provided, the workflow will search the database based on ‘place’.</p>
-</div>
-<div class="section" id="footprints-options">
-<h2>Footprints options<a class="headerlink" href="#footprints-options" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="footprints-options">
+<h2>Footprints options<a class="headerlink" href="#footprints-options" title="Permalink to this headline"></a></h2>
 <p>Use the key ‘footPrints’ to specify the source of building footprints to be used in the workflow.
 Currently, the workflow supports ‘
 <a class="reference external" href="https://www.openstreetmap.org/">OSM</a>’ and ‘<a class="reference external" href="https://github.com/microsoft/USBuildingFootprints">Microsoft</a>’.</p>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
 <p>Check the <a class="reference internal" href="examples.html#lbl-examples"><span class="std std-ref">Examples</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="5. Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="modules/softstoryClassifier.html" class="btn btn-neutral float-left" title="Soft-story Building Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="5. Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

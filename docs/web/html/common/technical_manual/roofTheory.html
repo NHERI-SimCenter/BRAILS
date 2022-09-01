@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Roof type classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Occupancy classifier" href="occupancyTheory.html" />
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
@@ -125,129 +89,98 @@
 <li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="theory.html"><span class="section-number">1. </span>Theory and Implementation</a> &raquo;</li>
-        
           <li><a href="modulesTheory.html"><span class="section-number">1.2. </span>Modules</a> &raquo;</li>
-        
       <li>Roof type classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/common/technical_manual/roofTheory.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="roof-type-classifier">
-<span id="rooftheory"></span><h1>Roof type classifier<a class="headerlink" href="#roof-type-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="roof-type-classifier">
+<span id="rooftheory"></span><h1>Roof type classifier<a class="headerlink" href="#roof-type-classifier" title="Permalink to this headline"></a></h1>
 <p>Roof type is a crucial information for wind hazard analyses of buildings because it is
 a key attribute needed for consideration of wind effects on structures.</p>
 <p>There are three major roof types, as shown in <a class="reference internal" href="../user_manual/modules/roofClassifier.html#roof-types"><span class="std std-numref">Table 4.2.1</span></a>, that are widely used in the world: flat, gabled, hipped.</p>
 <span id="roof-types"></span><table class="docutils align-default" id="id2">
-<caption><span class="caption-number">Table 1.2.1 </span><span class="caption-text">Roof prototypes</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 1.2.1 </span><span class="caption-text">Roof prototypes</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id3">
+<tr class="row-odd"><td><figure class="align-default" id="id3">
 <img alt="../../_images/flat.jpg" src="../../_images/flat.jpg" />
-<p class="caption"><span class="caption-number">Fig. 1.2.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id4">
+<td><figure class="align-default" id="id4">
 <img alt="../../_images/gable.jpg" src="../../_images/gable.jpg" />
-<p class="caption"><span class="caption-number">Fig. 1.2.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id5">
+<td><figure class="align-default" id="id5">
 <img alt="../../_images/hip.jpg" src="../../_images/hip.jpg" />
-<p class="caption"><span class="caption-number">Fig. 1.2.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
 </table>
 <p>Correspondingly, a typical satellite image of each roof type is shown in <a class="reference internal" href="#roof-images"><span class="std std-numref">Table 1.2.2</span></a>.</p>
 <span id="roof-images"></span><table class="docutils align-default" id="id6">
-<caption><span class="caption-number">Table 1.2.2 </span><span class="caption-text">Example satellite images of different roof types</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 1.2.2 </span><span class="caption-text">Example satellite images of different roof types</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id7">
+<tr class="row-odd"><td><figure class="align-default" id="id7">
 <img alt="../../_images/94.png" src="../../_images/94.png" />
-<p class="caption"><span class="caption-number">Fig. 1.2.4 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.4 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id8">
+<td><figure class="align-default" id="id8">
 <img alt="../../_images/76.png" src="../../_images/76.png" />
-<p class="caption"><span class="caption-number">Fig. 1.2.5 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.5 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id9">
+<td><figure class="align-default" id="id9">
 <img alt="../../_images/54.png" src="../../_images/54.png" />
-<p class="caption"><span class="caption-number">Fig. 1.2.6 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.6 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -261,58 +194,43 @@ Specifically,  ResNet <span id="id1">[<a class="reference internal" href="../../
 is employed.</p>
 <p>The architecture of the model is shown in <a class="reference internal" href="softstoryTheory.html#fig-resnet"><span class="std std-numref">Fig. 1.2.14</span></a>.
 In this module, we used a 50-layer ResNet.</p>
-<div class="figure align-default" id="id10">
+<figure class="align-default" id="id10">
 <span id="fig-resnet"></span><a class="reference internal image-reference" href="../../_images/ResNet.png"><img alt="ResNet" src="../../_images/ResNet.png" style="width: 70%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 1.2.7 </span><span class="caption-text">ResNet</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.2.7 </span><span class="caption-text">ResNet</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="occupancyTheory.html" class="btn btn-neutral float-right" title="Occupancy classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="modulesTheory.html" class="btn btn-neutral float-left" title="1.2. Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="occupancyTheory.html" class="btn btn-neutral float-right" title="Occupancy classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

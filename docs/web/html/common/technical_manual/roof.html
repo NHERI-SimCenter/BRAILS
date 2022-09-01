@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>2.1. Roof Classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="2.2. Occupancy Classifier" href="occupancy.html" />
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
@@ -125,81 +89,39 @@
 <li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="vnv.html"><span class="section-number">2. </span>Validation</a> &raquo;</li>
-        
       <li><span class="section-number">2.1. </span>Roof Classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/common/technical_manual/roof.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="roof-classifier">
-<span id="lbl-roofclassifier-vnv"></span><h1><span class="section-number">2.1. </span>Roof Classifier<a class="headerlink" href="#roof-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="roof-classifier">
+<span id="lbl-roofclassifier-vnv"></span><h1><span class="section-number">2.1. </span>Roof Classifier<a class="headerlink" href="#roof-classifier" title="Permalink to this headline"></a></h1>
 <p>The Roof Classifier’s methodology has been presented in <a class="reference internal" href="roofTheory.html#rooftheory"><span class="std std-ref">Roof type classifier</span></a>, and examples showing how to use it can be found in <a class="reference internal" href="../user_manual/modules/roofClassifier.html#lbl-roofclassifier"><span class="std std-ref">Roof Shape Classifier</span></a>. This section presents its validation against two datasets.</p>
-<div class="section" id="dataset-1-compare-with-openstreetmap-labels">
-<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline">¶</a></h2>
+<section id="dataset-1-compare-with-openstreetmap-labels">
+<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline"></a></h2>
 <p>The trained classifier is first tested on a ground truth dataset that can be downloaded from <a class="reference external" href="http://doi.org/10.5281/zenodo.4520781">Zenodo</a>. This data set was obtained by randomly selecting from OpenStreetMap a series of buildings for which a <cite>roof:shape</cite> entry existed and it was one of: hipped, flat or gabled. Some options in <a class="reference external" href="https://wiki.openstreetmap.org/wiki/Key:roof:shape">Open Street Maps</a>  include: gambrel, pyramidal skillion, half-hipped, gambrel, dome, onion, round, sailbox. The google map API was then used to download satellite images of these buildings. From the downloaded images, images for which no roof was visible were removed, examples of removed images are as shown in <a class="reference internal" href="#random-roof-empty"><span class="std std-numref">Table 2.1.1</span></a>.</p>
 <span id="random-roof-empty"></span><table class="docutils align-default" id="id2">
-<caption><span class="caption-number">Table 2.1.1 </span><span class="caption-text">Images removed from the test dataset</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 2.1.1 </span><span class="caption-text">Images removed from the test dataset</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -207,48 +129,54 @@
 <col style="width: 25%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default">
+<tr class="row-odd"><td><figure class="align-default">
 <img alt="../../_images/TopViewx-76.78538744x38.978670699999995.png" src="../../_images/TopViewx-76.78538744x38.978670699999995.png" />
-</div>
+</figure>
 </td>
-<td><div class="figure align-default">
+<td><figure class="align-default">
 <img alt="../../_images/TopViewx-76.84497884x38.71229606.png" src="../../_images/TopViewx-76.84497884x38.71229606.png" />
-</div>
+</figure>
 </td>
-<td><div class="figure align-default">
+<td><figure class="align-default">
 <img alt="../../_images/TopViewx-76.93814628x39.06148106.png" src="../../_images/TopViewx-76.93814628x39.06148106.png" />
-</div>
+</figure>
 </td>
-<td><div class="figure align-default">
+<td><figure class="align-default">
 <img alt="../../_images/TopViewx-76.86937465999999x39.10108044.png" src="../../_images/TopViewx-76.86937465999999x39.10108044.png" />
-</div>
+</figure>
 </td>
 </tr>
 </tbody>
 </table>
 <p>The <a class="reference external" href="http://doi.org/10.5281/zenodo.4520781">resulting dataset</a> contained little over a hundred images: 32 flat, 40 gabled, 52 hipped. Examples of these satellite images are as shown below:</p>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-number">Table 2.1.2 </span><span class="caption-text">Example satellite images of different roof types</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 2.1.2 </span><span class="caption-text">Example satellite images of different roof types</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id4">
+<tr class="row-odd"><td><figure class="align-default" id="id4">
 <img alt="../../_images/94.png" src="../../_images/94.png" />
-<p class="caption"><span class="caption-number">Fig. 2.1.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id5">
+<td><figure class="align-default" id="id5">
 <img alt="../../_images/76.png" src="../../_images/76.png" />
-<p class="caption"><span class="caption-number">Fig. 2.1.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id6">
+<td><figure class="align-default" id="id6">
 <img alt="../../_images/54.png" src="../../_images/54.png" />
-<p class="caption"><span class="caption-number">Fig. 2.1.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -304,13 +232,15 @@
 </div>
 <p>The prediction accuracy on this dataset is 90.3%. Precision is 90.3%. Recall is 90.3%. F1 is 90.3%.</p>
 <p>The confusion matrix for this validation is shown in <a class="reference internal" href="#fig-confusion-roof"><span class="std std-numref">Fig. 2.1.4</span></a>.</p>
-<div class="figure align-default" id="id7">
+<figure class="align-default" id="id7">
 <span id="fig-confusion-roof"></span><a class="reference internal image-reference" href="../../_images/confusion_roof.png"><img alt="Confusion matrix roof" src="../../_images/confusion_roof.png" style="width: 40%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 2.1.4 </span><span class="caption-text">Confusion matrix - Roof type classification for OpenStreetMap</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="dataset-2-compare-with-steer-hurricane-laura-dataset">
-<h2>Dataset 2: Compare with StEER Hurricane Laura Dataset<a class="headerlink" href="#dataset-2-compare-with-steer-hurricane-laura-dataset" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1.4 </span><span class="caption-text">Confusion matrix - Roof type classification for OpenStreetMap</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="dataset-2-compare-with-steer-hurricane-laura-dataset">
+<h2>Dataset 2: Compare with StEER Hurricane Laura Dataset<a class="headerlink" href="#dataset-2-compare-with-steer-hurricane-laura-dataset" title="Permalink to this headline"></a></h2>
 <p>The second validation dataset was obtained from <a class="reference external" href="https://www.steer.network/">StEER</a>.
 From StEER, we obtained a list of addresses with their roof types labelled.
 For each address, we downloaded an satellite image from Google Maps Static API.</p>
@@ -417,65 +347,50 @@ The StEER labels include the following classes:</p>
 </pre></div>
 </div>
 <p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-roof-laura"><span class="std std-numref">Fig. 2.1.5</span></a>.</p>
-<div class="figure align-default" id="id8">
+<figure class="align-default" id="id8">
 <span id="fig-confusion-roof-laura"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_roof_laura.png"><img alt="Confusion matrix roof Laura" src="../../_images/fig_confusion_roof_laura.png" style="width: 40%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 2.1.5 </span><span class="caption-text">Confusion matrix - Roof type classification for Hurricane Laura</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1.5 </span><span class="caption-text">Confusion matrix - Roof type classification for Hurricane Laura</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The accuracy for the three classes are:</p>
 <ul class="simple">
 <li><p>flat: Accuracy = 1.0, F1 = 0.4</p></li>
 <li><p>hipped: Accuracy = 0.7, F1 = 0.7</p></li>
 <li><p>gabled: Accuracy = 0.7, F1 = 0.8</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="occupancy.html" class="btn btn-neutral float-right" title="2.2. Occupancy Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="vnv.html" class="btn btn-neutral float-left" title="2. Validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="occupancy.html" class="btn btn-neutral float-right" title="2.2. Occupancy Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Occupancy Classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Number of Floors Detector" href="nFloorDetector.html" />
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">1. Acknowledgments</a></li>
@@ -106,7 +70,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dataPrep.html">4.1. Data Preperation for Training and Inference</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">4.2. Modules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="genericImageClassifier.html">Generic Image Classifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">Pytorch Image Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">PyTorch Image Classifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="roofClassifier.html">Roof Shape Classifier</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Occupancy Classifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#use-the-module">Use the module</a></li>
@@ -136,77 +100,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../../technical_manual/understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../userGuide.html"><span class="section-number">4. </span>User Guide</a> &raquo;</li>
-        
           <li><a href="modules.html"><span class="section-number">4.2. </span>Modules</a> &raquo;</li>
-        
       <li>Occupancy Classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../../_sources/common/user_manual/modules/occupancyClassifier.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="occupancy-classifier">
-<span id="lbl-occupancyclassifier"></span><h1>Occupancy Classifier<a class="headerlink" href="#occupancy-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="occupancy-classifier">
+<span id="lbl-occupancyclassifier"></span><h1>Occupancy Classifier<a class="headerlink" href="#occupancy-classifier" title="Permalink to this headline"></a></h1>
 <p>The Occupancy Classifier is a module built upon the <a class="reference internal" href="genericImageClassifier.html#lbl-genericimageclassifier"><span class="std std-ref">Generic Image Classifier</span></a> module. It’s purpose is to label a building based on occupancy class. The occupancy classifier takes a list of street view images as the input and will classify the building into one of three categories: RES1, RES3, COM1.</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -228,8 +149,8 @@
 Since the classifier is trained to classify only a specific category of images,
 its prediction is meaningful only if the input image belongs to the category the model is trained for.</p>
 </div>
-<div class="section" id="use-the-module">
-<h2>Use the module<a class="headerlink" href="#use-the-module" title="Permalink to this headline">¶</a></h2>
+<section id="use-the-module">
+<h2>Use the module<a class="headerlink" href="#use-the-module" title="Permalink to this headline"></a></h2>
 <p>Suppose you had a number of images in a folder named image_examples/Occupancy.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -242,20 +163,26 @@ its prediction is meaningful only if the input image belongs to the category the
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id1">
+<tr class="row-odd"><td><figure class="align-default" id="id1">
 <img alt="../../../_images/36887.jpg" src="../../../_images/36887.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.7 </span><span class="caption-text">Single-family Building (36887.png)</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.7 </span><span class="caption-text">Single-family Building (36887.png)</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id2">
+<td><figure class="align-default" id="id2">
 <img alt="../../../_images/37902.jpg" src="../../../_images/37902.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.8 </span><span class="caption-text">Multi-family Building (37902.jpg)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.8 </span><span class="caption-text">Multi-family Building (37902.jpg)</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id3">
+<td><figure class="align-default" id="id3">
 <img alt="../../../_images/42915.jpg" src="../../../_images/42915.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.9 </span><span class="caption-text">Commercial Building (42915.jpg)</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.9 </span><span class="caption-text">Commercial Building (42915.jpg)</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -297,9 +224,9 @@ Results written in file tmp/occupancy_preds.csv
 <li><p>As will be shown in <a class="reference internal" href="../../technical_manual/understand.html#lbl-understand"><span class="std std-ref">Generalization</span></a>, it is important to review sample results and possible retrain the model yourself.</p></li>
 </ol>
 </div>
-</div>
-<div class="section" id="retrain-the-model">
-<h2>Retrain the model<a class="headerlink" href="#retrain-the-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="retrain-the-model">
+<h2>Retrain the model<a class="headerlink" href="#retrain-the-model" title="Permalink to this headline"></a></h2>
 <p>You can retrain the existing model with your own data. To do so, you would place each of your labeled images (images of type .png) into one three seperate folders.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>my_occupancy_images
 │── RES1
@@ -340,55 +267,38 @@ imgs = [&#39;image_examples/Occupancy/RES1/36887.jpg&#39;,
 predictions = occupancyModel.predict(imgs)
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="nFloorDetector.html" class="btn btn-neutral float-right" title="Number of Floors Detector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="roofClassifier.html" class="btn btn-neutral float-left" title="Roof Shape Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nFloorDetector.html" class="btn btn-neutral float-right" title="Number of Floors Detector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

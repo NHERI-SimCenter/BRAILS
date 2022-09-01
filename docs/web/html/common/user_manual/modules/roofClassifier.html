@@ -1,49 +1,26 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Roof Shape Classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Occupancy Classifier" href="occupancyClassifier.html" />
-    <link rel="prev" title="Pytorch Image Classifier" href="pytorchImageClassifier.html" />
+    <link rel="prev" title="PyTorch Image Classifier" href="pytorchImageClassifier.html" />
 <script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.8.0"></script>
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">1. Acknowledgments</a></li>
@@ -106,7 +70,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dataPrep.html">4.1. Data Preperation for Training and Inference</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">4.2. Modules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="genericImageClassifier.html">Generic Image Classifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">Pytorch Image Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">PyTorch Image Classifier</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Roof Shape Classifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#use-the-module">Use the module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#retrain-the-model">Retrain the model</a></li>
@@ -136,100 +100,63 @@
 <li class="toctree-l1"><a class="reference internal" href="../../technical_manual/understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../userGuide.html"><span class="section-number">4. </span>User Guide</a> &raquo;</li>
-        
           <li><a href="modules.html"><span class="section-number">4.2. </span>Modules</a> &raquo;</li>
-        
       <li>Roof Shape Classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../../_sources/common/user_manual/modules/roofClassifier.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="roof-shape-classifier">
-<span id="lbl-roofclassifier"></span><h1>Roof Shape Classifier<a class="headerlink" href="#roof-shape-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="roof-shape-classifier">
+<span id="lbl-roofclassifier"></span><h1>Roof Shape Classifier<a class="headerlink" href="#roof-shape-classifier" title="Permalink to this headline"></a></h1>
 <p>The Roof Shape Classifier is a module built upon the <a class="reference internal" href="genericImageClassifier.html#lbl-genericimageclassifier"><span class="std std-ref">Generic Image Classifier</span></a> module. It’s purpose is to classify the roof shape of a building.  The roof classifier takes a list of satellite images as the input and will classify the roof type into one of three categories: gabled, hipped, and flat.</p>
 <span id="roof-types"></span><table class="docutils align-default" id="id1">
-<caption><span class="caption-number">Table 4.2.1 </span><span class="caption-text">Roof prototypes</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 4.2.1 </span><span class="caption-text">Roof prototypes</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id2">
+<tr class="row-odd"><td><figure class="align-default" id="id2">
 <img alt="../../../_images/flat.jpg" src="../../../_images/flat.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.1 </span><span class="caption-text">Flat</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id3">
+<td><figure class="align-default" id="id3">
 <img alt="../../../_images/gable.jpg" src="../../../_images/gable.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.2 </span><span class="caption-text">Gabled</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id4">
+<td><figure class="align-default" id="id4">
 <img alt="../../../_images/hip.jpg" src="../../../_images/hip.jpg" />
-<p class="caption"><span class="caption-number">Fig. 4.2.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.3 </span><span class="caption-text">Hipped</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -247,8 +174,8 @@
 Since the classifier is trained to classify only a specific category of images,
 its prediction is meaningful only if the input image belongs to the category the model is trained for.</p>
 </div>
-<div class="section" id="use-the-module">
-<h2>Use the module<a class="headerlink" href="#use-the-module" title="Permalink to this headline">¶</a></h2>
+<section id="use-the-module">
+<h2>Use the module<a class="headerlink" href="#use-the-module" title="Permalink to this headline"></a></h2>
 <p>Suppose you had a number of images in a folder named image_examples/Roof.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -257,20 +184,26 @@ its prediction is meaningful only if the input image belongs to the category the
 <col style="width: 33%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id5">
+<tr class="row-odd"><td><figure class="align-default" id="id5">
 <img alt="../../../_images/76.png" src="../../../_images/76.png" />
-<p class="caption"><span class="caption-number">Fig. 4.2.4 </span><span class="caption-text">image_examples/Roof/gabled/76.png Gabled</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.4 </span><span class="caption-text">image_examples/Roof/gabled/76.png Gabled</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id6">
+<td><figure class="align-default" id="id6">
 <img alt="../../../_images/54.png" src="../../../_images/54.png" />
-<p class="caption"><span class="caption-number">Fig. 4.2.5 </span><span class="caption-text">image_examples/Roof/hipped/54.png  Hipped</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.5 </span><span class="caption-text">image_examples/Roof/hipped/54.png  Hipped</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id7">
+<td><figure class="align-default" id="id7">
 <img alt="../../../_images/94.png" src="../../../_images/94.png" />
-<p class="caption"><span class="caption-number">Fig. 4.2.6 </span><span class="caption-text">image_examples/Roof/flat/94.png  Flat</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2.6 </span><span class="caption-text">image_examples/Roof/flat/94.png  Flat</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -311,9 +244,9 @@ Results written in file roofType_preds.csv
 <li><p>The images used in the example can be downloaded from <a class="reference external" href="https://zenodo.org/record/4562949/files/image_examples.zip">Zenodo</a>.</p></li>
 </ol>
 </div>
-</div>
-<div class="section" id="retrain-the-model">
-<h2>Retrain the model<a class="headerlink" href="#retrain-the-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="retrain-the-model">
+<h2>Retrain the model<a class="headerlink" href="#retrain-the-model" title="Permalink to this headline"></a></h2>
 <p>You can retrain the existing model with your own data. To do so, you would place each of your labeled images (images of type .png) into one three seperate folders.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>my_roof_shapes
 │── flat
@@ -354,55 +287,38 @@ imgs = [&#39;image_examples/Roof/gabled/76.png&#39;,
 predictions = roofModel.predict(imgs)
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pytorchImageClassifier.html" class="btn btn-neutral float-left" title="PyTorch Image Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="occupancyClassifier.html" class="btn btn-neutral float-right" title="Occupancy Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="pytorchImageClassifier.html" class="btn btn-neutral float-left" title="Pytorch Image Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

@@ -1,46 +1,23 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>1.1. Framework &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="1.2. Modules" href="modulesTheory.html" />
@@ -53,15 +30,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -88,16 +61,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
@@ -125,84 +89,44 @@
 <li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="theory.html"><span class="section-number">1. </span>Theory and Implementation</a> &raquo;</li>
-        
       <li><span class="section-number">1.1. </span>Framework</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/common/technical_manual/framework.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="framework">
-<span id="lbl-framework"></span><h1><span class="section-number">1.1. </span>Framework<a class="headerlink" href="#framework" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="framework">
+<span id="lbl-framework"></span><h1><span class="section-number">1.1. </span>Framework<a class="headerlink" href="#framework" title="Permalink to this headline"></a></h1>
 <p>This section presents a framework that works as an abstraction providing generic functionalities and can be selectively
 changed by additional user-written codes with user-provided input data,
 thus providing a region-specific building information harvesting tool.
 The framework provides a standard way to create realistic building inventory databases and it is a universal, reusable environment that provides particular functionalities facilitating regional-scale building information modeling.</p>
 <p>As shown in <a class="reference internal" href="#brailspipeline"><span class="std std-numref">Fig. 1.1.1</span></a>, the framework consists of two steps: data fusion and data enhancement.</p>
-<div class="align-center figure" id="id70">
+<figure class="align-center" id="id70">
 <span id="brailspipeline"></span><img alt="../../_images/pipeline.png" src="../../_images/pipeline.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.1 </span><span class="caption-text">Framework</span><a class="headerlink" href="#id70" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.1 </span><span class="caption-text">Framework</span><a class="headerlink" href="#id70" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>Due to the complexity and the size of source data and the cost to collect it,
 building information at the regional-scale is usually not able to be inferred
 from a single resource but multiple resources, such as images, point clouds,
@@ -222,8 +146,8 @@ mapping intervention. Similarly, a significant amount of property tax assessment
 records are missing from administrative databases. The incompleteness issue is
 common for almost all data sources. In this framework, the missing values will
 be filled by modellings performed based on the incomplete initial database.</p>
-<div class="section" id="extracting-building-information-from-images">
-<h2>Extracting building information from images<a class="headerlink" href="#extracting-building-information-from-images" title="Permalink to this headline">¶</a></h2>
+<section id="extracting-building-information-from-images">
+<h2>Extracting building information from images<a class="headerlink" href="#extracting-building-information-from-images" title="Permalink to this headline"></a></h2>
 <p>An initial building inventory, containing basic indexing information such as addresses or coordinates of individual buildings,
 and other basic descriptions such as year built and structure type, has been created in the previous section.
 Based on the indexing information, satellite or street view images of each building can be retrieved using Google Maps API.
@@ -259,9 +183,9 @@ The ConvNet-identified building information is then merged into the initial data
 <p>It should be noted that, due to reasons like heavy occlusions in images or bad viewpoints,
 predictions from ConvNet are not always with acceptable confidence. To tackle this issue, in <a class="reference internal" href="#enhance"><span class="std std-ref">Data enhancement</span></a>,
 a machine learning based approach will be employed to enhance the database.</p>
-</div>
-<div class="section" id="data-fusion">
-<h2>Data fusion<a class="headerlink" href="#data-fusion" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="data-fusion">
+<h2>Data fusion<a class="headerlink" href="#data-fusion" title="Permalink to this headline"></a></h2>
 <p>In order to combine building information obtained form different sources,
 a data fusion process is designed, as shown in <a class="reference internal" href="#brailsfusion"><span class="std std-numref">Fig. 1.1.2</span></a>.
 There are two starting points of the data flow pipeline: one is the address list and the other one is the building footprints.</p>
@@ -280,13 +204,15 @@ multiple data sources can now be merged into the main stream of the data flow pi
 satellite and street view images of each building are then retrieved and fed into pretrained ConvNets,
 and predictions on the building features such as number of stories, roof types, etc., can be obtained.
 Merging the predicted values into the data stream results in the initial building database.</p>
-<div class="align-center figure" id="id71">
+<figure class="align-center" id="id71">
 <span id="brailsfusion"></span><img alt="../../_images/Fusion.png" src="../../_images/Fusion.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.2 </span><span class="caption-text">Framework</span><a class="headerlink" href="#id71" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="data-enhancement">
-<span id="enhance"></span><h2>Data enhancement<a class="headerlink" href="#data-enhancement" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.2 </span><span class="caption-text">Framework</span><a class="headerlink" href="#id71" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="data-enhancement">
+<span id="enhance"></span><h2>Data enhancement<a class="headerlink" href="#data-enhancement" title="Permalink to this headline"></a></h2>
 <p>Note that, after the fusion, the initial building database is still incomplete.
 Some of the reasons are:
 firstly no data source is perfect and there are usually a considerable amount of missing items in them;
@@ -316,10 +242,12 @@ such as household income or race.
 For example, as the city shown in the map <a class="reference internal" href="#brailsmapsf"><span class="std std-numref">Fig. 1.1.3</span></a>,
 there are areas denser with buildings than others and clusters of
 certain types of building are easy to be found in certain regions.</p>
-<div class="align-center figure" id="id72">
+<figure class="align-center" id="id72">
 <span id="brailsmapsf"></span><img alt="../../_images/mapSF.png" src="../../_images/mapSF.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.3 </span><span class="caption-text">Satellite view of buildings in San Francisco</span><a class="headerlink" href="#id72" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.3 </span><span class="caption-text">Satellite view of buildings in San Francisco</span><a class="headerlink" href="#id72" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The capability of evaluating spatial patterns is a prerequisite to understanding the
 complicated spatial processes underlying the distribution of a phenomenon.</p>
 <p>In spatial statistics, the semivariogram is a function describing the degree of spatial
@@ -330,7 +258,7 @@ observations as a function of distance. It equals to half the variance of two
 random variables separated by a vector distance <span class="math notranslate nohighlight">\(\boldsymbol{h}\)</span>
 <span id="id4">[<a class="reference internal" href="../../index.html#id59" title="Pierre Goovaerts. Geostatistics for natural resources evaluation. Oxford University Press on Demand, 1997.">Goo97</a>, <a class="reference internal" href="../../index.html#id39" title="Erik Vanmarcke. Random fields: analysis and synthesis. World Scientific, 2010.">Van10</a>, <a class="reference internal" href="../../index.html#id35" title="C Wang and Q Chen. A hybrid geotechnical and geological data-based framework for multiscale regional liquefaction hazard mapping. Géotechnique, 68(7):614–625, 2018.">WC18</a>, <a class="reference internal" href="../../index.html#id36" title="Chaofeng Wang, Qiushi Chen, Mengfen Shen, and C Hsein Juang. On the spatial variability of cpt-based geotechnical parameters for regional liquefaction evaluation. Soil Dynamics and Earthquake Engineering, 95:153–166, 2017.">WCSJ17</a>]</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eq-gamma">
-<span class="eqno">(1.1.1)<a class="headerlink" href="#equation-eq-gamma" title="Permalink to this equation">¶</a></span>\[\gamma (\boldsymbol{h})= \frac{1}{2}Var[Z(\boldsymbol{\mu}) - Z(\boldsymbol{\mu}+\boldsymbol{h})]\]</div>
+<span class="eqno">(1.1.1)<a class="headerlink" href="#equation-eq-gamma" title="Permalink to this equation"></a></span>\[\gamma (\boldsymbol{h})= \frac{1}{2}Var[Z(\boldsymbol{\mu}) - Z(\boldsymbol{\mu}+\boldsymbol{h})]\]</div>
 <p>where <span class="math notranslate nohighlight">\(Z(\boldsymbol{\mu})\)</span> is the observation at a spatial location <span class="math notranslate nohighlight">\(\mu\)</span>;
 <span class="math notranslate nohighlight">\(Z(\boldsymbol{\mu}+\boldsymbol{h})\)</span> is the observation at a spatial location <span class="math notranslate nohighlight">\(\boldsymbol{\mu}+\boldsymbol{h}\)</span>.</p>
 <p>It is expected that buildings far away from each other will are more different
@@ -358,14 +286,18 @@ Another note that deserves to be taken here is the curves revealed in <a class="
 are city- or region-specific, i.e., the semivariogram curve may reflect the truth of the region being investigated, and may not be exactly
 correct or directly applicable for describing another region.
 In other words, the spatial dependence of building features are regional-specific and the semivariogram curves vary regionally.</p>
-<div class="align-center figure" id="id73">
+<figure class="align-center" id="id73">
 <span id="numofstories-semivariogram"></span><img alt="../../_images/correlation_numofstories.png" src="../../_images/correlation_numofstories.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.4 </span><span class="caption-text">Spatial patterns of building information expressed in semivariogram of the number of stories (The horizontal axis represents the distance between a pair of buildings, while the vertical axis represents the dis-similarity of these buildings.) These curves are calculated based on a building dataset covering four coastal cities in the Atlantic County, New Jersey</span><a class="headerlink" href="#id73" title="Permalink to this image">¶</a></p>
-</div>
-<div class="align-center figure" id="id74">
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.4 </span><span class="caption-text">Spatial patterns of building information expressed in semivariogram of the number of stories (The horizontal axis represents the distance between a pair of buildings, while the vertical axis represents the dis-similarity of these buildings.) These curves are calculated based on a building dataset covering four coastal cities in the Atlantic County, New Jersey</span><a class="headerlink" href="#id73" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id74">
 <span id="yearofbuilt-semivariogram"></span><img alt="../../_images/correlation_yearbuilt.png" src="../../_images/correlation_yearbuilt.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.5 </span><span class="caption-text">Spatial patterns of building information expressed in semivariogram of the year of construction (The horizontal axis represents the distance between a pair of buildings, while the vertical axis represents the dis-similarity of these buildings.) These curves are calculated based on a building dataset covering four coastal cities in the Atlantic County, New Jersey</span><a class="headerlink" href="#id74" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.5 </span><span class="caption-text">Spatial patterns of building information expressed in semivariogram of the year of construction (The horizontal axis represents the distance between a pair of buildings, while the vertical axis represents the dis-similarity of these buildings.) These curves are calculated based on a building dataset covering four coastal cities in the Atlantic County, New Jersey</span><a class="headerlink" href="#id74" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>Since the semivariograms (<a class="reference internal" href="#numofstories-semivariogram"><span class="std std-numref">Fig. 1.1.4</span></a> and <a class="reference internal" href="#yearofbuilt-semivariogram"><span class="std std-numref">Fig. 1.1.5</span></a> )
 clearly show there is a spatial pattern of the distribution of a certain building property,
 there must be a function for mapping neighbor information <span class="math notranslate nohighlight">\(\boldsymbol{Z}_{p}\)</span> into <span class="math notranslate nohighlight">\(Z_{n}\)</span>.
@@ -379,10 +311,12 @@ However, it is possible to predict the features of the building in the middle ba
 because <a class="reference internal" href="#numofstories-semivariogram"><span class="std std-numref">Fig. 1.1.4</span></a> and <a class="reference internal" href="#yearofbuilt-semivariogram"><span class="std std-numref">Fig. 1.1.5</span></a>  indicates that
 the attributes of buildings within a community are correlated with each other.
 The correlations can be learned by neural networks using <a class="reference external" href="https://github.com/NHERI-SimCenter/SURF">SURF</a>.</p>
-<div class="align-center figure" id="id75">
+<figure class="align-center" id="id75">
 <span id="neighborhood"></span><img alt="../../_images/neighbor.png" src="../../_images/neighbor.png" />
-<p class="caption"><span class="caption-number">Fig. 1.1.6 </span><span class="caption-text">A neighborhood street view</span><a class="headerlink" href="#id75" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1.1.6 </span><span class="caption-text">A neighborhood street view</span><a class="headerlink" href="#id75" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>As mentioned in the previous sections,
 there is a significant portion of building information still missing from the
 initial database or can not be extracted from images.
@@ -390,7 +324,8 @@ Using <a class="reference external" href="https://github.com/NHERI-SimCenter/SUR
 the missing values can be predicted based on known values of neighboring buildings,
 hence the gaps in the initial database are filled and the regional building information database is enhanced.
 Details about how to do this can be found in the documentation of <a class="reference external" href="https://github.com/NHERI-SimCenter/SURF">SURF</a>.</p>
-<p id="id7"><dl class="citation">
+<div class="docutils container" id="id7">
+<dl class="citation">
 <dt class="label" id="id64"><span class="brackets"><a class="fn-backref" href="#id2">BHF+19</a></span></dt>
 <dd><p>Benjamin Bischke, Patrick Helber, Joachim Folz, Damian Borth, and Andreas Dengel. Multi-task learning for segmentation of building footprints with deep neural networks. <em>2019 IEEE International Conference on Image Processing (ICIP)</em>, pages 1480–1484, 2019.</p>
 </dd>
@@ -434,56 +369,39 @@ Details about how to do this can be found in the documentation of <a class="refe
 <dd><p>Kang Zhao, Jungwon Kang, Jaewook Jung, and Gunho Sohn. Building extraction from satellite images using mask r-cnn with building boundary regularization. <em>CVPR Workshops</em>, pages 247–251, 2018.</p>
 </dd>
 </dl>
-</p>
 </div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="modulesTheory.html" class="btn btn-neutral float-right" title="1.2. Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="theory.html" class="btn btn-neutral float-left" title="1. Theory and Implementation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modulesTheory.html" class="btn btn-neutral float-right" title="1.2. Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>2.2. Occupancy Classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="2.3. Soft-story Building Classifier" href="softstory.html" />
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/acknowledgments.html">1. Acknowledgments</a></li>
@@ -125,79 +89,37 @@
 <li class="toctree-l1"><a class="reference internal" href="understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="vnv.html"><span class="section-number">2. </span>Validation</a> &raquo;</li>
-        
       <li><span class="section-number">2.2. </span>Occupancy Classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/common/technical_manual/occupancy.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="occupancy-classifier">
-<span id="lbl-occupancyclassifier-vnv"></span><h1><span class="section-number">2.2. </span>Occupancy Classifier<a class="headerlink" href="#occupancy-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="occupancy-classifier">
+<span id="lbl-occupancyclassifier-vnv"></span><h1><span class="section-number">2.2. </span>Occupancy Classifier<a class="headerlink" href="#occupancy-classifier" title="Permalink to this headline"></a></h1>
 <p>The Occupancy Classifier’s methodology has been presented in <a class="reference internal" href="occupancyTheory.html#occupancytheory"><span class="std std-ref">Occupancy classifier</span></a>, and examples showing how to use it can be found in <a class="reference internal" href="../user_manual/modules/occupancyClassifier.html#lbl-occupancyclassifier"><span class="std std-ref">Occupancy Classifier</span></a>.
 This section presents its validation against two datasets.</p>
-<div class="section" id="dataset-1-compare-with-openstreetmap-labels">
-<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline">¶</a></h2>
+<section id="dataset-1-compare-with-openstreetmap-labels">
+<h2>Dataset 1: Compare with OpenStreetMap Labels<a class="headerlink" href="#dataset-1-compare-with-openstreetmap-labels" title="Permalink to this headline"></a></h2>
 <p>The trained classifier is tested on a ground truth dataset that can be downloaded from <a class="reference external" href="https://zenodo.org/record/4553803/files/occupancy_validation_images.zip">here</a>.
 We firstly obtained a set of randomly selected buildings in the United States with occupancy tags found on OpenStreetMap.
 We then downloaded the street view images from Google Street View for each building.
@@ -251,19 +173,21 @@ Examples of these street view images can be found in <a class="reference interna
 </pre></div>
 </div>
 <p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-occupancyv2"><span class="std std-numref">Fig. 2.2.1</span></a>.</p>
-<div class="figure align-default" id="id2">
+<figure class="align-default" id="id2">
 <span id="fig-confusion-occupancyv2"></span><a class="reference internal image-reference" href="../../_images/confusion_occupancy_v2.png"><img alt="Confusion matrix occupancy class" src="../../_images/confusion_occupancy_v2.png" style="width: 40%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 2.2.1 </span><span class="caption-text">Confusion matrix - Occupancy Class classifier</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.1 </span><span class="caption-text">Confusion matrix - Occupancy Class classifier</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The accuracy for the two classes are:</p>
 <ul class="simple">
 <li><p>RES3: Accuracy = 0.97, F1 = 0.97</p></li>
 <li><p>COM: Accuracy = 0.97, F1 = 0.98</p></li>
 <li><p>RES1: Accuracy = 0.99, F1 = 0.97</p></li>
 </ul>
-</div>
-<div class="section" id="dataset-2-compare-with-njdep-dataset">
-<h2>Dataset 2: Compare with NJDEP Dataset<a class="headerlink" href="#dataset-2-compare-with-njdep-dataset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="dataset-2-compare-with-njdep-dataset">
+<h2>Dataset 2: Compare with NJDEP Dataset<a class="headerlink" href="#dataset-2-compare-with-njdep-dataset" title="Permalink to this headline"></a></h2>
 <p>The second validation dataset is from New Jersey Department of Environmental Protection (NJDEP).</p>
 <p>NJDEP developed a building inventory for flood hazard and risk analysis as part of its flood control and resilience mission.
 In this dataset, we can find building footprints with their occupancy types labelled.
@@ -455,10 +379,12 @@ At the end, the script will plot a confusion matrix and print the accuracy.</p>
 <p>In the files you downloaded, there are folders with names like RES-COM, which means those are images that are labelled as ‘RES’ in NJDEP dataset,
 but they are predicted as ‘COM’. You can browse through those images to investigate deeper.</p>
 <p>The confusion matrix tested on this dataset is shown in <a class="reference internal" href="#fig-confusion-occupancy-njdep-v2"><span class="std std-numref">Fig. 2.2.2</span></a>.</p>
-<div class="figure align-default" id="id3">
+<figure class="align-default" id="id3">
 <span id="fig-confusion-occupancy-njdep-v2"></span><a class="reference internal image-reference" href="../../_images/fig_confusion_occupancy_njdep_v2.png"><img alt="Confusion matrix occupancy NJDEP" src="../../_images/fig_confusion_occupancy_njdep_v2.png" style="width: 40%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 2.2.2 </span><span class="caption-text">Confusion matrix - Occupancy type classification for NJDEP</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.2 </span><span class="caption-text">Confusion matrix - Occupancy type classification for NJDEP</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The accuracy for the two classes are:</p>
 <ul class="simple">
 <li><p>RES1: Accuracy = 0.89, F1 = 0.86</p></li>
@@ -467,7 +393,7 @@ but they are predicted as ‘COM’. You can browse through those images to inve
 </ul>
 <p>Examples of false predictions are shown in <a class="reference internal" href="#atlantic-occupancy-examples-njdep-falsev2"><span class="std std-numref">Table 2.2.1</span></a>.</p>
 <span id="atlantic-occupancy-examples-njdep-falsev2"></span><table class="docutils align-default" id="id4">
-<caption><span class="caption-number">Table 2.2.1 </span><span class="caption-text">Example of false predictions</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 2.2.1 </span><span class="caption-text">Example of false predictions</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -475,25 +401,33 @@ but they are predicted as ‘COM’. You can browse through those images to inve
 <col style="width: 25%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id5">
+<tr class="row-odd"><td><figure class="align-default" id="id5">
 <img alt="../../_images/StreetViewx-74.366315x39.422974.png" src="../../_images/StreetViewx-74.366315x39.422974.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.3 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.3 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id6">
+<td><figure class="align-default" id="id6">
 <img alt="../../_images/StreetViewx-74.366873x39.420778.png" src="../../_images/StreetViewx-74.366873x39.420778.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.4 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.4 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id7">
+<td><figure class="align-default" id="id7">
 <img alt="../../_images/StreetViewx-74.417573x39.372665.png" src="../../_images/StreetViewx-74.417573x39.372665.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.5 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.5 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id8">
+<td><figure class="align-default" id="id8">
 <img alt="../../_images/StreetViewx-74.418175x39.369580.png" src="../../_images/StreetViewx-74.418175x39.369580.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.6 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.6 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
@@ -504,7 +438,7 @@ but they are predicted as ‘COM’. You can browse through those images to inve
 This validation doesn’t consider the possible bias in the labels (examples can be found in <a class="reference internal" href="#njdep-occupancy-examples-biasv2"><span class="std std-numref">Table 2.2.2</span></a>), which also negatively influences the accuracy.</p>
 </div>
 <span id="njdep-occupancy-examples-biasv2"></span><table class="docutils align-default" id="id9">
-<caption><span class="caption-number">Table 2.2.2 </span><span class="caption-text">Example of street view images: Bias in the labels</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-number">Table 2.2.2 </span><span class="caption-text">Example of street view images: Bias in the labels</span><a class="headerlink" href="#id9" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -512,78 +446,69 @@ This validation doesn’t consider the possible bias in the labels (examples can
 <col style="width: 25%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><div class="figure align-default" id="id10">
+<tr class="row-odd"><td><figure class="align-default" id="id10">
 <img alt="../../_images/StreetViewx-74.544719x39.459546.png" src="../../_images/StreetViewx-74.544719x39.459546.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.7 </span><span class="caption-text">Label: RES1, BRAILS Prediction: COM</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.7 </span><span class="caption-text">Label: RES1, BRAILS Prediction: COM</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id11">
+<td><figure class="align-default" id="id11">
 <img alt="../../_images/StreetViewx-74.358387x39.411702.png" src="../../_images/StreetViewx-74.358387x39.411702.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.8 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.8 </span><span class="caption-text">Label: RES1, BRAILS Prediction: RES3</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id12">
+<td><figure class="align-default" id="id12">
 <img alt="../../_images/StreetViewx-74.412689x39.368096.png" src="../../_images/StreetViewx-74.412689x39.368096.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.9 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.9 </span><span class="caption-text">Label: RES3, BRAILS Prediction: COM</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
-<td><div class="figure align-default" id="id13">
+<td><figure class="align-default" id="id13">
 <img alt="../../_images/StreetViewx-74.406136x39.382882.png" src="../../_images/StreetViewx-74.406136x39.382882.png" />
-<p class="caption"><span class="caption-number">Fig. 2.2.10 </span><span class="caption-text">Label: RES3, BRAILS Prediction: RES1</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2.10 </span><span class="caption-text">Label: RES3, BRAILS Prediction: RES1</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="softstory.html" class="btn btn-neutral float-right" title="2.3. Soft-story Building Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="roof.html" class="btn btn-neutral float-left" title="2.1. Roof Classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="softstory.html" class="btn btn-neutral float-right" title="2.3. Soft-story Building Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

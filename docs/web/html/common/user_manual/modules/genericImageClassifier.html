@@ -1,48 +1,25 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Generic Image Classifier &mdash; BRAILS 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Pytorch Image Classifier" href="pytorchImageClassifier.html" />
+    <link rel="next" title="PyTorch Image Classifier" href="pytorchImageClassifier.html" />
     <link rel="prev" title="4.2. Modules" href="modules.html" />
 <script src="https://cdn.jsdelivr.net/npm/vega@5.12.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.13.1"></script>
@@ -52,15 +29,11 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #F2F2F2" >
-          
 <a href="https://simcenter.designsafe-ci.org/" style="margin-bottom: 0px;">
   <img src="../../../_static/SimCenter_logo.png" class="logo" alt="Org-Logo" />
 </a>
@@ -87,16 +60,7 @@
 </div>
 
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">1. Acknowledgments</a></li>
@@ -113,7 +77,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#classify-images-based-on-model">Classify Images Based on Model</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">Pytorch Image Classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytorchImageClassifier.html">PyTorch Image Classifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="roofClassifier.html">Roof Shape Classifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="occupancyClassifier.html">Occupancy Classifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nFloorDetector.html">Number of Floors Detector</a></li>
@@ -139,77 +103,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../../technical_manual/understand.html">3. Generalization</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #F2F2F2" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">BRAILS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../userGuide.html"><span class="section-number">4. </span>User Guide</a> &raquo;</li>
-        
           <li><a href="modules.html"><span class="section-number">4.2. </span>Modules</a> &raquo;</li>
-        
       <li>Generic Image Classifier</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../../_sources/common/user_manual/modules/genericImageClassifier.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="generic-image-classifier">
-<span id="lbl-genericimageclassifier"></span><h1>Generic Image Classifier<a class="headerlink" href="#generic-image-classifier" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="generic-image-classifier">
+<span id="lbl-genericimageclassifier"></span><h1>Generic Image Classifier<a class="headerlink" href="#generic-image-classifier" title="Permalink to this headline"></a></h1>
 <p>The Generic Image Classifier is a class that can be used for creating user defined classifier.</p>
 <div class="toggle docutils container">
 <div class="header docutils container">
@@ -265,12 +186,12 @@
 </ol>
 </div></blockquote>
 </div>
-<div class="section" id="decription">
-<h2>Decription<a class="headerlink" href="#decription" title="Permalink to this headline">¶</a></h2>
+<section id="decription">
+<h2>Decription<a class="headerlink" href="#decription" title="Permalink to this headline"></a></h2>
 <p>This class implements the abstraction of an image classifier, it can be first used to train the classifier and save the data needed by the classifier locally. Once trained, the classifier can be used to predict the class of each image given a set of images. The user provides categorized images to the classifier so that it can be initially trained.</p>
-</div>
-<div class="section" id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
 <p>The following is an example, in which a classifier is created and trained.</p>
 <p>The image dataset for this example contains street view images categorized according to construction materials.</p>
 <p>The dataset can be downloaded <a class="reference external" href="https://zenodo.org/record/4416845/files/building_materials.zip">here</a>.</p>
@@ -286,9 +207,9 @@
        └── *.png
 </pre></div>
 </div>
-</div>
-<div class="section" id="construct-the-image-classifier">
-<h2>Construct the image classifier<a class="headerlink" href="#construct-the-image-classifier" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="construct-the-image-classifier">
+<h2>Construct the image classifier<a class="headerlink" href="#construct-the-image-classifier" title="Permalink to this headline"></a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># import the module
 from brails.modules import ImageClassifier
 
@@ -299,9 +220,9 @@ materialClassifier = ImageClassifier(modelName=&#39;materialClassifierV0.1&#39;)
 materialClassifier.loadData(&#39;building_materials&#39;)
 </pre></div>
 </div>
-</div>
-<div class="section" id="train-the-model">
-<h2>Train the model<a class="headerlink" href="#train-the-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="train-the-model">
+<h2>Train the model<a class="headerlink" href="#train-the-model" title="Permalink to this headline"></a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># train the base model for 50 epochs and then fine tune for 200 epochs
 materialClassifier.train(baseModel=&#39;InceptionV3&#39;, initial_epochs=50,fine_tune_epochs=200)
 </pre></div>
@@ -336,9 +257,9 @@ materialClassifier.train(baseModel=&#39;InceptionV3&#39;, initial_epochs=50,fine
 &#39;EfficientNetB7&#39;
 </pre></div>
 </div>
-</div>
-<div class="section" id="classify-images-based-on-model">
-<h2>Classify Images Based on Model<a class="headerlink" href="#classify-images-based-on-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="classify-images-based-on-model">
+<h2>Classify Images Based on Model<a class="headerlink" href="#classify-images-based-on-model" title="Permalink to this headline"></a></h2>
 <p>Now you can use the trained model to predict the (building materials) class for a given image.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># If you are running the inference from another place, you need to initialize the classifier firstly:
 from brails.GenericImageClassifier import ImageClassifier
@@ -361,55 +282,38 @@ The classifier takes an image as the input and will always produce a prediction.
 Since the classifier is trained to classify only a specific category of images, its prediction is meaningful only if
 the input image belongs to the category the model is trained for.</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="pytorchImageClassifier.html" class="btn btn-neutral float-right" title="Pytorch Image Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="modules.html" class="btn btn-neutral float-left" title="4.2. Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pytorchImageClassifier.html" class="btn btn-neutral float-right" title="PyTorch Image Classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, NHERI SimCenter.
-
-    </p>
+    <p>&#169; Copyright 2021, NHERI SimCenter.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();
