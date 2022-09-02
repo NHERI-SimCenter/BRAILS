@@ -104,7 +104,7 @@ class FacadeParser:
                 totalLengthClusters.append(np.sum(lengthSeg[ind]))
                 segmentsClusters.append(segments[ind])
                 
-                indNot = np.argwhere(abs((slopeSeg-slopeSeg[0])/slopeSeg)>=0.3).squeeze()
+                indNot = np.argwhere(abs((slopeSeg-slopeSeg[0])/slopeSeg[0])>=0.3).squeeze()
                 slopeSeg = slopeSeg[indNot]
                 lengthSeg = lengthSeg[indNot]
                 segments = segments[indNot]
