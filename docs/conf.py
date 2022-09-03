@@ -2,31 +2,34 @@
 import os
 import sys
 sys.path.append(os.path.abspath('./sphinx_ext/'))
+from datetime import datetime
 #sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'BRAILS'
-copyright = '2021, NHERI SimCenter'
-author = 'Charles Wang'
+copyright = f"{str(datetime.today().year)}, The Regents of the University of California"
+author = 'Barbaros Cetiner, Yunhui Guo, Sascha Hornauer, Chaofeng Wang, Frank McKenna'
 
 # The short X.Y version
 #version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '2.0'
+release = '2.0.0'
 
 rst_prolog = """
-.. |app| replace:: *BRAILS*
-.. |appName| replace:: *BRAILS*
-.. |s3harkName| replace:: *SURF*
-.. |surfName| replace:: *SURF*
+.. |app| replace:: BRAILS
+.. |appName| replace:: BRAILS
+.. |s3harkName| replace:: SURF
+.. |surfName| replace:: SURF
 .. |brailsName| replace:: BRAILS
 .. |full tool name| replace:: Building Recognition using AI at Large-Scale
+.. _MessageBoard: https://simcenter-messageboard.designsafe-ci.org/smf/index.php?board=10.0
+.. |messageBoard| replace:: `MessageBoard`_
 .. |short tool name| replace:: BRAILS
 .. |short tool id| replace:: BRAILS
 .. |tool github link| replace:: `BRAILS Github page`_
 .. _brails Github page: https://github.com/NHERI-SimCenter/BRAILS
-.. |tool version| replace:: 1.0
+.. |tool version| replace:: 2.0.0
 .. |SimCenter| replace:: `SimCenter`_
 .. _SimCenter: https://simcenter.designsafe-ci.org/
 
@@ -35,6 +38,10 @@ rst_prolog = """
 .. _EE-UQ app: https://simcenter.designsafe-ci.org/research-tools/ee-uq-application/
 .. |user survey link| replace:: `user survey`_
 .. _user survey: https://docs.google.com/forms/d/e/1FAIpQLSfh20kBxDmvmHgz9uFwhkospGLCeazZzL770A2GuYZ2KgBZBA/viewform?usp=sf_link
+"""
+
+rst_prolog += f"""
+.. |developers| replace:: {", ".join(f"**{auth}** " for auth in author.split(", "))}
 """
 
 # -- General configuration ---------------------------------------------------
@@ -54,7 +61,7 @@ extensions = [
     'rst2pdf.pdfbuilder',
     'sphinx.ext.mathjax'
 ]
-pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'Charles Wang'),]
+pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'NHERI SimCenter'),]
 bibtex_bibfiles = ['common/technical_manual/references.bib']
 
 mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
