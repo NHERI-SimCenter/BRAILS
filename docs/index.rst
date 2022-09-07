@@ -17,13 +17,17 @@ This document covers the features and capabilities of Version 3.0 of the tool. U
    common/about/about.rst
    common/about/acknowledgments.rst
    common/about/license
+   common/about/cite.rst
    common/about/glossary.rst
    common/about/abbreviations.rst
+   common/about/releasenotes.rst
+
+.. _lbl-user-manual:
 
 .. toctree::
    :caption: User Manual
    :maxdepth: 1
-   :numbered: 2
+   :numbered: 4
 
    common/user_manual//installation
    common/user_manual/userGuide
@@ -41,12 +45,6 @@ This document covers the features and capabilities of Version 3.0 of the tool. U
    common/technical_manual/theory
    common/technical_manual/vnv
    common/technical_manual/understand
-
-
-How to cite
----------------------------
-
-Charles Wang, Sascha Hornauer, Barbaros Cetiner, Yunhui Guo, Frank McKenna, Qian Yu, Stella X. Yu, Ertugrul Taciroglu, & Kincho H. Law. (2021, March 1). NHERI-SimCenter/BRAILS: Release v2.0.0 (Version v2.0.0). Zenodo. http://doi.org/10.5281/zenodo.4570554
 
 Contact
 ---------------------------

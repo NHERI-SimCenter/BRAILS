@@ -53,14 +53,28 @@ rst_prolog += f"""
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
+
+extensions =  [
+    "sphinx-jsonschema",
+    "sphinxcontrib.bibtex",
+    "toctree_filter",
+    "sphinxcontrib.images",
+    "sphinx.ext.extlinks",
+    "sphinxcontrib.images",
+    "rendre.sphinx",
+    "sphinx.ext.autodoc",
+    "crate.sphinx.csv",
+    "sphinx_panels",
+    #"sphinxcontrib.spelling",
+    'sphinx_toolbox.collapse',
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
     'sphinxcontrib.bibtex',
-	'toctree_filter',
+    'toctree_filter',
     'rst2pdf.pdfbuilder',
     'sphinx.ext.mathjax'
 ]
+
 pdf_documents = [('index', u'rst2pdf', u'BRAILS', u'NHERI SimCenter'),]
 bibtex_bibfiles = ['common/technical_manual/references.bib']
 
