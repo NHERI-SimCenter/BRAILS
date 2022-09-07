@@ -4,8 +4,9 @@
 About
 *****
 
-BRAILS is an open-source software framework maintained at the |tool github link| and 
-released under a **BSD clause 2** license, :numref:`lblLicense`. The function of  
+|app| is an open-source software framework hosted on the |tool github link|, and released under the **2-Clause BSD License** (see :ref:`lblLicense` ). The primary objective of |app| is to provide an easy-to-use programming interface for generating regional-level building inventory information. The approach utilized 
+
+The function of  
 |app| is to generate regional asset information, presently information on buildings, utilizing data from multiple sources. The gathering such information for a region, or even for city, is a laborious and expensive undertaking. The purpose of |app| is to assist researchers and decision makers in various fields, such as urban planning, risk management, etc. in this assest building task.
 
 |SimCenter|, which provides applications that are used in the assessment of the impact of natural hazard at the regional scale, is currently using |app| to generate inventories for use in it's `testbeds <https://nheri-simcenter.github.io/R2D-Documentation/>`_ and will in the future include |app| applications in it's `R2D <https://simcenter.designsafe-ci.org/research-tools/r2dtool/>`_ application.
