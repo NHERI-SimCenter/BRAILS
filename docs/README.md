@@ -40,7 +40,7 @@ or
 pip3 install -r requirements.txt
 ```
 
-> Note: A Python 3 installation must be available in your terminal environment. The pip command is used on Windows and pip3 on a Mac. Iy you do not have admin rights, add a -U before the -r.
+> Note: A Python 3 installation must be available in your terminal environment. The pip command is used on Windows and pip3 on a Mac. If you do not have admin rights, add a -U before the -r.
 
 ### 3 Build with Make
 
