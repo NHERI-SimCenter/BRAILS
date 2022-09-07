@@ -1,8 +1,8 @@
-# SimCenterDocumentation
+# BRAILS Documentation
 
 This is the repository where the documentation for BRAILS is maintained. The [current documentation](https://nheri-simcenter.github.io/BRAILS-Documentation/index.html) is in reStructuredText format and is built using the Sphinx Python module.
 
-Contributors should follow the [style reference](Help/docstyle.md) for guidelines on documentation formatting.
+Contributors should follow the [style reference](https://github.com/NHERI-SimCenter/SimCenterDocumentation/blob/master/Help/docstyle.md) for guidelines on documentation formatting.
 
 ## Directory Structure
 
@@ -16,7 +16,7 @@ Contributors should follow the [style reference](Help/docstyle.md) for guideline
 
 Documentation files for BRAILS can be built by completing the following steps.
 
-### 1. Download this repository from Github
+### 1. Download this repository from GitHub
 
 For Git users, this can be done by running the following command in a terminal.
 
@@ -28,7 +28,7 @@ The remaining terminal commands should be run from the `docs/` directory of this
 
 ### 2. Install dependencies
 
-Install the project dependencies by running the following terminal command from the documentation root:
+Install the project dependencies by running the following terminal command from the *documentation root*:
 
 ```shell
 pip install -r requirements.txt
