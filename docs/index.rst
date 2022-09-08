@@ -15,7 +15,7 @@ This document covers the features and capabilities of Version 3.0 of the tool. U
    :numbered: 4
 
    common/about/about.rst
-   common/about/acknowledgments.rst
+   common/about/acknowledgements.rst
    common/about/license
    common/about/cite.rst
    common/about/glossary.rst
