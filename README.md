@@ -1,8 +1,8 @@
 
 
-## What is BRAILS
+## What is BRAILS?
 
-BRAILS (Building Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework will also provide turn-key applications that allow the users to put the individual modules together to determine multiple attributes in a single pass. 
+BRAILS (Building Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework also provides turn-key applications allowing users to put individual modules together to determine multiple attributes in a single pass or train their general-purpose image classification, object detection, or semantic segmentation models.
 
 ## Documentation
 
@@ -66,6 +66,3 @@ invGenerator.inventory
   doi="10.5281/zenodo.4570554"
 }
 ```
-
-
-
