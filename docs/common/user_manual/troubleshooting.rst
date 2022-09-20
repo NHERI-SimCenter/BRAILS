@@ -40,6 +40,6 @@ Installation instructions install the latest PyTorch version and the associated 
 
 4. Run the `pip <https://pip.pypa.io/en/stable/installation/>`_ install command determined in Step 3. Please note that ``torchaudio`` is not required for running |app|, hence can be removed from this command.
 
-Internet connection
+API Key Errors
 ^^^^^^^^^^^^^^^^^^^^^
 The trained models and accompanying datasets, when called the first time, need to be downloaded from the internet. Images also need to be downloaded during the running. Therefore, please make sure you are connected to the internet.
