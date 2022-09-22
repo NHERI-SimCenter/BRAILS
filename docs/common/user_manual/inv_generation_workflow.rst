@@ -1,7 +1,7 @@
 .. _lbl-workflow-tutorial:
 
-Workflow
-================
+Inventory Generation Workflow
+==============================
 
 The workflow is designed to facilitate the creation of regional building inventories. 
 
