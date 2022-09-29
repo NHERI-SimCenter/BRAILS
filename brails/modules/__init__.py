@@ -40,6 +40,7 @@
 
 from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import PytorchImageClassifier
 from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
+from brails.modules.ImageSegmenter.ImageSegmenter import ImageSegmenter
 from brails.modules.PytorchRoofTypeClassifier.RoofTypeClassifier import PytorchRoofClassifier
 from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
 from brails.modules.ChimneyDetector.ChimneyDetector import ChimneyDetector
