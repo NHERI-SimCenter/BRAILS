@@ -56,7 +56,7 @@ NHERI-SimCenter nheri-simcenter@berkeley.edu
 ## How to cite
 
 ```
-@software{barbaros_cetiner_2022_7132010,
+@software{cetiner_2022_7132010,
   author       = {Barbaros Cetiner and
                   Charles Wang and
                   Frank McKenna and
