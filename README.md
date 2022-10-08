@@ -56,13 +56,21 @@ NHERI-SimCenter nheri-simcenter@berkeley.edu
 ## How to cite
 
 ```
-@misc{brails,
-  title={NHERI-SimCenter/BRAILS: Release v2.0.0},
-  journal={Zenodo}, 
-  author={Wang, Charles and Hornauer, Sascha and Cetiner, Barbaros and Guo, Yunhui and McKenna, Frank and Yu, Qian and Yu, Stella X. and Taciroglu, Ertugrul and Law, Kincho H.,
-  year={2021}, 
-  month={Mar},
-  url={https://zenodo.org/record/4570554}  
-  doi="10.5281/zenodo.4570554"
+@software{barbaros_cetiner_2022_7132010,
+  author       = {Barbaros Cetiner and
+                  Charles Wang and
+                  Frank McKenna and
+                  Sascha Hornauer and
+                  Yunhui Guo},
+  title        = {BRAILS Release v3.0.0},
+  month        = sep,
+  year         = 2022,
+  note         = {{This work is based on material supported by the 
+                   National Science Foundation under grants CMMI
+                   1612843 and CMMI 2131111}},
+  publisher    = {Zenodo},
+  version      = {v3.0.0},
+  doi          = {10.5281/zenodo.7132010},
+  url          = {https://doi.org/10.5281/zenodo.7132010}
 }
 ```

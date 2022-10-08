@@ -9,12 +9,11 @@ from datetime import datetime
 
 project = 'BRAILS'
 copyright = f"{str(datetime.today().year)}, The Regents of the University of California"
-author = 'Barbaros Cetiner, Yunhui Guo, Sascha Hornauer, Chaofeng Wang, Frank McKenna'
-
+author = 'Barbaros Cetiner, Chaofeng Wang, Frank McKenna, Sascha Hornauer, Yunhui Guo'
 # The short X.Y version
 #version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '2.0.0'
+release = '3.0.0'
 
 rst_prolog = """
 .. |app| replace:: BRAILS
@@ -29,7 +28,7 @@ rst_prolog = """
 .. |short tool id| replace:: BRAILS
 .. |tool github link| replace:: `BRAILS Github page`_
 .. _brails Github page: https://github.com/NHERI-SimCenter/BRAILS
-.. |tool version| replace:: 2.0.0
+.. |tool version| replace:: 3.0.0
 .. |SimCenter| replace:: `SimCenter`_
 .. _SimCenter: https://simcenter.designsafe-ci.org/
 
