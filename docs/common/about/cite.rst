@@ -6,10 +6,7 @@ How to Cite
 
 To cite BRAILS, please make reference to both 1) the BRAILS repository published on Zenodo and 2) the SimCenter paper that provides an outline of the existing SimCenter tools listed below. 
 
-   1. Charles Wang, Sascha Hornauer, Barbaros Cetiner, Yunhui Guo, Frank McKenna, Qian Yu, 
-      Stella X. Yu, Ertugrul Taciroglu, & Kincho H. Law. (2021).
-      NHERI-SimCenter/BRAILS: Version 2.0.0.
-      Zenodo.  `DOI: 10.5281/zenodo.4570554 <http://doi.org/10.5281/zenodo.4570554>`_
+   1. Barbaros Cetiner, Charles Wang, Frank McKenna, Sascha Hornauer, & Yunhui Guo. (2022). NHERI-SimCenter/BRAILS: Version v3.0.0. Zenodo. `DOI: 10.5281/zenodo.7132010 <https://doi.org/10.5281/zenodo.7132010>`_ 
       
    2. Gregory G. Deierlein, Frank McKenna, Adam Zsarnóczay, Tracy Kijewski-Correa, Ahsan Kareem,
       Wael Elhaddad, Laura Lowes, Matt J. Schoettler, and Sanjay Govindjee (2020)
