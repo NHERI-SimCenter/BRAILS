@@ -21,7 +21,7 @@ setup(
     name='BRAILS',
     python_requires='>=3.6',
     version=brails.__version__,
-    description="Building Recognition using AI at Large-Scale",
+    description="Building Recognition Using AI at Large-Scale",
     long_description=read_file('README.md'),
     long_description_content_type="text/markdown",
     author="NHERI SimCenter",
@@ -34,13 +34,7 @@ setup(
     zip_safe=False,
     install_requires=read_requirements('requirements.txt'),
     include_package_data=True,
-    package_data={'': ['brails/modules/FoundationClassifier/csail_segmentation_tool/csail_seg/data/color150.mat',
-                       'brails/models/efficientdet-d4_chimneyDetector.pth',
-                       'brails/models/efficientdet-d4_garageDetector.pth',
-                       'brails/models/efficientdet-d4_nfloorDetector.pth',
-                       'brails/models/facadeParser.pth',
-                       'brails/models/transformer_rooftype_v1.pkl',
-                       'brails/models/yearBuiltv0.1.pth']
+    package_data={'': ['brails/modules/FoundationClassifier/csail_segmentation_tool/csail_seg/data/color150.mat']
                   },
     license="BSD 3-Clause",
     keywords=['brails', 'bim', 'brails framework'],
