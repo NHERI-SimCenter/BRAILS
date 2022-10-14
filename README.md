@@ -15,7 +15,7 @@ Online documentation is available at <a href="https://nheri-simcenter.github.io/
 
 The easiest way to install the latest version of BRAILS is using ``pip``:
 ```
-pip install git+https://github.com/NHERI-SimCenter/BRAILS
+pip install BRAILS
 ```
 
 ### Example: InventoryGenerator Workflow
