@@ -15,7 +15,7 @@ You can install the latest version of |app| using `pip <https://pip.pypa.io/en/s
 
 .. code-block::
 
-    pip install git+https://github.com/NHERI-SimCenter/BRAILS
+    pip install BRAILS
     
 Once this command is fully executed, you can verify that |app| is successfully installed by importing |app|:
 
@@ -30,10 +30,10 @@ If you receive an error message after running the command above, please see the 
 
 	.. code-block::
 
-	    pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/{Release Tag}/BRAILS-{Release Tag}.zip
+	    pip install BRAILS=={release version}
 
-	For example, to install v1.9.0 of BRAILS:
+	For example, to install v2.0.5 of BRAILS:
 
 	.. code-block::
 
-	    pip install https://github.com/NHERI-SimCenter/BRAILS/releases/download/v1.9.0/BRAILS-v1.9.0.zip
+	    pip install BRAILS==2.0.5
