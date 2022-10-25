@@ -1,4 +1,3 @@
-
 from brails.InventoryGenerator import InventoryGenerator
 
 # Initialize InventoryGenerator:

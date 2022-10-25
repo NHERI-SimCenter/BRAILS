@@ -1,10 +1,5 @@
-import brails;
-import os;
-import glob;
-
-pwd = os.getcwd()
-
 from brails.modules import PytorchRoofClassifier, PytorchOccupancyClassifier
+import glob;
 
 # initilize a roof classifier
 roofModel = PytorchRoofClassifier()
