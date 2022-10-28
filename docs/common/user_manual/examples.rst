@@ -56,7 +56,7 @@ Once the code is executed, two CSV files will be created in the tmp folder, Occu
 Example 3: Retraining Existing Modules of BRAILS
 =================================================
     
-This example shows the steps required to retrain an existing BRAILS module using a user-provided training dataset. The script below illustrates this process for BRAILS roof shape classifier module only, but the same steps are applicable to all other BRAILS modules. 
+This example shows the steps required to retrain an existing BRAILS module using a user-provided training dataset. The script below illustrates this process for BRAILS roof shape classifier module only, but the same steps are applicable to all other BRAILS modules. In this specific implementation, the roof classifier model is retrained for a learning rate (:python:`lr`) of 0.001, batch size of 64 (:python:`batch_size`), and the number of epochs of 5 (:python:`epochs`). These input parameters are training hyperparameters that may depend on the application. At the minimum, retraining a deep learning module typically requires more epochs than in this example.
 
 .. literalinclude:: ./sample_scripts/ex3.py
    :language: python

@@ -99,12 +99,18 @@ class InventoryGenerator:
 
         # Randomly select nbldgs from the footprint data if randomSelection is 
         # set to True:          
-        if self.randomSelection==True:
-            footprints = random.sample(fpHandler.footprints, nbldgs)
-            print(f'Randomly selected {nbldgs} buildings')
-        else: 
+        if self.randomSelection==False:
             footprints = fpHandler.footprints[:nbldgs]
             print(f'Selected the first {nbldgs} buildings')
+        elif self.randomSelection==True: 
+            footprints = random.sample(fpHandler.footprints, nbldgs)
+            print(f'Randomly selected {nbldgs} buildings')
+	else:
+            random.seed(self.randomSelection)
+            footprints = random.sample(fpHandler.footprints, nbldgs)
+            print(f'Randomly selected {nbldgs} buildings using the seed {self.randomSelection}')
+	
+
         
         # Initialize the inventory DataFrame with the obtained footprint data:
         self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
