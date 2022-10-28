@@ -1,0 +1,11 @@
+image,prediction,probability
+tmp/images/satellite/8.png,flat,0.7034066319465637
+tmp/images/satellite/14.png,hipped,0.8674657344818115
+tmp/images/satellite/17.png,flat,0.7297888994216919
+tmp/images/satellite/19.png,gabled,0.9999415874481201
+tmp/images/satellite/4.png,gabled,1.0
+tmp/images/satellite/16.png,flat,1.0
+tmp/images/satellite/12.png,flat,0.9999819993972778
+tmp/images/satellite/11.png,hipped,0.9999932050704956
+tmp/images/satellite/10.png,flat,1.0
+tmp/images/satellite/3.png,gabled,0.8481845259666443
