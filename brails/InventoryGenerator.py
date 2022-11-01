@@ -53,7 +53,7 @@ from shapely.geometry import Polygon
 #import brails.models as models
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, RoofClassifier, 
-                            PytorchOccupancyClassifier, RoofCoverClassifier, 
+                            OccupancyClassifier, RoofCoverClassifier, 
                             YearBuiltClassifier)
 from .workflow.ImHandler import ImageHandler
 from .workflow.FootprintHandler import FootprintHandler
@@ -70,8 +70,8 @@ class InventoryGenerator:
                                   'roofpitch']
         """
         self.enabledAttributes = ['buildingheight','chimney','erabuilt',
-                                  'garage','numstories','roofeaveheight',
-                                  'roofshape','roofpitch']
+                                  'garage','numstories','occupancy',
+                                  'roofeaveheight','roofshape','roofpitch']
 
         self.inventory = None
         self.location = location
@@ -272,16 +272,17 @@ class InventoryGenerator:
                                    'nstories')
                 self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
                 
-            elif attribute=='occupancy':
+            elif attribute=='occupancy': 
                 # Initialize the occupancy classifier object:
-                occupancyModel = PytorchOccupancyClassifier(modelName='transformer_occupancy_v1',
-                                                            download=True)
+                occupancyModel = OccupancyClassifier()
                 
                 # Call the occupancy classifier to determine the occupancy 
                 # class of each building:
-                occupancy = occupancyModel.predictMultipleImages(imstreet)
+                occupancyModel.predict(imstreet)
                 
                 # Write the results to the inventory DataFrame:
+                occupancy = [[im for (im,_) in occupancyModel.preds],
+                             [pred for (_,pred) in occupancyModel.preds]]
                 self.inventory = write_to_dataframe(self.inventory,occupancy,
                                                     'occupancy')
                 self.inventory['occupancy'] = self.inventory['occupancy'].fillna('N/A')

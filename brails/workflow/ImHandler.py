@@ -229,7 +229,7 @@ class ImageHandler:
             image_url = streetViewBaseURL % (str(latlon)[1:-1].replace(" ", ""),str(heading),str(fov),key)
             r = requests.get(image_url)
             if r.status_code == 200:
-                with open(os.path.join(im_path,f"{imName}.png"), 'wb') as f:
+                with open(os.path.join(im_path,f"{imName}.jpg"), 'wb') as f:
                     f.write(r.content)
           
         # Function that checks if, given three colinear points p, q, r, point q lies on
@@ -696,7 +696,7 @@ class ImageHandler:
             fp = np.fliplr(np.squeeze(np.array(footprint)))
             refLine, imagePlane, scale, fov, heading = image_retrieve(fp,'tmp/images/street',count,self.apikey)
             if scale is not None:
-                self.street_images.append(f"tmp/images/street/{count}.png")
+                self.street_images.append(f"tmp/images/street/{count}.jpg")
             else:
                 self.street_images.append(None)
             if isinstance(refLine, np.ndarray): 
