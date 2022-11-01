@@ -52,7 +52,7 @@ from shapely.geometry import Polygon
 
 #import brails.models as models
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
-                            NFloorDetector, PytorchRoofClassifier, 
+                            NFloorDetector, RoofClassifier, 
                             PytorchOccupancyClassifier, RoofCoverClassifier, 
                             YearBuiltClassifier)
 from .workflow.ImHandler import ImageHandler
@@ -302,15 +302,15 @@ class InventoryGenerator:
             
             elif attribute=='roofshape':
                 # Initialize the roof type classifier object:
-                roofModel = PytorchRoofClassifier(modelName='transformer_rooftype_v1',
-                                                  download=True)
+                roofModel = RoofClassifier()
 
                 # Call the roof type classifier to determine the roof type of
                 # each building:                
-                roofShape = roofModel.predictMultipleImages(imsat)
+                roofModel.predict(imsat)
                 
                 # Write the results to the inventory DataFrame:
-                roofShape['prediction'] = roofShape['prediction'].replace({'flat':'Flat', 'hipped':'Hip', 'gabled':'Gable'})
+                roofShape = [[im for (im,_) in roofModel.preds],
+                             [pred for (_,pred) in roofModel.preds]]
                 self.inventory = write_to_dataframe(self.inventory,roofShape,
                                                     'roofshape',
                                                     'satellite_images')

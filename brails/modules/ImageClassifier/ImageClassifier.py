@@ -580,13 +580,20 @@ class ImageClassifier:
         model.eval()
         
         preds = []
-        if os.path.isdir(testDataDir):
+        if isinstance(testDataDir,list):
+            for im in testDataDir:
+                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+                    image = image_loader(os.path.join(im))
+                    _, pred = torch.max(model(image),1)
+                    preds.append((im, classes[pred]))   
+            self.preds = preds 
+        elif os.path.isdir(testDataDir):
             for im in os.listdir(testDataDir):
                 if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
                     image = image_loader(os.path.join(testDataDir,im))
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
-            self.preds = preds
+            self.preds = preds                  
         elif os.path.isfile(testDataDir):
             img = plt.imread(testDataDir)[:,:,:3]
             image = image_loader(testDataDir)
