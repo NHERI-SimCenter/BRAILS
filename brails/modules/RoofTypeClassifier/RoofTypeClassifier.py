@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2021 The Regents of the University of California
+# Copyright (c) 2022 The Regents of the University of California
 #
 # This file is part of BRAILS.
 #
@@ -35,18 +35,43 @@
 #
 # Contributors:
 # Barbaros Cetiner
-# Yunhui Guo 
-# Sascha Hornauer
 
-from brails.modules.PytorchGenericModelClassifier.GenericImageClassifier import PytorchImageClassifier
+
 from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
-from brails.modules.ImageSegmenter.ImageSegmenter import ImageSegmenter
-from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier
-from brails.modules.PytorchOccupancyClassClassifier.OccupancyClassifier import PytorchOccupancyClassifier
-from brails.modules.ChimneyDetector.ChimneyDetector import ChimneyDetector
-from brails.modules.FacadeParser.FacadeParser import FacadeParser
-from brails.modules.FoundationClassifier.FoundationClassifier import FoundationHeightClassifier
-from brails.modules.GarageDetector.GarageDetector import GarageDetector
-from brails.modules.NumFloorDetector.NFloorDetector import NFloorDetector
-from brails.modules.RoofCoverClassifier.RoofCoverClassifier import RoofCoverClassifier
-from brails.modules.YearBuiltClassifier.YearBuiltClassifier import YearBuiltClassifier
+
+import torch
+import os
+
+class RoofClassifier(ImageClassifier):
+
+    def __init__(self, modelPath=None): 
+    
+        if modelPath == None:
+            os.makedirs('tmp/models',exist_ok=True)
+            modelPath = 'tmp/models/roofTypeClassifier_v1.pth'
+            if not os.path.isfile(modelPath):
+                print('Loading default roof classifier model file to tmp/models folder...')
+                torch.hub.download_url_to_file('https://zenodo.org/record/7271554/files/trained_model_rooftype.pth',
+                                               modelPath, progress=False)
+                print('Default roof classifier model loaded')
+            else: 
+                print(f"Default roof classifier model at {modelPath} loaded")
+        else:
+            print(f'Inferences will be performed using the custom model at {modelPath}')
+        
+        self.modelPath = modelPath
+        self.classes = ['Flat','Gable','Hip']
+        
+        
+    def predict(self, dataDir):
+        imageClassifier = ImageClassifier()
+        imageClassifier.predict(self.modelPath,dataDir,self.classes)
+        self.preds = imageClassifier.preds
+        
+    def retrain(self, dataDir, batchSize=8, nepochs=100, plotLoss=True):
+        imageClassifier = ImageClassifier()
+        imageClassifier.retrain(self.modelPath,dataDir)
+
+
+if __name__ == '__main__':
+    pass
