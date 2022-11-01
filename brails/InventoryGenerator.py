@@ -105,7 +105,7 @@ class InventoryGenerator:
         elif self.randomSelection==True: 
             footprints = random.sample(fpHandler.footprints, nbldgs)
             print(f'Randomly selected {nbldgs} buildings')
-	else:
+        else:
             random.seed(self.randomSelection)
             footprints = random.sample(fpHandler.footprints, nbldgs)
             print(f'Randomly selected {nbldgs} buildings using the seed {self.randomSelection}')
