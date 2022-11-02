@@ -576,7 +576,7 @@ class ImageClassifier:
             image = image.unsqueeze(0)  
             return image.to(self.device) 
         
-        model = torch.load(modelPath)
+        model = torch.load(modelPath,map_location=self.device)
         model.eval()
         
         preds = []
