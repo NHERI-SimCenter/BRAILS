@@ -576,7 +576,11 @@ class ImageClassifier:
             image = image.unsqueeze(0)  
             return image.to(self.device) 
         
-        model = torch.load(modelPath,map_location=self.device)
+        try:
+            model = torch.load(modelPath)
+        except:
+            state = torch.load(modelPath,map_location=self.device)
+            model.load_state_dict(state)
         model.eval()
         
         preds = []
