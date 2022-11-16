@@ -70,8 +70,7 @@ class RoofClassifier(ImageClassifier):
         
     def retrain(self, dataDir, batchSize=8, nepochs=100, plotLoss=True):
         imageClassifier = ImageClassifier()
-        imageClassifier.retrain(self.modelPath,dataDir)
-
-
+        imageClassifier.retrain(self.modelPath,dataDir,batchSize,nepochs,plotLoss)
+        
 if __name__ == '__main__':
-    pass
+    pass        
