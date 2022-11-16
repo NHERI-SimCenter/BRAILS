@@ -50,7 +50,6 @@ from PIL import Image
 import sys
 import requests
 import zipfile
-from multiprocessing import freeze_support
 
 class ImageClassifier:
 
@@ -578,11 +577,7 @@ class ImageClassifier:
             image = image.unsqueeze(0)  
             return image.to(self.device) 
         
-        try:
-            model = torch.load(modelPath)
-        except:
-            state = torch.load(modelPath,map_location=self.device)
-            model.load_state_dict(state)
+        model = torch.load(modelPath,map_location=self.device)
         model.eval()
         
         preds = []
