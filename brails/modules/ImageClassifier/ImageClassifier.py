@@ -565,37 +565,43 @@ class ImageClassifier:
         self.testDataDir = testDataDir
         self.classes = sorted(classes)
         
-        loader = transforms.Compose([
-                transforms.Resize(self.modelInputSize),
-                transforms.CenterCrop(self.modelInputSize),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        
         def image_loader(image_name):
+            loader = transforms.Compose([
+                    transforms.Resize(self.modelInputSize),
+                    transforms.CenterCrop(self.modelInputSize),
+                    transforms.ToTensor(),
+                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
             image = Image.open(image_name).convert("RGB")
             image = loader(image).float()
             image = image.unsqueeze(0)  
             return image.to(self.device) 
+        
+        def isImage(im):
+            return im.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp'))
         
         model = torch.load(modelPath,map_location=self.device)
         model.eval()
         
         preds = []
         if isinstance(testDataDir,list):
-            for im in testDataDir:
-                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+            imlist = os.listdir(testDataDir)
+            imlist.sort()
+            for im in imlist:
+                if isImage(im):
                     image = image_loader(os.path.join(im))
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
             self.preds = preds 
         elif os.path.isdir(testDataDir):
-            for im in os.listdir(testDataDir):
-                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+            imlist = os.listdir(testDataDir)
+            imlist.sort()
+            for im in imlist:
+                if isImage(im):
                     image = image_loader(os.path.join(testDataDir,im))
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
             self.preds = preds                  
-        elif os.path.isfile(testDataDir):
+        elif os.path.isfile(testDataDir) and isImage(testDataDir):
             img = plt.imread(testDataDir)[:,:,:3]
             image = image_loader(testDataDir)
             _, pred = torch.max(model(image),1)
