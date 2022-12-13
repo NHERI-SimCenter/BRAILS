@@ -60,8 +60,7 @@ class OccupancyClassifier(ImageClassifier):
             print(f'Inferences will be performed using the custom model at {modelPath}')
      
         self.modelPath = modelPath
-        self.classes = ['Other','Residential']
-        
+        self.classes = ['Other','Residential']  
         
     def predict(self, dataDir):
         imageClassifier = ImageClassifier()
@@ -70,8 +69,7 @@ class OccupancyClassifier(ImageClassifier):
         
     def retrain(self, dataDir, batchSize=8, nepochs=100, plotLoss=True):
         imageClassifier = ImageClassifier()
-        imageClassifier.retrain(self.modelPath,dataDir)
-
+        imageClassifier.retrain(self.modelPath,dataDir,batchSize,nepochs,plotLoss)
 
 if __name__ == '__main__':
     pass
