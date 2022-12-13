@@ -343,7 +343,7 @@ class ImageClassifier:
         # Create training and validation datasets
         image_datasets = {x: datasets.ImageFolder(os.path.join(self.trainDataDir, x), data_transforms[x]) for x in ['train', 'val']}
         # Create training and validation dataloaders
-        dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=4) for x in ['train', 'val']}
+        dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=0) for x in ['train', 'val']}
         
         # Send the model to GPU
         model_ft = model_ft.to(self.device)
@@ -526,7 +526,7 @@ class ImageClassifier:
         # Create training and validation datasets
         image_datasets = {x: datasets.ImageFolder(os.path.join(self.trainDataDir, x), data_transforms[x]) for x in ['train', 'val']}
         # Create training and validation dataloaders
-        dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=4) for x in ['train', 'val']}
+        dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchSize, shuffle=True, num_workers=0) for x in ['train', 'val']}
         
         # Send the model to GPU
         model = torch.load(modelPath)    
@@ -534,6 +534,7 @@ class ImageClassifier:
         final_model = model.to(self.device)
         final_optimizer = optim.SGD(final_model.parameters(), lr=0.0001, momentum=0.9)
         final_criterion = nn.CrossEntropyLoss()
+        print(f'\nRetraining the model using the data located in {self.trainDataDir} folder...')
         _,final_hist = train_model(final_model, dataloaders_dict, final_criterion, final_optimizer, num_epochs=nepochs)
         print('Training complete.')
         os.makedirs('tmp/models', exist_ok=True)
@@ -564,37 +565,43 @@ class ImageClassifier:
         self.testDataDir = testDataDir
         self.classes = sorted(classes)
         
-        loader = transforms.Compose([
-                transforms.Resize(self.modelInputSize),
-                transforms.CenterCrop(self.modelInputSize),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        
         def image_loader(image_name):
+            loader = transforms.Compose([
+                    transforms.Resize(self.modelInputSize),
+                    transforms.CenterCrop(self.modelInputSize),
+                    transforms.ToTensor(),
+                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
             image = Image.open(image_name).convert("RGB")
             image = loader(image).float()
             image = image.unsqueeze(0)  
             return image.to(self.device) 
+        
+        def isImage(im):
+            return im.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp'))
         
         model = torch.load(modelPath,map_location=self.device)
         model.eval()
         
         preds = []
         if isinstance(testDataDir,list):
-            for im in testDataDir:
-                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+            imlist = os.listdir(testDataDir)
+            imlist.sort()
+            for im in imlist:
+                if isImage(im):
                     image = image_loader(os.path.join(im))
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
             self.preds = preds 
         elif os.path.isdir(testDataDir):
-            for im in os.listdir(testDataDir):
-                if ('jpg' in im) or ('jpeg' in im) or ('png' in im):
+            imlist = os.listdir(testDataDir)
+            imlist.sort()
+            for im in imlist:
+                if isImage(im):
                     image = image_loader(os.path.join(testDataDir,im))
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
             self.preds = preds                  
-        elif os.path.isfile(testDataDir):
+        elif os.path.isfile(testDataDir) and isImage(testDataDir):
             img = plt.imread(testDataDir)[:,:,:3]
             image = image_loader(testDataDir)
             _, pred = torch.max(model(image),1)
@@ -606,3 +613,6 @@ class ImageClassifier:
             plt.show()
             print((f"Predicted class: {pred}"))
             self.preds = pred
+
+if __name__ == '__main__':
+    pass

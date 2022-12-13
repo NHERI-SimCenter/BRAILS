@@ -12,9 +12,8 @@ tensorboard
 tensorboardX
 webcolors 
 pyyaml
-torch>=1.7
-torchvision
-timm
+torch>=1.12
+torchvision>0.13
 yacs
 Pillow
 sklearn

@@ -42,25 +42,25 @@ from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
 import torch
 import os
 
-class RoofClassifier(ImageClassifier):
+class ConsTypeClassifier(ImageClassifier):
 
     def __init__(self, modelPath=None): 
     
         if modelPath == None:
             os.makedirs('tmp/models',exist_ok=True)
-            modelPath = 'tmp/models/roofTypeClassifier_v1.pth'
+            modelPath = 'tmp/models/consTypeClassifier_v1.pth'
             if not os.path.isfile(modelPath):
-                print('Loading default roof classifier model file to tmp/models folder...')
-                torch.hub.download_url_to_file('https://zenodo.org/record/7271554/files/trained_model_rooftype.pth',
+                print('Loading default construction type classifier model file to tmp/models folder...')
+                torch.hub.download_url_to_file('https://zenodo.org/record/7271554/files/trained_model_constype.pth',
                                                modelPath, progress=False)
-                print('Default roof classifier model loaded')
+                print('Default construction type classifier model loaded')
             else: 
-                print(f"Default roof classifier model at {modelPath} loaded")
+                print(f"Default construction type classifier model at {modelPath} loaded")
         else:
             print(f'Inferences will be performed using the custom model at {modelPath}')
         
         self.modelPath = modelPath
-        self.classes = ['Flat','Gable','Hip']      
+        self.classes = ['MAB','MAS','RCC','STL','WOD']      
         
     def predict(self, dataDir):
         imageClassifier = ImageClassifier()
