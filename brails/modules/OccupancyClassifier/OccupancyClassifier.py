@@ -41,6 +41,7 @@ from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
 
 import torch
 import os
+import random
 
 class OccupancyClassifier(ImageClassifier):
 
@@ -65,7 +66,15 @@ class OccupancyClassifier(ImageClassifier):
     def predict(self, dataDir):
         imageClassifier = ImageClassifier()
         imageClassifier.predict(self.modelPath,dataDir,self.classes)
-        self.preds = imageClassifier.preds
+        def hazclass(str):
+            if hazclass=='Residential':
+                out = random.choice(['RES1','RES3'])
+            else:
+                out = 'COM1'
+            return(out)
+        self.preds = [hazclass(pred) for pred in imageClassifier.preds]
+        
+                      
         
     def retrain(self, dataDir, batchSize=8, nepochs=100, plotLoss=True):
         imageClassifier = ImageClassifier()
