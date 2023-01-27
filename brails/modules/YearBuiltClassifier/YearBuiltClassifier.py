@@ -147,17 +147,23 @@ class YearBuiltClassifier():
         pred_clear = []
         for prediction in predictions:
             if prediction==0:
-                pred_str = 'Pre-1970'
+                #pred_str = 'Pre-1970'
+                pred_str = 1960
             elif prediction==1:
-                pred_str = '1970-1979'
+                #pred_str = '1970-1979'
+                pred_str = 1975
             elif prediction==2:
-                pred_str = '1980-1989'
+                #pred_str = '1980-1989'
+                pred_str = 1985
             elif prediction==3:
-                pred_str = '1990-1999'
+                #pred_str = '1990-1999'
+                pred_str = 1995
             elif prediction==4:
-                pred_str = '2000-2009'
+                #pred_str = '2000-2009'
+                pred_str = 2005
             else:
-                pred_str = 'Post-2010'
+                #pred_str = 'Post-2010'
+                pred_str = 2015
             pred_clear.append(pred_str)
             
         df = pd.DataFrame(list(zip(imagePathList, pred_clear, probs)), columns =['image', 'prediction', 'probability']) 

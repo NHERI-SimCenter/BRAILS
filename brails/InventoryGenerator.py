@@ -71,7 +71,8 @@ class InventoryGenerator:
         """
         self.enabledAttributes = ['buildingheight','chimney','erabuilt',
                                   'garage','numstories','occupancy',
-                                  'roofeaveheight','roofshape','roofpitch']
+                                  'roofeaveheight','roofshape','roofpitch',
+                                  'constype']
 
         self.inventory = None
         self.location = location
@@ -99,21 +100,27 @@ class InventoryGenerator:
 
         # Randomly select nbldgs from the footprint data if randomSelection is 
         # set to True:          
-        if self.randomSelection==False:
-            footprints = fpHandler.footprints[:nbldgs]
-            print(f'Selected the first {nbldgs} buildings')
-        elif self.randomSelection==True: 
-            footprints = random.sample(fpHandler.footprints, nbldgs)
-            print(f'Randomly selected {nbldgs} buildings')
-        else:
-            random.seed(self.randomSelection)
-            footprints = random.sample(fpHandler.footprints, nbldgs)
-            print(f'Randomly selected {nbldgs} buildings using the seed {self.randomSelection}')
-	
-
+        if nbldgs!='all':
+            if self.randomSelection==False:
+                footprints = fpHandler.footprints[:nbldgs]
+                fpareas = fpHandler.fpAreas[:nbldgs]
+                print(f'Selected the first {nbldgs} buildings')
+            elif self.randomSelection==True: 
+                footprints = random.sample(fpHandler.footprints, nbldgs)
+                fpareas = random.sample(fpHandler.fpAreas, nbldgs)
+                print(f'Randomly selected {nbldgs} buildings')
+            else:
+                random.seed(self.randomSelection)
+                footprints = random.sample(fpHandler.footprints, nbldgs)
+                fpareas = random.sample(fpHandler.fpAreas, nbldgs)
+                print(f'Randomly selected {nbldgs} buildings using the seed {self.randomSelection}')
+        else:	
+                footprints = fpHandler.footprints[:]
+                print(f'Selected all {len(footprints)} buildings')
         
         # Initialize the inventory DataFrame with the obtained footprint data:
         self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
+        self.inventory['fparea'] = fpareas
         
         # Initialize the image handler class  to check if the provided API key
         # is valid:
@@ -344,6 +351,10 @@ class InventoryGenerator:
                                                     [facadeParserModel.predictions['image'].to_list(),
                                                      facadeParserModel.predictions[attribute].to_list()],
                                                      attribute)    
+        
+            elif attribute=='constype':
+                self.inventory['constype'] = ['W1' for ind in range(len(self.inventory.index))] 
+        
         
         dfout = self.inventory.copy(deep=True)
         for index, row in self.inventory.iterrows():

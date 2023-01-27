@@ -164,6 +164,48 @@ class FootprintHandler:
             print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
             return footprints
 
+        def polygon_area(lats, lons):
+        
+            radius = 20925721.784777 # Earth's radius in feet
+            
+            from numpy import arctan2, cos, sin, sqrt, pi, append, diff, deg2rad
+            lats = deg2rad(lats)
+            lons = deg2rad(lons)
+        
+            # Line integral based on Green's Theorem, assumes spherical Earth
+        
+            #close polygon
+            if lats[0]!=lats[-1]:
+                lats = append(lats, lats[0])
+                lons = append(lons, lons[0])
+        
+            #colatitudes relative to (0,0)
+            a = sin(lats/2)**2 + cos(lats)* sin(lons/2)**2
+            colat = 2*arctan2( sqrt(a), sqrt(1-a) )
+        
+            #azimuths relative to (0,0)
+            az = arctan2(cos(lats) * sin(lons), sin(lats)) % (2*pi)
+        
+            # Calculate diffs
+            # daz = diff(az) % (2*pi)
+            daz = diff(az)
+            daz = (daz + pi) % (2 * pi) - pi
+        
+            deltas=diff(colat)/2
+            colat=colat[0:-1]+deltas
+        
+            # Perform integral
+            integrands = (1-cos(colat)) * daz
+        
+            # Integrate 
+            area = abs(sum(integrands))/(4*pi)
+        
+            area = min(area,1-area)
+            if radius is not None: #return in units of radius
+                return area * 4*pi*radius**2
+            else: #return in ratio of sphere total area
+                return area
+
         self.queryarea = queryarea
         if isinstance(queryarea,str):
             self.footprints = get_osm_footprints(queryarea)
@@ -178,6 +220,15 @@ class FootprintHandler:
                      ' as a string or a list of strings containing the area name(s)' + 
                      ' or a tuple containing the latitude and longitude pairs for' +
                      ' the bounding box of the area of interest.')   
+             
+        self.fpAreas = []
+        for fp in self.footprints:
+            lons = []
+            lats = []
+            for pt in fp:
+                lons.append(pt[0])
+                lats.append(pt[1])        
+            self.fpAreas.append(polygon_area(lats, lons))
 
     def load_footprint_data(self,fpfile):
         """
