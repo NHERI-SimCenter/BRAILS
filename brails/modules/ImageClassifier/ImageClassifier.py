@@ -584,11 +584,11 @@ class ImageClassifier:
         
         preds = []
         if isinstance(testDataDir,list):
-            imlist = os.listdir(testDataDir)
+            imlist = testDataDir[:]
             imlist.sort()
             for im in imlist:
                 if isImage(im):
-                    image = image_loader(os.path.join(im))
+                    image = image_loader(im)
                     _, pred = torch.max(model(image),1)
                     preds.append((im, classes[pred]))   
             self.preds = preds 

@@ -50,14 +50,14 @@ class RoofClassifier(ImageClassifier):
             os.makedirs('tmp/models',exist_ok=True)
             modelPath = 'tmp/models/roofTypeClassifier_v1.pth'
             if not os.path.isfile(modelPath):
-                print('Loading default roof classifier model file to tmp/models folder...')
+                print('\n\nLoading default roof classifier model file to tmp/models folder...')
                 torch.hub.download_url_to_file('https://zenodo.org/record/7271554/files/trained_model_rooftype.pth',
-                                               modelPath, progress=False)
+                                               modelPath, progress=True)
                 print('Default roof classifier model loaded')
             else: 
-                print(f"Default roof classifier model at {modelPath} loaded")
+                print(f"\nDefault roof classifier model at {modelPath} loaded")
         else:
-            print(f'Inferences will be performed using the custom model at {modelPath}')
+            print(f'\nInferences will be performed using the custom model at {modelPath}')
         
         self.modelPath = modelPath
         self.classes = ['Flat','Gable','Hip']      

@@ -41,7 +41,6 @@ from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
 
 import torch
 import os
-import random
 
 class OccupancyClassifier(ImageClassifier):
 
@@ -51,14 +50,14 @@ class OccupancyClassifier(ImageClassifier):
             os.makedirs('tmp/models',exist_ok=True)
             modelPath = 'tmp/models/OccupancyClassifier_v1.pth'
             if not os.path.isfile(modelPath):
-                print('Loading default occupancy classifier model file to tmp/models folder...')
+                print('\n\nLoading default occupancy classifier model file to tmp/models folder...')
                 torch.hub.download_url_to_file('https://zenodo.org/record/7272099/files/trained_model_occupancy_v1.pth',
-                                               modelPath, progress=False)
+                                               modelPath, progress=True)
                 print('Default occupancy classifier model loaded')
             else: 
-                print(f"Default occupancy classifier model at {modelPath} loaded")
+                print(f"\nDefault occupancy classifier model at {modelPath} loaded")
         else:
-            print(f'Inferences will be performed using the custom model at {modelPath}')
+            print(f'\nInferences will be performed using the custom model at {modelPath}')
      
         self.modelPath = modelPath
         self.classes = ['Other','Residential']  
@@ -66,15 +65,7 @@ class OccupancyClassifier(ImageClassifier):
     def predict(self, dataDir):
         imageClassifier = ImageClassifier()
         imageClassifier.predict(self.modelPath,dataDir,self.classes)
-        def hazclass(str):
-            if hazclass=='Residential':
-                out = random.choice(['RES1','RES3'])
-            else:
-                out = 'COM1'
-            return(out)
-        self.preds = [hazclass(pred) for pred in imageClassifier.preds]
-        
-                      
+        self.preds = imageClassifier.preds
         
     def retrain(self, dataDir, batchSize=8, nepochs=100, plotLoss=True):
         imageClassifier = ImageClassifier()
