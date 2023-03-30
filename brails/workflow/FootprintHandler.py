@@ -205,10 +205,31 @@ class FootprintHandler:
                 return area * 4*pi*radius**2
             else: #return in ratio of sphere total area
                 return area
+        
+        def load_footprint_data(fpfile):
+            """
+            Function that loads footprint data from a GeoJSON file
+            
+            Input: A GeoJSON file containing footprint information
+            Output: Footprint information parsed as a list of lists with each
+                    coordinate described in longitude and latitude pairs   
+            """
+            with open(fpfile) as f:
+                data = json.load(f)['features']
+
+            footprints = []
+            for count, loc in enumerate(data):
+                footprints.append(loc['geometry']['coordinates'][0][0])
+            
+            print(f"Found a total of {len(footprints)} building footprints in {fpfile}")
+            return footprints
 
         self.queryarea = queryarea
         if isinstance(queryarea,str):
-            self.footprints = get_osm_footprints(queryarea)
+            if 'geojson' in queryarea.lower():
+                self.footprints = load_footprint_data(queryarea)
+            else:
+                self.footprints = get_osm_footprints(queryarea)
         elif isinstance(queryarea,tuple):
             self.footprints = get_osm_footprints(queryarea)
         elif isinstance(queryarea,list):    
@@ -216,10 +237,14 @@ class FootprintHandler:
             for query in queryarea: 
                 self.footprints.extend(get_osm_footprints(query))
         else:
-            sys.exit('Incorrect location entry. The location entry must be defined' + 
-                     ' as a string or a list of strings containing the area name(s)' + 
-                     ' or a tuple containing the latitude and longitude pairs for' +
-                     ' the bounding box of the area of interest.')   
+            sys.exit('Incorrect location entry. The location entry must be defined as' + 
+                     ' 1) a string or a list of strings containing the name(s) of the query areas,' + 
+                     ' 2) string containing the name of a GeoJSON file containing footprint data,' +
+                     ' 3) or a tuple containing the coordinates for a rectangular' +
+                     ' bounding box of interest in (lon1, lat1, lon2, lat2) format.' +
+                     ' For defining a bounding box, longitude and latitude values' +
+                     ' shall be entered for the vertex pairs of any of the two' +
+                     ' diagonals of the rectangular bounding box.')   
              
         self.fpAreas = []
         for fp in self.footprints:
@@ -229,18 +254,3 @@ class FootprintHandler:
                 lons.append(pt[0])
                 lats.append(pt[1])        
             self.fpAreas.append(polygon_area(lats, lons))
-
-    def load_footprint_data(self,fpfile):
-        """
-        Function that loads footprint data from a GeoJSON file
-        
-        Input: A GeoJSON file containing footprint information
-        Output: Footprint information parsed as a list of lists with each
-                coordinate described in longitude and latitude pairs   
-        """
-        with open(fpfile) as f:
-            data = json.load(f)['features']
-
-        self.footprints = []
-        for count, loc in enumerate(data):
-            self.footprints.append(loc['geometry']['coordinates'][0][0])
