@@ -93,10 +93,7 @@ class InventoryGenerator:
         
         # Get footprint data for the defined location:
         fpHandler = FootprintHandler()
-        if 'geojson' in location:
-            fpHandler.load_footprint_data(self.location)
-        else:
-            fpHandler.fetch_footprint_data(self.location)
+        fpHandler.fetch_footprint_data(self.location)
 
         # Randomly select nbldgs from the footprint data if randomSelection is 
         # set to True:          
