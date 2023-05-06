@@ -43,6 +43,7 @@
 import os
 import requests 
 import sys
+import math
 from math import radians, sin, cos, atan2, sqrt, log, floor
 from shapely.geometry import Point, Polygon, MultiPoint
 
@@ -60,13 +61,15 @@ class ImageHandler:
                                       'size=600x600&location=37.87251874078189,' +
                                       '-122.25960286494328&heading=280&fov=120&' +
                                       f"pitch=20&key={apikey}").ok
+        """
         responseSatellite = requests.get('https://maps.googleapis.com/maps/api/staticmap?' + 
                                          'maptype=satellite&size=600x600&' + 
                                          'center=37.87251874078189,-122.25960286494328' + 
                                          f"&zoom=20&key={apikey}").ok
-        
+        """
         # If any of the requested images cannot be downloaded, notify the 
         # user of the error and stop program execution:
+        """
         if responseStreet==False and responseSatellite==False:
             error_message = ('Google API key error. Either the API key was entered'
                              + ' incorrectly or both Maps Static API and Street '
@@ -82,6 +85,14 @@ class ImageHandler:
                              + 'but does not have Maps Static API enabled. Please ' 
                              + 'enter a key that has both Maps Static API '
                              + 'and Street View Static API enabled.')  
+        else:
+            error_message = None
+        """
+        if responseStreet==False:
+            error_message = ('Google API key error. The entered API key is valid '
+                             + 'but does not have Street View Static API enabled. ' 
+                             + 'Please enter a key that has both Maps Static API '
+                             + 'and Street View Static API enabled.')
         else:
             error_message = None
     
@@ -101,6 +112,117 @@ class ImageHandler:
         self.street_images = []
 
     def GetGoogleSatelliteImage(self,footprints):
+        self.footprints = footprints[:]
+
+        def deg2num(lat, lon, zoom):
+          lat_rad = math.radians(lat)
+          n = 2**zoom
+          xtile = int((lon + 180)/360*n)
+          ytile = int((1 - math.asinh(math.tan(lat_rad))/math.pi)/2*n)
+          return (xtile,ytile)
+             
+        def tile_bbox(zoom: int, x: int, y: int):
+            return [tile_lat(y, zoom),tile_lat(y + 1, zoom),tile_lon(x, zoom),tile_lon(x + 1, zoom)]
+        
+        
+        def tile_lon(x: int, z: int) -> float:
+            return x / math.pow(2.0, z) * 360.0 - 180
+        
+        
+        def tile_lat(y: int, z: int) -> float:
+            return math.degrees(
+                math.atan(math.sinh(math.pi - (2.0 * math.pi * y) / math.pow(2.0, z)))
+        
+        self.footprints = footprints
+        self.satellite_images = []
+        os.makedirs('tmp/images/satellite',exist_ok=True)
+        for count, fp in enumerate(footprints):
+            # Compute the centroid of the footprint polygon: 
+            fp_cent = Polygon(fp).centroid
+            self.centroids.append([fp_cent.x,fp_cent.y])
+            
+        lon = [coord[0] for coord in fp]
+        lat = [coord[1] for coord in fp]
+        fp = (lon,lat)
+        
+        minlon = min(lon)
+        maxlon = max(lon)
+        minlat = min(lat)
+        maxlat = max(lat)
+        
+        londiff = maxlon - minlon
+        latdiff = maxlat - minlat
+        
+        minlon_buff = minlon - londiff*0.1
+        maxlon_buff = maxlon + londiff*0.1
+        
+        minlat_buff = minlat - latdiff*0.1
+        maxlat_buff = maxlat + latdiff*0.1
+        
+        bbox_buffered = ([minlon_buff,minlon_buff,maxlon_buff,maxlon_buff],[minlat_buff,maxlat_buff,maxlat_buff,minlat_buff])
+
+        xlist = []
+        ylist = [] 
+        for ind in range(4):
+          (lat, lon) = (bbox_buffered[1][ind],bbox_buffered[0][ind]) #(34.02381712389629, -118.50875749626134)
+          zoom = 20
+          x,y = deg2num(lat, lon, zoom)
+          xlist.append(x)
+          ylist.append(y)
+        
+        xlist = list(range(min(xlist),max(xlist)+1))
+        ylist = list(range(min(ylist),max(ylist)+1))
+        
+        base_url = "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+        
+        counter = 0
+        tilelist = []
+        offsets = []
+        imbnds = []
+        ntiles = (len(xlist), len(ylist))
+        for (yind,y) in enumerate(ylist):
+          for (xind,x) in enumerate(xlist):
+              url = base_url.format(x=x, y=y, z=zoom)
+              response = requests.get(url,stream=True)
+              im = Image.open(response.raw)
+              tilelist.append(f"Tile{counter}.jpg")
+              im.save(tilelist[counter])
+              counter+=1
+              offsets.append((xind*256,yind*256))
+              tilebnds = tile_bbox(zoom=zoom,x=x,y=y)
+              if xind==0 and yind==0:
+                imbnds.append(tilebnds.west)
+                imbnds.append(tilebnds.south)
+              elif xind==ntiles[0]-1 and yind==0:
+                imbnds.append(tilebnds.east)
+              elif xind==0 and yind==ntiles[1]-1:
+               imbnds.append(tilebnds.north)
+        
+        
+        images = [Image.open(tile) for tile in tilelist]
+        
+        new_im = Image.new('RGB', (256*ntiles[0], 256*ntiles[1]))
+        
+        for (ind,im) in enumerate(images):
+          new_im.paste(im, offsets[ind])
+        
+        im_name = f"tmp/images/satellite/{count}.png"
+        
+        lonrange = imbnds[2]-imbnds[0]
+        latrange = imbnds[3]-imbnds[1]
+        
+        
+        left = math.floor((bbox_buffered[0][0]-imbnds[0])/lonrange*256*ntiles[0])
+        right = math.ceil((bbox_buffered[0][-1]-imbnds[0])/lonrange*256*ntiles[0])
+        bottom = math.ceil((bbox_buffered[1][0]-imbnds[1])/latrange*256*ntiles[1])
+        top = math.floor((bbox_buffered[1][1]-imbnds[1])/latrange*256*ntiles[1])
+        
+        cropped_im = new_im.crop((left, top, right, bottom))
+        cropped_im.save(im_name)
+        self.satellite_images.append(im_name)
+
+
+    def GetGoogleSatelliteImageAPI(self,footprints):
         self.footprints = footprints[:]
         def dist(p1,p2):
             """
