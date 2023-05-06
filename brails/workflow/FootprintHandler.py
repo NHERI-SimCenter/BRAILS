@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-12-2022  
+# 05-06-2023  
 
 import requests
 import sys
@@ -214,14 +214,46 @@ class FootprintHandler:
             Output: Footprint information parsed as a list of lists with each
                     coordinate described in longitude and latitude pairs   
             """
+            
+            def pluralsuffix(count):
+                if count!=1:
+                    suffix = 's'
+                else:
+                    suffix = ''
+                return suffix
+            
             with open(fpfile) as f:
                 data = json.load(f)['features']
 
-            footprints = []
-            for count, loc in enumerate(data):
-                footprints.append(loc['geometry']['coordinates'][0][0])
-            
-            print(f"Found a total of {len(footprints)} building footprints in {fpfile}")
+                footprints = []
+                discardedfp_count = 0
+                correctedfp_count = 0
+                for count, loc in enumerate(data):
+                    if loc['geometry']['type']=='Polygon':
+                        temp_fp = loc['geometry']['coordinates']
+                        if len(temp_fp)>1:
+                            fp = temp_fp[:] 
+                        elif len(temp_fp[0])>1:
+                            fp = temp_fp[0][:] 
+                        elif len(temp_fp[0][0])>1:
+                            fp = temp_fp[0][0][:]
+                        
+                        if len(fp)==2:
+                           list_len = [len(i) for i in fp]
+                           fp = fp[list_len.index(max(list_len))]
+                           correctedfp_count+=1
+                        
+                        footprints.append(fp)
+                            
+                    elif loc['geometry']['type']=='MultiPolygon':
+                        discardedfp_count+=1   
+                
+                if discardedfp_count==0:   
+                    print(f"Extracted a total of {len(footprints)} building footprints from {fpfile}")
+                else: 
+                    print(f"Corrected {correctedfp_count} building footprint{pluralsuffix(correctedfp_count)} with invalid geometry")
+                    print(f"Discarded {discardedfp_count} building footprint{pluralsuffix(discardedfp_count)} with invalid geometry")
+                    print(f"Extracted a total of {len(footprints)} building footprints from {fpfile}")
             return footprints
 
         self.queryarea = queryarea
@@ -239,7 +271,7 @@ class FootprintHandler:
         else:
             sys.exit('Incorrect location entry. The location entry must be defined as' + 
                      ' 1) a string or a list of strings containing the name(s) of the query areas,' + 
-                     ' 2) string containing the name of a GeoJSON file containing footprint data,' +
+                     ' 2) a string for the name of a GeoJSON file containing footprint data,' +
                      ' 3) or a tuple containing the coordinates for a rectangular' +
                      ' bounding box of interest in (lon1, lat1, lon2, lat2) format.' +
                      ' For defining a bounding box, longitude and latitude values' +
