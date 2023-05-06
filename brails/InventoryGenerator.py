@@ -41,7 +41,7 @@
 # Satish Rao
 #
 # Last updated:
-# 05-08-2022 
+# 05-06-2023 
 
 import random
 import sys
@@ -103,16 +103,19 @@ class InventoryGenerator:
                 fpareas = fpHandler.fpAreas[:nbldgs]
                 print(f'Selected the first {nbldgs} buildings')
             elif self.randomSelection==True: 
-                footprints = random.sample(fpHandler.footprints, nbldgs)
-                fpareas = random.sample(fpHandler.fpAreas, nbldgs)
+                inds = random.sample(list(range(len(fpHandler.footprints))),nbldgs); inds.sort()
+                footprints = [fpHandler.footprints[ind] for ind in inds]
+                fpareas = [fpHandler.fpAreas[ind] for ind in inds]
                 print(f'Randomly selected {nbldgs} buildings')
             else:
                 random.seed(self.randomSelection)
-                footprints = random.sample(fpHandler.footprints, nbldgs)
-                fpareas = random.sample(fpHandler.fpAreas, nbldgs)
+                inds = random.sample(list(range(len(fpHandler.footprints))),nbldgs); inds.sort()
+                footprints = [fpHandler.footprints[ind] for ind in inds]
+                fpareas = [fpHandler.fpAreas[ind] for ind in inds]
                 print(f'Randomly selected {nbldgs} buildings using the seed {self.randomSelection}')
         else:	
                 footprints = fpHandler.footprints[:]
+                fpareas = fpHandler.fpAreas[:]
                 print(f'Selected all {len(footprints)} buildings')
         
         # Initialize the inventory DataFrame with the obtained footprint data:
