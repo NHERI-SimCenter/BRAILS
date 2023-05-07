@@ -75,6 +75,7 @@ class InventoryGenerator:
                                   'constype']
 
         self.inventory = None
+        self.incompleteInventory = None
         self.location = location
         self.nbldgs = nbldgs
         self.randomSelection = randomSelection
@@ -118,9 +119,14 @@ class InventoryGenerator:
                 fpareas = fpHandler.fpAreas[:]
                 print(f'Selected all {len(footprints)} buildings')
         
-        # Initialize the inventory DataFrame with the obtained footprint data:
+        # Initialize the inventory DataFrame with the footprint data obtained for nbldgs:
         self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
         self.inventory['fparea'] = fpareas
+        
+        # Initialize a seperate inventory DataFrame including all footprints for
+        # the defined region for use with a data imputation application:
+        self.incompleteInventory = pd.DataFrame(pd.Series(fpHandler.footprints[:],name='footprint'))
+        self.incompleteInventory['fparea'] = fpHandler.fpAreas[:]                
         
         # Initialize the image handler class  to check if the provided API key
         # is valid:
@@ -361,5 +367,13 @@ class InventoryGenerator:
             dfout.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
         dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                            errors='ignore')
-        dfout.to_csv('inventory.csv', index=False) 
+        dfout.to_csv('inventory.csv', index=True, index_label='ID') 
         print('Final inventory available in inventory.csv')
+        
+        
+        dfout_incomp = pd.merge(left=self.incompleteInventory, right=dfout.drop(columns=['footprint'], 
+                           errors='ignore'), how='left', left_on='fparea', right_on='fparea')
+        for index, row in self.incompleteInventory.iterrows():
+            dfout_incomp.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
+        self.incompleteInventory = dfout_incomp.copy(deep=True)
+        dfout_incomp.to_csv('IncompleteInventory.csv', index=True, index_label='ID', na_rep='NA') 
