@@ -63,16 +63,10 @@ class InventoryGenerator:
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
-        """
-        self.enabledAttributes = ['buildingheight','chimney','erabuilt',
-                                  'garage','numstories','occupancy',
-                                  'roofcover','roofeaveheight','roofshape',
-                                  'roofpitch']
-        """
         self.enabledAttributes = ['buildingheight','chimney','erabuilt',
                                   'garage','numstories','occupancy',
                                   'roofeaveheight','roofshape','roofpitch',
-                                  'constype']
+                                  'constype'] #roofcover,'constype']
 
         self.inventory = None
         self.incompleteInventory = None
@@ -361,16 +355,20 @@ class InventoryGenerator:
             elif attribute=='constype':
                 self.inventory['constype'] = ['W1' for ind in range(len(self.inventory.index))] 
         
-        
+        # Remove the columns that list the image names corresponding to each
+        # building from the inventory DataFrame, add an ID column, and print 
+        # the resulting table to the output file titled inventory.csv:
         dfout = self.inventory.copy(deep=True)
         for index, row in self.inventory.iterrows():
             dfout.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
         dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                            errors='ignore')
         dfout.to_csv('inventory.csv', index=True, index_label='ID') 
-        print('Final inventory available in inventory.csv')
+        print('\nFinal inventory data available in inventory.csv')
         
-        
+        # Merge the DataFrame of predicted attributes with the DataFrame of
+        # incomplete inventory and print the resulting table to the output file
+        # titled IncompleteInventory.csv:        
         dfout_incomp = pd.merge(left=self.incompleteInventory, right=dfout.drop(columns=['footprint'], 
                            errors='ignore'), how='left', left_on='fparea', right_on='fparea')
         for index, row in self.incompleteInventory.iterrows():
