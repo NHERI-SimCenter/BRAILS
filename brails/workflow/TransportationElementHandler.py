@@ -50,6 +50,10 @@ import sys
 class TransportationElementHandler:
     def __init__(self): 
         self.queryarea = []
+        self.output_files = {'roads':'Roads.geojson',
+                             'bridges':'Bridges.geojson',
+                             'tunnels':'Tunnels.geojson',
+                             'railroads':'Railroads.geojson'}
         
     def fetch_transportation_elements(self,queryarea):
 
@@ -209,9 +213,10 @@ class TransportationElementHandler:
             jsonout = conv2geojson(datalist,eltype,bpoly)  
             if '_road' not in eltype:      
                 print_el_counts(jsonout['features'],eltype)
-                output_filename = f'{eltype.title()}s.geojson'
-                with open(output_filename, 'w') as output_file:
-                    json.dump(jsonout, output_file, indent=2)
+                if len(jsonout['features'])!=0:
+                    output_filename = f'{eltype.title()}s.geojson'
+                    with open(output_filename, 'w') as output_file:
+                        json.dump(jsonout, output_file, indent=2)
             return jsonout
 
         def find(s, ch):
@@ -260,11 +265,9 @@ class TransportationElementHandler:
             print_el_counts(roadjsons_combined['features'],'road')
             with open('Roads.geojson', 'w') as output_file:
                 json.dump(roadjsons_combined, output_file, indent=2)    
-
-
-        bpoly = fetch_roi('Arizona')
-        #bpoly = fetch_roi((-122.659,37.814,-122.364,37.909)) 
-
+        
+        self.queryarea = queryarea
+        bpoly = fetch_roi(self.queryarea)
 
         eltypes = ['bridge','tunnel','railroad','primary_road','secondary_road','local_road']
 

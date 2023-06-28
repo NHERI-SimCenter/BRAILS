@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-06-2023  
+# 05-27-2023  
 
 import requests
 import sys
@@ -48,8 +48,10 @@ class FootprintHandler:
     def __init__(self): 
         self.footprints = []
         self.queryarea = []
+        self.availableDataSources = ['osm','usastr','nsi']
+        self.fpSource = 'osm'
         
-    def fetch_footprint_data(self,queryarea):
+    def fetch_footprint_data(self,queryarea,fpSource='osm'):
         """
         Function that loads footprint data from OpenStreetMap
         
@@ -118,7 +120,7 @@ class FootprintHandler:
                                        f"{queryarea[1]}, {queryarea[2]}, "
                                        f"{queryarea[3]}]")
             
-            print(f"\nFetching footprint data for {queryarea_printname}...")
+            print(f"\nFetching OSM footprint data for {queryarea_printname}...")
             url = 'http://overpass-api.de/api/interpreter'
             
             if isinstance(queryarea,str):
@@ -163,7 +165,69 @@ class FootprintHandler:
             
             print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
             return footprints
+        
+        def get_usastruct_footprints(queryarea):
+            if isinstance(queryarea,tuple):
+                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
+                                       f"{queryarea[1]}, {queryarea[2]}, "
+                                       f"{queryarea[3]}]")
 
+            elif isinstance(queryarea,str):
+                sys.exit("This option is not yet available for FEMA USA Structures footprint data")
+
+            print(f"\nFetching FEMA USA Structures footprint data for {queryarea_printname}...")
+
+            query = f'https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/rest/services/USA_Structures_View/FeatureServer/0/query?geometry={queryarea[0]},{queryarea[1]},{queryarea[2]},{queryarea[3]}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=pjson'
+
+            r = requests.get(query)
+            if 'error' in r.text:
+                sys.exit(f"Data server is currently unresponsive." +
+                          " Please try again later.")
+
+            datalist = r.json()['features']
+            footprints = []
+            for data in datalist:
+                footprint = data['geometry']['rings'][0]
+                footprints.append(footprint)
+
+            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
+            return footprints
+ 
+        def get_ms_footprints(queryarea):
+            if isinstance(queryarea,tuple):
+                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
+                                       f"{queryarea[1]}, {queryarea[2]}, "
+                                       f"{queryarea[3]}]")
+
+            elif isinstance(queryarea,str):
+                sys.exit("This option is not yet available for FEMA USA Structures footprint data")
+
+            print(f"\nFetching Microsoft footprint data for {queryarea_printname}...")
+            
+            if isinstance(queryarea,tuple):
+                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
+                                       f"{queryarea[1]}, {queryarea[2]}, "
+                                       f"{queryarea[3]}]")
+            
+            elif isinstance(queryarea,str):
+                sys.exit("This option is not yet available for Microsoft footprint data")
+            
+            query = f'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/MSBFP2/FeatureServer/0/query?where=1%3D1&outFields=&geometry={queryarea[0]},{queryarea[1]},{queryarea[2]},{queryarea[3]}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json'
+            
+            r = requests.get(query)
+            if 'error' in r.text:
+                sys.exit(f"Data server for is currently unresponsive." +
+                          " Please try again later.")
+            
+            datalist = r.json()['features']
+            footprints = []
+            for data in datalist:
+                footprint = data['geometry']['rings'][0]
+                footprints.append(footprint)
+            
+            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
+            return footprints        
+ 
         def polygon_area(lats, lons):
         
             radius = 20925721.784777 # Earth's radius in feet
@@ -256,18 +320,30 @@ class FootprintHandler:
                     print(f"Extracted a total of {len(footprints)} building footprints from {fpfile}")
             return footprints
 
+        def fp_source_selector(self):
+            if self.fpSource=='osm':
+                footprints = get_osm_footprints(self.queryarea)
+            elif self.fpSource=='usastr':
+                footprints = get_usastruct_footprints(self.queryarea)
+            elif self.fpSource=='ms':
+                 footprints = get_ms_footprints(self.queryarea)
+            return footprints
+
         self.queryarea = queryarea
-        if isinstance(queryarea,str):
+        self.fpSource = fpSource
+        
+        
+        if isinstance(self.queryarea,str):
             if 'geojson' in queryarea.lower():
-                self.footprints = load_footprint_data(queryarea)
+                self.footprints = load_footprint_data(self.queryarea)
             else:
-                self.footprints = get_osm_footprints(queryarea)
+                self.footprints = fp_source_selector(self)
         elif isinstance(queryarea,tuple):
-            self.footprints = get_osm_footprints(queryarea)
+            self.footprints = fp_source_selector(self)
         elif isinstance(queryarea,list):    
             self.footprints = []
-            for query in queryarea: 
-                self.footprints.extend(get_osm_footprints(query))
+            for query in self.queryarea: 
+                self.footprints.extend(fp_source_selector(self))
         else:
             sys.exit('Incorrect location entry. The location entry must be defined as' + 
                      ' 1) a string or a list of strings containing the name(s) of the query areas,' + 
