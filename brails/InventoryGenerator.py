@@ -61,7 +61,7 @@ from .workflow.FootprintHandler import FootprintHandler
 class InventoryGenerator:
 
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
-                 GoogleAPIKey=''):                
+                 fpSource='osm', GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
         self.enabledAttributes = ['buildingheight','chimney','erabuilt',
                                   'garage','numstories','occupancy',
@@ -75,6 +75,7 @@ class InventoryGenerator:
         self.randomSelection = randomSelection
         self.workDir = 'tmp'
         self.modelDir = 'tmp/models'
+        self.fpSource = fpSource
 
         """
         # Copy the model files to the current directory:
@@ -88,7 +89,7 @@ class InventoryGenerator:
         
         # Get footprint data for the defined location:
         fpHandler = FootprintHandler()
-        fpHandler.fetch_footprint_data(self.location)
+        fpHandler.fetch_footprint_data(self.location,self.fpSource)
 
         # Randomly select nbldgs from the footprint data if randomSelection is 
         # set to True:          
@@ -114,13 +115,13 @@ class InventoryGenerator:
                 print(f'Selected all {len(footprints)} buildings')
         
         # Initialize the inventory DataFrame with the footprint data obtained for nbldgs:
-        self.inventory = pd.DataFrame(pd.Series(footprints,name='footprint'))
-        self.inventory['fparea'] = fpareas
+        self.inventory = pd.DataFrame(pd.Series(footprints,name='Footprint'))
+        self.inventory['PlanArea'] = fpareas
         
         # Initialize a seperate inventory DataFrame including all footprints for
         # the defined region for use with a data imputation application:
-        self.incompleteInventory = pd.DataFrame(pd.Series(fpHandler.footprints[:],name='footprint'))
-        self.incompleteInventory['fparea'] = fpHandler.fpAreas[:]                
+        self.incompleteInventory = pd.DataFrame(pd.Series(fpHandler.footprints[:],name='Footprint'))
+        self.incompleteInventory['PlanArea'] = fpHandler.fpAreas[:]                
         
         # Initialize the image handler class  to check if the provided API key
         # is valid:
@@ -204,7 +205,7 @@ class InventoryGenerator:
         self.attributes = sorted(list(set(self.attributes)))
         
         # Create a list of footprints for easier module calls:
-        footprints = self.inventory['footprint'].values.tolist()
+        footprints = self.inventory['Footprint'].values.tolist()
         
         # Download the images required for the requested attributes:
         image_handler = ImageHandler(self.apiKey)
@@ -247,8 +248,8 @@ class InventoryGenerator:
                 yearModel.predict(imstreet)
                 
                 # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,yearModel.results_df,'eraBuilt')
-                self.inventory['eraBuilt'] = self.inventory['eraBuilt'].fillna('N/A')
+                self.inventory = write_to_dataframe(self.inventory,yearModel.results_df,'YearBuilt')
+                self.inventory['YearBuilt'] = self.inventory['YearBuilt'].fillna('N/A')
 
             elif attribute=='garage':
                 # Initialize the garage detector object:
@@ -276,8 +277,8 @@ class InventoryGenerator:
                 self.inventory = write_to_dataframe(self.inventory,
                                    [storyModel.system_dict['infer']['images'],
                                    storyModel.system_dict['infer']['predictions']],
-                                   'nstories')
-                self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
+                                   'NumberOfStories')
+                self.inventory['NumberOfStories'] = self.inventory['NumberOfStories'].astype(dtype='Int64')
                 
             elif attribute=='occupancy': 
                 # Initialize the occupancy classifier object:
@@ -291,8 +292,8 @@ class InventoryGenerator:
                 occupancy = [[im for (im,_) in occupancyModel.preds],
                              [pred for (_,pred) in occupancyModel.preds]]
                 self.inventory = write_to_dataframe(self.inventory,occupancy,
-                                                    'occupancy')
-                self.inventory['occupancy'] = self.inventory['occupancy'].fillna('N/A')
+                                                    'OccupancyClass')
+                self.inventory['OccupancyClass'] = self.inventory['OccupancyClass'].fillna('N/A')
             
             elif attribute=='roofcover':
                 # Initialize the roof cover classifier object:
@@ -336,8 +337,8 @@ class InventoryGenerator:
                     self.inventory = write_to_dataframe(self.inventory,
                                        [storyModel.system_dict['infer']['images'],
                                        storyModel.system_dict['infer']['predictions']],
-                                       'nstories')
-                    self.inventory['nstories'] = self.inventory['nstories'].astype(dtype='Int64')
+                                       'NumberOfStories')
+                    self.inventory['NumberOfStories'] = self.inventory['NumberOfStories'].astype(dtype='Int64')
                 
                 if 'facadeParserModel' not in locals():   
                     # Initialize the facade parser object:
@@ -353,25 +354,44 @@ class InventoryGenerator:
                                                      attribute)    
         
             elif attribute=='constype':
-                self.inventory['constype'] = ['W1' for ind in range(len(self.inventory.index))] 
+                self.inventory['StructureType'] = ['W1' for ind in range(len(self.inventory.index))] 
         
         # Remove the columns that list the image names corresponding to each
         # building from the inventory DataFrame, add an ID column, and print 
         # the resulting table to the output file titled inventory.csv:
         dfout = self.inventory.copy(deep=True)
-        for index, row in self.inventory.iterrows():
-            dfout.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
+        for index, row in self.inventory.iterrows():            
+            dfout.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
+            '{"type":"Polygon","coordinates":[' + 
+            f"""{row['Footprint']}""" + 
+            ']},"properties":{}}')
+            centroid = Polygon(row['Footprint']).centroid
+            dfout.loc[index, 'Latitude'] = centroid.y
+            dfout.loc[index, 'Longitude'] = centroid.x 
+
         dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                            errors='ignore')
-        dfout.to_csv('inventory.csv', index=True, index_label='ID') 
+        cols = [col for col in dfout.columns if col!='Footprint'] 
+        new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
+        dfout = dfout[new_cols]
+        
+        dfout.to_csv('inventory.csv', index=True, index_label='id') 
         print('\nFinal inventory data available in inventory.csv')
         
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
         # titled IncompleteInventory.csv:        
-        dfout_incomp = pd.merge(left=self.incompleteInventory, right=dfout.drop(columns=['footprint'], 
-                           errors='ignore'), how='left', left_on='fparea', right_on='fparea')
+        dfout_incomp = pd.merge(left=self.incompleteInventory, right=dfout.drop(columns=['Footprint'], 
+                           errors='ignore'), how='left', left_on='PlanArea', right_on='PlanArea')
+        
         for index, row in self.incompleteInventory.iterrows():
-            dfout_incomp.loc[index, 'footprint'] = Polygon(row['footprint']).wkt
+            dfout_incomp.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
+            '{"type":"Polygon","coordinates":[' + 
+            f"""{row['Footprint']}""" + 
+            ']},"properties":{}}')
+            centroid = Polygon(row['Footprint']).centroid
+            dfout_incomp.loc[index, 'Latitude'] = centroid.y
+            dfout_incomp.loc[index, 'Longitude'] = centroid.x 
+            
         self.incompleteInventory = dfout_incomp.copy(deep=True)
-        dfout_incomp.to_csv('IncompleteInventory.csv', index=True, index_label='ID', na_rep='NA') 
+        dfout_incomp.to_csv('IncompleteInventory.csv', index=True, index_label='id', na_rep='NA') 
