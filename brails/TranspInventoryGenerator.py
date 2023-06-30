@@ -46,10 +46,11 @@ from brails.workflow.TransportationElementHandler import TransportationElementHa
 class TranspInventoryGenerator:
 
     def __init__(self, location='Berkeley, CA'):                
-        self.enabledElements = ['roads','bridges','tunnels']
+        self.enabledElements = ['roads','bridges','tunnels','railroads']
         self.location = location
         self.workDir = 'tmp'
         self.modelDir = 'tmp/models'
+        self.inventory_files = ''
     
     def enabled_elements(self):
         print('Here is the list of attributes currently enabled in InventoryGenerator:\n')
@@ -59,3 +60,8 @@ class TranspInventoryGenerator:
     def generate(self):
         tphandler = TransportationElementHandler()
         tphandler.fetch_transportation_elements(self.location) 
+        
+        self.inventory_files = tphandler.output_files
+        
+        outfiles = ", ".join(value for value in tphandler.output_files.values())
+        print(f'\nFinal transportation inventory data available in {outfiles}')

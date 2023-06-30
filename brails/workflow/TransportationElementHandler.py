@@ -50,10 +50,7 @@ import sys
 class TransportationElementHandler:
     def __init__(self): 
         self.queryarea = []
-        self.output_files = {'roads':'Roads.geojson',
-                             'bridges':'Bridges.geojson',
-                             'tunnels':'Tunnels.geojson',
-                             'railroads':'Railroads.geojson'}
+        self.output_files = {'roads':'Roads.geojson'}
         
     def fetch_transportation_elements(self,queryarea):
 
@@ -217,6 +214,8 @@ class TransportationElementHandler:
                     output_filename = f'{eltype.title()}s.geojson'
                     with open(output_filename, 'w') as output_file:
                         json.dump(jsonout, output_file, indent=2)
+                else:
+                    jsonout = ''
             return jsonout
 
         def find(s, ch):
@@ -274,7 +273,9 @@ class TransportationElementHandler:
         roadjsons = {'primary_road':[],'secondary_road':[],'local_road':[]}
         for eltype in eltypes:
             if '_road' not in eltype:
-                write2geojson(bpoly,eltype)
+                jsonout = write2geojson(bpoly,eltype)
+                if jsonout!='':
+                   self.output_files[eltype + 's'] = eltype.capitalize() + 's.geojson'
             else:
                 roadjsons[eltype] = (write2geojson(bpoly,eltype))
         combine_write_roadjsons(roadjsons,bpoly)
