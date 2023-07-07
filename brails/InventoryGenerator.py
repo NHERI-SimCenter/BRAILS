@@ -360,6 +360,10 @@ class InventoryGenerator:
         # building from the inventory DataFrame, add an ID column, and print 
         # the resulting table to the output file titled inventory.csv:
         dfout = self.inventory.copy(deep=True)
+        dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
+                           errors='ignore')
+        dfout2merge = dfout.copy(deep=True)
+        
         for index, row in self.inventory.iterrows():            
             dfout.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
             '{"type":"Polygon","coordinates":[' + 
@@ -368,9 +372,7 @@ class InventoryGenerator:
             centroid = Polygon(row['Footprint']).centroid
             dfout.loc[index, 'Latitude'] = centroid.y
             dfout.loc[index, 'Longitude'] = centroid.x 
-
-        dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
-                           errors='ignore')
+        
         cols = [col for col in dfout.columns if col!='Footprint'] 
         new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
         dfout = dfout[new_cols]
@@ -380,18 +382,36 @@ class InventoryGenerator:
         
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
-        # titled IncompleteInventory.csv:        
-        dfout_incomp = pd.merge(left=self.incompleteInventory, right=dfout.drop(columns=['Footprint'], 
-                           errors='ignore'), how='left', left_on='PlanArea', right_on='PlanArea')
+        # titled IncompleteInventory.csv:  
+        dfout2merge['fp_as_string'] = dfout2merge['Footprint'].apply(lambda x: "".join(str(x)))
+            
+        dfout_incomp = self.incompleteInventory.copy(deep=True)
+        dfout_incomp['fp_as_string'] = dfout_incomp['Footprint'].apply(lambda x: "".join(str(x)))
         
-        for index, row in self.incompleteInventory.iterrows():
-            dfout_incomp.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
+        dfout_incomp = pd.merge(left=dfout_incomp, 
+                                right=dfout2merge.drop(columns=['Footprint'], errors='ignore'),
+                                how='left', left_on=['fp_as_string','PlanArea'], 
+                                right_on=['fp_as_string','PlanArea'],
+                                sort=False)
+        
+        dfout_incomp = dfout2merge.append(dfout_incomp[dfout_incomp.roofshape.isnull()])
+        dfout_incomp = dfout_incomp.reset_index(drop=True).drop(columns=['fp_as_string'], errors='ignore')
+
+        self.incompleteInventory = dfout_incomp.copy(deep=True)
+        
+        dfout_incomp4print = dfout_incomp.copy(deep=True)         
+        for index, row in dfout_incomp.iterrows():            
+            dfout_incomp4print.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
             '{"type":"Polygon","coordinates":[' + 
             f"""{row['Footprint']}""" + 
             ']},"properties":{}}')
             centroid = Polygon(row['Footprint']).centroid
-            dfout_incomp.loc[index, 'Latitude'] = centroid.y
-            dfout_incomp.loc[index, 'Longitude'] = centroid.x 
-            
-        self.incompleteInventory = dfout_incomp.copy(deep=True)
-        dfout_incomp.to_csv('IncompleteInventory.csv', index=True, index_label='id', na_rep='NA') 
+            dfout_incomp4print.loc[index, 'Latitude'] = centroid.y
+            dfout_incomp4print.loc[index, 'Longitude'] = centroid.x 
+        
+        cols = [col for col in dfout_incomp4print.columns if col!='Footprint'] 
+        new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
+        dfout_incomp4print = dfout_incomp4print[new_cols]
+         
+        dfout_incomp4print.to_csv('IncompleteInventory.csv', index=True, index_label='id', na_rep='NA') 
+        print('Incomplete inventory data available in IncompleteInventory.csv')        
