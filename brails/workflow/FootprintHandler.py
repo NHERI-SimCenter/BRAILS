@@ -75,7 +75,7 @@ class FootprintHandler:
                         queryarea_formatted += ''.join(list(j))
                 
                 nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
-                                  f"q={queryarea_formatted}&format=json")
+                                  f"q={queryarea_formatted}&format=jsonv2")
                 
                 r = requests.get(nominatimquery)
                 datalist = r.json()
@@ -93,12 +93,11 @@ class FootprintHandler:
                          data['type']=='administrative'): 
                         areafound = True
                         break
-                
                 if areafound==True:
                     print(f"Found {queryarea_name}")
                 else:
                     sys.exit(f"Could not locate an area named {queryarea}. " + 
-                             'Please check your location query to make sure' +
+                             'Please check your location query to make sure ' +
                              'it was entered correctly.')
                     
                         
@@ -125,7 +124,7 @@ class FootprintHandler:
             
             if isinstance(queryarea,str):
                 query = f"""
-                [out:json][timeout:5000];
+                [out:json][timeout:5000][maxsize:2000000000];
                 area({queryarea_turboid})->.searchArea;
                 way["building"](area.searchArea);
                 out body;
