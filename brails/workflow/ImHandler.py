@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-06-2023   
+# 07-14-2023   
 
 
 import os
@@ -186,11 +186,13 @@ class ImageHandler:
             
             resized_im = padded_im.resize((640,640))
             resized_im.save(impath)
+            for tile in tilelist:
+                os.remove(tile)
         
         def determine_tile_coords(bbox_buffered):
             xlist = []; ylist = []
             for ind in range(4):
-                (lat, lon) = (bbox_buffered[1][ind],bbox_buffered[0][ind]) #(34.02381712389629, -118.50875749626134)
+                (lat, lon) = (bbox_buffered[1][ind],bbox_buffered[0][ind])
                 x,y = deg2num(lat, lon, 20)
                 xlist.append(x)
                 ylist.append(y)
