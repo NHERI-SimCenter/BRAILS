@@ -37,23 +37,30 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-27-2023  
+# 07-14-2023  
 
+import math
+import json
 import requests
 import sys
-import json
+import pandas as pd
+from tqdm import tqdm
 from itertools import groupby
+from shapely.geometry import Polygon, LineString, MultiPolygon, box
+from shapely.ops import linemerge, unary_union, polygonize
 
 class FootprintHandler:
     def __init__(self): 
-        self.footprints = []
         self.queryarea = []
-        self.availableDataSources = ['osm','usastr','nsi']
+        self.availableDataSources = ['osm','ms','usastr']
         self.fpSource = 'osm'
+        self.footprints = []
+        self.bldgheights = []
         
     def fetch_footprint_data(self,queryarea,fpSource='osm'):
         """
-        Function that loads footprint data from OpenStreetMap
+        Function that loads footprint data from OpenStreetMap, Microsoft or USA
+        Structures data
         
         Input: Location entry defined as a string or a list of strings 
                containing the area name(s) or a tuple containing the longitude
@@ -62,6 +69,21 @@ class FootprintHandler:
                 coordinate described in longitude and latitude pairs   
         """
         def get_osm_footprints(queryarea):
+            def write_fp2geojson(footprints, output_filename='footprints.geojson'):
+                geojson = {'type':'FeatureCollection', 
+                           "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                           'features':[]}
+                for fp in footprints:
+                    feature = {'type':'Feature',
+                               'properties':{},
+                               'geometry':{'type':'Polygon',
+                                           'coordinates':[]}}
+                    feature['geometry']['coordinates'] = [fp]
+                    geojson['features'].append(feature)
+                    
+                with open(output_filename, 'w') as output_file:
+                    json.dump(geojson, output_file, indent=2)
+                
             if isinstance(queryarea,str):
                 # Search for the query area using Nominatim API:
                 print(f"\nSearching for {queryarea}...")
@@ -99,25 +121,36 @@ class FootprintHandler:
                     sys.exit(f"Could not locate an area named {queryarea}. " + 
                              'Please check your location query to make sure ' +
                              'it was entered correctly.')
-                    
+                 
+                queryarea_printname = queryarea_name.split(",")[0]    
                         
             elif isinstance(queryarea,tuple):
-                pass
-            else:
-                sys.exit('Incorrect location entry. The location entry must be defined' + 
-                         ' as a string or a list of strings containing the area name(s)' + 
-                         ' or a tuple containing the longitude and latitude pairs for' +
-                         ' the bounding box of the area of interest.')
-                         
-                         
-            
+                if len(queryarea)%2==0 and len(queryarea)!=0:                        
+                    if len(queryarea)==4:
+                        bpoly = [min(queryarea[1],queryarea[3]),
+                                min(queryarea[0],queryarea[2]),
+                                max(queryarea[1],queryarea[3]),
+                                max(queryarea[0],queryarea[2])]
+                        bpoly = f'{bpoly[0]},{bpoly[1]},{bpoly[2]},{bpoly[3]}'
+                        queryarea_printname = (f"the bounding box: {list(queryarea)}")                        
+                    elif len(queryarea)>4:
+                        bpoly = 'poly:"'
+                        queryarea_printname = 'the bounding box: ['
+                        for i in range(int(len(queryarea)/2)):
+                            bpoly+=f'{queryarea[2*i+1]} {queryarea[2*i]} '
+                            queryarea_printname+= f'{queryarea[2*i]}, {queryarea[2*i+1]}, '
+                        bpoly = bpoly[:-1]+'"'
+                        queryarea_printname = queryarea_printname[:-2]+']'
+                    else:
+                        raise ValueError('Less than two latitude longitude pairs were entered to define the bounding box entry. ' + 
+                                         'A bounding box can be defined by using at least two longitude/latitude pairs.') 
+                else:
+                        raise ValueError('Incorrect number of elements detected in the tuple for the bounding box. ' 
+                                         'Please check to see if you are missing a longitude or latitude value.')                                       
+
+
+                                     
             # Obtain and parse the footprint data for the determined area using Overpass API:
-            if isinstance(queryarea,str):
-                queryarea_printname = queryarea_name.split(",")[0]
-            elif isinstance(queryarea,tuple):
-                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
-                                       f"{queryarea[1]}, {queryarea[2]}, "
-                                       f"{queryarea[3]}]")
             
             print(f"\nFetching OSM footprint data for {queryarea_printname}...")
             url = 'http://overpass-api.de/api/interpreter'
@@ -132,13 +165,9 @@ class FootprintHandler:
                 out skel qt;
                 """
             elif isinstance(queryarea,tuple):
-                bbox = [min(queryarea[1],queryarea[3]),
-                        min(queryarea[0],queryarea[2]),
-                        max(queryarea[1],queryarea[3]),
-                        max(queryarea[0],queryarea[2])]
                 query = f"""
-                [out:json][timeout:5000];
-                way["building"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
+                [out:json][timeout:5000][maxsize:2000000000];
+                way["building"]({bpoly});
                 out body;
                 >;
                 out skel qt;
@@ -152,7 +181,6 @@ class FootprintHandler:
                 if data['type']=='node':
                    nodedict[data['id']] = [data['lon'],data['lat']]
         
-        
             footprints = []
             for data in datalist:
                 if data['type']=='way':
@@ -162,9 +190,232 @@ class FootprintHandler:
                         footprint.append(nodedict[node])
                     footprints.append(footprint)
             
-            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
+            print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")
+            
+            write_fp2geojson(footprints)
+            
             return footprints
-        
+ 
+        def get_ms_footprints(self):
+            def fetch_roi(queryarea):
+                # Search for the query area using Nominatim API:
+                print(f"\nSearching for {queryarea}...")
+                queryarea = queryarea.replace(" ", "+").replace(',','+')
+                
+                queryarea_formatted = ""
+                for i, j in groupby(queryarea):
+                    if i=='+':
+                        queryarea_formatted += i
+                    else:
+                        queryarea_formatted += ''.join(list(j))
+                
+                nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
+                                  f"q={queryarea_formatted}&format=jsonv2")                
+                r = requests.get(nominatimquery)
+                datalist = r.json()
+                
+                areafound = False
+                for data in datalist:
+                    queryarea_osmid = data['osm_id']
+                    queryarea_name = data['display_name']
+                    if(data['osm_type']=='relation' and 
+                        'university' in queryarea.lower() and
+                        data['type']=='university'):
+                        areafound = True
+                        break
+                    elif (data['osm_type']=='relation' and 
+                          data['type']=='administrative'): 
+                        areafound = True
+                        break
+                
+                if areafound==True:
+                    print(f"Found {queryarea_name}")
+                else:
+                    sys.exit(f"Could not locate an area named {queryarea}. " + 
+                             'Please check your location query to make sure ' +
+                             'it was entered correctly.')
+                
+                queryarea_printname = queryarea_name.split(",")[0]  
+                
+                print(f"\nFetching Microsoft building footprints for {queryarea_printname}...")
+                url = 'http://overpass-api.de/api/interpreter'
+                
+                if isinstance(queryarea,str):
+                    query = f"""
+                    [out:json][timeout:5000];
+                    rel({queryarea_osmid});
+                    out geom;
+                    """
+                r = requests.get(url, params={'data': query})
+                
+                datastruct = r.json()['elements'][0]
+                
+                if datastruct['tags']['type'] in ['boundary','multipolygon']:
+                    lss = []
+                    for coorddict in datastruct['members']:
+                        if coorddict['role']=='outer':
+                            ls = []
+                            for coord in coorddict['geometry']:
+                                ls.append([coord['lon'],coord['lat']])
+                            lss.append(LineString(ls))
+                
+                    merged = linemerge([*lss])
+                    borders = unary_union(merged) # linestrings to a MultiLineString
+                    polygons = list(polygonize(borders)) 
+                    
+                    if len(polygons)==1:
+                        bpoly = polygons[0]
+                    else:
+                        bpoly = MultiPolygon(polygons)
+                
+                else:
+                    sys.exit(f"Could not retrieve the boundary for {queryarea}. " + 
+                             'Please check your location query to make sure ' +
+                             'it was entered correctly.')    
+                return bpoly, queryarea_printname
+            
+            def deg2num(lat, lon, zoom):
+                lat_rad = math.radians(lat)
+                n = 2**zoom
+                xtile = int((lon + 180)/360*n)
+                ytile = int((1 - math.asinh(math.tan(lat_rad))/math.pi)/2*n)
+                return (xtile,ytile)
+            
+            def determine_tile_coords(bbox):
+                xlist = []; ylist = []
+                for vert in bbox:
+                    (lat, lon) = (vert[1],vert[0])
+                    x,y = deg2num(lat, lon, 9)
+                    xlist.append(x)
+                    ylist.append(y)
+            
+                    xlist = list(range(min(xlist),max(xlist)+1))
+                    ylist = list(range(min(ylist),max(ylist)+1))
+                return (xlist,ylist)               
+            
+            def xy2quadkey(xtile,ytile):
+                xtilebin = str(bin(xtile)); xtilebin = xtilebin[2:]
+                ytilebin = str(bin(ytile)); ytilebin = ytilebin[2:]
+                zpad = len(xtilebin)-len(ytilebin)
+                if zpad<0:
+                  xtilebin = xtilebin.zfill(len(xtilebin)-zpad)
+                elif zpad>0:
+                  ytilebin = ytilebin.zfill(len(ytilebin)+zpad)
+                quadkeybin = "".join(i + j for i, j in zip(ytilebin, xtilebin))
+                quadkey = ''
+                for i in range(0, int(len(quadkeybin)/2)):
+                    quadkey+=str(int(quadkeybin[2*i:2*(i+1)],2))
+                return int(quadkey)
+            
+            def bbox2quadkeys(bpoly):
+                bbox = bpoly.bounds
+                bbox_coords = [[bbox[0],bbox[1]],
+                               [bbox[2],bbox[1]],
+                               [bbox[2],bbox[3]],
+                               [bbox[0],bbox[3]]] 
+            
+            
+                (xtiles,ytiles) = determine_tile_coords(bbox_coords)
+                quadkeys = []
+                for xtile in xtiles:
+                    for ytile in ytiles:
+                        quadkeys.append(xy2quadkey(xtile,ytile))
+                quadkeys = list(set(quadkeys))
+                return quadkeys
+            
+            def bbox2poly(queryarea):
+                if len(queryarea)%2==0 and len(queryarea)!=0:                        
+                    if len(queryarea)==4:
+                        bpoly = box(*queryarea)
+                        queryarea_printname = (f"the bounding box: {list(queryarea)}")                        
+                    elif len(queryarea)>4:
+                        queryarea_printname = 'the bounding box: ['
+                        bpolycoords = []
+                        for i in range(int(len(queryarea)/2)):
+                            bpolycoords = bpolycoords.append([queryarea[2*i], queryarea[2*i+1]])
+                            queryarea_printname+= f'{queryarea[2*i]}, {queryarea[2*i+1]}, '
+                        bpoly = Polygon(bpolycoords)
+                        queryarea_printname = queryarea_printname[:-2]+']'
+                    else:
+                        raise ValueError('Less than two latitude longitude pairs were entered to define the bounding box entry. ' + 
+                                         'A bounding box can be defined by using at least two longitude/latitude pairs.') 
+                else:
+                        raise ValueError('Incorrect number of elements detected in the tuple for the bounding box. ' 
+                                         'Please check to see if you are missing a longitude or latitude value.')  
+
+                print(f"\nFetching Microsoft building footprints for {queryarea_printname}...")
+                
+                return bpoly, queryarea_printname
+            
+            def parse_file_size(strsize):
+                strsize = strsize.lower()
+                if 'gb' in strsize:
+                    multiplier = 1e9
+                    sizestr = 'gb' 
+                elif 'mb' in strsize:
+                    multiplier = 1e6
+                    sizestr = 'mb' 
+                elif 'kb' in strsize:
+                    multiplier = 1e3
+                    sizestr = 'kb'
+                else:
+                    multiplier = 1
+                    sizestr = 'b'
+                return float(strsize.replace(sizestr,''))*multiplier
+                    
+            def download_ms_tiles(quadkeys,bpoly):
+                dftiles = pd.read_csv(
+                    "https://minedbuildings.blob.core.windows.net/global-buildings/dataset-links.csv"
+                )
+                
+                footprints = []
+                bldgheights = []
+                for quadkey in tqdm(quadkeys):
+                    rows = dftiles[dftiles['QuadKey'] == quadkey]
+                    if rows.shape[0] == 1:
+                        url = rows.iloc[0]['Url']
+                    elif rows.shape[0] > 1:
+                        rows.loc[:,'Size'] = rows['Size'].apply(lambda x: parse_file_size(x))
+                        url = rows[rows['Size']==rows['Size'].max()].iloc[0]['Url']
+                    else:
+                        continue
+                    
+                    df_fp = pd.read_json(url, lines=True)
+                    for index, row in tqdm(df_fp.iterrows(), total=df_fp.shape[0]):
+                        fp_poly = Polygon(row['geometry']['coordinates'][0])
+                        if fp_poly.intersects(bpoly):
+                            footprints.append(row['geometry']['coordinates'][0])
+                            bldgheights.append(row['properties']['height']*3.28084)
+            
+                return (footprints, bldgheights)
+            
+            def write_fp2geojson(footprints, bldgheights, output_filename='footprints.geojson'):
+                geojson = {'type':'FeatureCollection', 
+                           "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                           'features':[]}
+                for fp,bldgheight in zip(footprints,bldgheights):
+                    feature = {'type':'Feature',
+                               'properties':{},
+                               'geometry':{'type':'Polygon',
+                                           'coordinates':[]}}
+                    feature['geometry']['coordinates'] = [fp]
+                    feature['properties']['bldgheight'] = bldgheight
+                    geojson['features'].append(feature)
+                with open(output_filename, 'w') as output_file:
+                    json.dump(geojson, output_file, indent=2)
+                        
+            if isinstance(queryarea,tuple):
+                bpoly, queryarea_printname = bbox2poly(queryarea)   
+            elif isinstance(queryarea,str):
+                bpoly, queryarea_printname = fetch_roi(queryarea)                                                
+            
+            quadkeys = bbox2quadkeys(bpoly)
+            (footprints, bldgheights) = download_ms_tiles(quadkeys, bpoly)
+            write_fp2geojson(footprints,bldgheights)
+            
+            print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")
+            return footprints        
+     
         def get_usastruct_footprints(queryarea):
             if isinstance(queryarea,tuple):
                 queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
@@ -180,7 +431,7 @@ class FootprintHandler:
 
             r = requests.get(query)
             if 'error' in r.text:
-                sys.exit(f"Data server is currently unresponsive." +
+                sys.exit("Data server is currently unresponsive." +
                           " Please try again later.")
 
             datalist = r.json()['features']
@@ -189,44 +440,9 @@ class FootprintHandler:
                 footprint = data['geometry']['rings'][0]
                 footprints.append(footprint)
 
-            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
-            return footprints
- 
-        def get_ms_footprints(queryarea):
-            if isinstance(queryarea,tuple):
-                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
-                                       f"{queryarea[1]}, {queryarea[2]}, "
-                                       f"{queryarea[3]}]")
+            print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")
+            return footprints    
 
-            elif isinstance(queryarea,str):
-                sys.exit("This option is not yet available for FEMA USA Structures footprint data")
-
-            print(f"\nFetching Microsoft footprint data for {queryarea_printname}...")
-            
-            if isinstance(queryarea,tuple):
-                queryarea_printname = (f"the bounding box: [{queryarea[0]}," 
-                                       f"{queryarea[1]}, {queryarea[2]}, "
-                                       f"{queryarea[3]}]")
-            
-            elif isinstance(queryarea,str):
-                sys.exit("This option is not yet available for Microsoft footprint data")
-            
-            query = f'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/MSBFP2/FeatureServer/0/query?where=1%3D1&outFields=&geometry={queryarea[0]},{queryarea[1]},{queryarea[2]},{queryarea[3]}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json'
-            
-            r = requests.get(query)
-            if 'error' in r.text:
-                sys.exit(f"Data server for is currently unresponsive." +
-                          " Please try again later.")
-            
-            datalist = r.json()['features']
-            footprints = []
-            for data in datalist:
-                footprint = data['geometry']['rings'][0]
-                footprints.append(footprint)
-            
-            print(f"Found a total of {len(footprints)} building footprints in {queryarea_printname}")
-            return footprints        
- 
         def polygon_area(lats, lons):
         
             radius = 20925721.784777 # Earth's radius in feet
@@ -322,15 +538,14 @@ class FootprintHandler:
         def fp_source_selector(self):
             if self.fpSource=='osm':
                 footprints = get_osm_footprints(self.queryarea)
-            elif self.fpSource=='usastr':
-                footprints = get_usastruct_footprints(self.queryarea)
             elif self.fpSource=='ms':
                  footprints = get_ms_footprints(self.queryarea)
+            elif self.fpSource=='usastr':
+                footprints = get_usastruct_footprints(self.queryarea)
             return footprints
 
         self.queryarea = queryarea
-        self.fpSource = fpSource
-        
+        self.fpSource = fpSource   
         
         if isinstance(self.queryarea,str):
             if 'geojson' in queryarea.lower():
