@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 06-23-2023  
+# 07-13-2023  
 
 import requests
 import copy
@@ -68,8 +68,7 @@ class TransportationElementHandler:
                         queryarea_formatted += ''.join(list(j))
                 
                 nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
-                                  f"q={queryarea_formatted}&format=json")
-                
+                                  f"q={queryarea_formatted}&format=jsonv2")                
                 r = requests.get(nominatimquery)
                 datalist = r.json()
                 
