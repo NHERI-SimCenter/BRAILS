@@ -137,15 +137,15 @@ def formatBridges(bridges_gdf):
     bnodeDF.drop("geometry", axis=1, inplace=True)
     ## Format bridge items
     bridges_gdf["bridge_class"] = bridges_gdf["STRUCTURE_KIND"].apply(int)*100+bridges_gdf["STRUCTURE_TYPE"].apply(int)
-    bridges_gdf = bridges_gdf.rename(columns = {"STRUCTURE_NUMBER":"bridge_id","geometry":"location", 
+    bridges_gdf = bridges_gdf.rename(columns = {"STRUCTURE_NUMBER":"ID","geometry":"location", 
         "YEAR_BUILT":"year_built", "MAIN_UNIT_SPANS":"nspans", "MAX_SPAN_LEN_MT":"lmaxspan","STATE_CODE":"state_code"})
-    columnsNeeded = ["bridge_id", "bridge_class", "year_built", "nspans", "lmaxspan", "state_code"]
+    columnsNeeded = ["ID", "bridge_class", "year_built", "nspans", "lmaxspan", "state_code"]
     bridges_gdf = bridges_gdf.loc[:,columnsNeeded]
-    bridges_gdf["bridge_id"] = bridges_gdf["bridge_id"].apply(lambda x: x.replace(" ",""))
+    bridges_gdf["ID"] = bridges_gdf["ID"].apply(lambda x: x.replace(" ",""))
     ## Format the hwy_bridges array
     bridgeDict = pd.DataFrame(bridges_gdf)
     bridgeDict = bridgeDict.reset_index().rename(columns={"index":"location"})
-    bridgeDict = bridgeDict[["bridge_id", "location", "bridge_class", "year_built", "nspans", "lmaxspan", "state_code"]]
+    bridgeDict = bridgeDict[["ID", "location", "bridge_class", "year_built", "nspans", "lmaxspan", "state_code"]]
     bridgeDict = bridgeDict.to_dict("records")
     return bnodeDF, bridgeDict
     
@@ -243,13 +243,13 @@ def formatRoads(roads_gdf):
         capacity.append(ROADCAPACITY_MAP[mtfcc])
         edge_id.append(edgesExploded_expand.loc[row_ind,"OID"] + '_'
                         + str(edgesExploded_expand.loc[row_ind,"segID"]))
-    edgesExploded_expand["edge_id"] = edge_id
+    edgesExploded_expand["ID"] = edge_id
     edgesExploded_expand["length"] = roadLength
     edgesExploded_expand["road_type"] = road_type
     edgesExploded_expand["lanes"] = lanes
     edgesExploded_expand["capacity"] = capacity
     edgesExploded_expand = edgesExploded_expand.rename(columns={'node_start': 'start_node', 'node_end': 'end_node'})
-    columnsNeeded=['edge_id','length','start_node','end_node','road_type','lanes','capacity']
+    columnsNeeded=['ID','length','start_node','end_node','road_type','lanes','capacity']
     edgesExploded_expand = edgesExploded_expand[columnsNeeded]
     edgesDict = edgesExploded_expand.to_dict(orient='records')
 
@@ -269,14 +269,14 @@ def formatTunnels(tunnels_gdf):
     ## Format bridge items
     if "cons_type" not in tunnels_gdf.columns:
         tunnels_gdf["cons_type"] = "unclassified"
-    tunnels_gdf = tunnels_gdf.rename(columns = {"tunnel_number":"tunnel_id"})
-    columnsNeeded = ["tunnel_id", "cons_type"]
+    tunnels_gdf = tunnels_gdf.rename(columns = {"tunnel_number":"ID"})
+    columnsNeeded = ["ID", "cons_type"]
     tunnels_gdf = tunnels_gdf.loc[:,columnsNeeded]
-    tunnels_gdf["tunnel_id"] = tunnels_gdf["tunnel_id"].apply(lambda x: x.replace(" ",""))
+    tunnels_gdf["ID"] = tunnels_gdf["ID"].apply(lambda x: x.replace(" ",""))
     ## Format the hwy_tunnels dict array
     tunnelDict = pd.DataFrame(tunnels_gdf)
     tunnelDict = tunnelDict.reset_index().rename(columns={"index":"location"})
-    tunnelDict = tunnelDict[["tunnel_id", "location", "cons_type"]]
+    tunnelDict = tunnelDict[["ID", "location", "cons_type"]]
     tunnelDict = tunnelDict.to_dict("records")
     return tnodeDF, tunnelDict
     
