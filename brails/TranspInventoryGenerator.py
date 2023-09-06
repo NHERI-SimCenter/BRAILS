@@ -132,8 +132,8 @@ class TranspInventoryGenerator:
 def formatBridges(bridges_gdf):
     ## Format bridge nodes
     bnodeDF = pd.DataFrame({"geometry":bridges_gdf["geometry"]}).reset_index().rename(columns = {"index":"nodeID"})
-    bnodeDF["lat"] = bnodeDF["geometry"].apply(lambda pt:pt.x)
-    bnodeDF["lon"] = bnodeDF["geometry"].apply(lambda pt:pt.y)
+    bnodeDF["lat"] = bnodeDF["geometry"].apply(lambda pt:pt.y)
+    bnodeDF["lon"] = bnodeDF["geometry"].apply(lambda pt:pt.x)
     bnodeDF.drop("geometry", axis=1, inplace=True)
     ## Format bridge items
     bridges_gdf["bridge_class"] = bridges_gdf["STRUCTURE_KIND"].apply(int)*100+bridges_gdf["STRUCTURE_TYPE"].apply(int)
@@ -263,8 +263,8 @@ def formatRoads(roads_gdf):
 def formatTunnels(tunnels_gdf):
     ## Format tunnel nodes
     tnodeDF = pd.DataFrame({"geometry":tunnels_gdf["geometry"]}).reset_index().rename(columns = {"index":"nodeID"})
-    tnodeDF["lat"] = tnodeDF["geometry"].apply(lambda pt:pt.x)
-    tnodeDF["lon"] = tnodeDF["geometry"].apply(lambda pt:pt.y)
+    tnodeDF["lat"] = tnodeDF["geometry"].apply(lambda pt:pt.y)
+    tnodeDF["lon"] = tnodeDF["geometry"].apply(lambda pt:pt.x)
     tnodeDF.drop("geometry", axis=1, inplace=True)
     ## Format bridge items
     if "cons_type" not in tunnels_gdf.columns:
