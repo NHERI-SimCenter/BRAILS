@@ -150,8 +150,22 @@ def formatBridges(bridges_gdf):
     return bnodeDF, bridgeDict
     
 def formatRoads(roads_gdf):
+    ## Expand roads_gdf geometry from multi-segment to singel segment
+    expandedRoads = []
+    for row_ind in roads_gdf.index:
+        LS_list = []
+        multiseg_line = roads_gdf.loc[row_ind,"geometry"]
+        for pt1, pt2 in zip(multiseg_line.coords, multiseg_line.coords[1:]):
+            LS_list.append(shapely.LineString([pt1, pt2]))
+        gdf_i = pd.concat([roads_gdf.loc[row_ind,:].to_frame().T]*len(LS_list), ignore_index=True)
+        for ind_i in range(len(LS_list)):    
+            gdf_i.loc[ind_i,"OID"] = gdf_i.loc[ind_i,"OID"]+"_"+str(ind_i)
+        gdf_i["geometry"] = LS_list
+        expandedRoads.append(gdf_i)
+    expandedRoads = pd.concat(expandedRoads, ignore_index=True)
+    expandedRoads = gpd.GeoDataFrame(expandedRoads, crs=roads_gdf.crs)
     ## Convert to graph to find the intersection nodes
-    graph = momepy.gdf_to_nx(roads_gdf.to_crs("epsg:32610"), approach='primal')
+    graph = momepy.gdf_to_nx(expandedRoads.to_crs("epsg:32610"), approach='primal')
     with warnings.catch_warnings(): #Suppress the warning of disconnected components in the graph
         warnings.simplefilter("ignore")
         nodes, edges, sw = momepy.nx_to_gdf(graph, points=True, lines=True,
@@ -161,9 +175,6 @@ def formatRoads(roads_gdf):
     nodes = nodes.to_crs("epsg:4326")
     edges = edges.to_crs("epsg:4326")
     rnodeDF = pd.DataFrame(nodes)
-    ### Some edges are duplicated, keep only the first one
-    edges = edges[edges.duplicated(['node_start', 'node_end'], keep="first")==False]
-    edges = edges.reset_index(drop=True)
     ### Some edges has start_node as the last point in the geometry and end_node as the first point, check and reorder
     for ind in edges.index:
         start = nodes.loc[edges.loc[ind, "node_start"],"geometry"]
@@ -179,79 +190,30 @@ def formatRoads(roads_gdf):
             edges.loc[ind,"node_start"] = newStartID
             edges.loc[ind,"node_end"] = newEndID
         else:
-            print(ind, "th row of edges has wrong start/first, end/last pairs, likely a bug of momepy.gdf_to_nx function")
+            print(ind, "th row of roadway has wrong start/first, end/last pairs, likely a bug of momepy.gdf_to_nx function")
+    ### Some edges are duplicated, keep only the first one
+    # edges = edges[edges.duplicated(['node_start', 'node_end'], keep="first")==False]
+    # edges = edges.reset_index(drop=True)
     ## Format roadways
-    ### Convert LineString to MultiLineString
-    MLSList = []
-    num_of_LS = []
-    for row_index in edges.index:
-        line = edges.loc[row_index, "geometry"]
-        coordsList = []
-        for pt1,pt2 in zip(line.coords, line.coords[1:]):
-            coordsList.append([pt1,pt2])
-        
-        lines = MultiLineString(coordsList)
-        MLSList.append(lines)
-        num_of_LS.append(len(coordsList))
-    edges["geometry"] = MLSList
-    edges["num_of_LS"] = num_of_LS
-    ### Expand each seg of MLS to one edge row
-    edgesExploded = edges.explode(index_parts = True)
-    nodeIDcursor = rnodeDF["nodeID"].max()
-    edgesExploded_expand = pd.DataFrame(columns = edgesExploded.columns)
-    newColumn = pd.DataFrame(columns = ["segID"])
-    edgesExploded_expand = pd.concat([edgesExploded_expand,newColumn],axis=1)
-    for ind1, ind2 in edgesExploded.index:
-        num_of_LS = edgesExploded.loc[(ind1,ind2),"num_of_LS"]
-        if num_of_LS == 1:
-            continue
-        if ind2 < num_of_LS-1:
-            pt_long = edgesExploded.loc[(ind1, ind2),"geometry"].xy[0][-1]
-            pt_lat = edgesExploded.loc[(ind1, ind2),"geometry"].xy[1][-1]
-            new_node = pd.DataFrame({"nodeID":[nodeIDcursor+1],"geometry": [shapely.geometry.Point(pt_long, pt_lat)]})
-            rnodeDF = pd.concat([rnodeDF, new_node], ignore_index=True)
-            nodeIDcursor += 1
-            new_edge = edgesExploded.loc[(ind1, ind2),:].to_frame().T.reset_index(drop = True)
-            newColumn = pd.DataFrame({"segID":[ind2]})
-            new_edge = pd.concat([new_edge, newColumn], axis = 1)
-            if ind2==0:
-                new_edge["node_end"] = nodeIDcursor
-            else:
-                new_edge["node_start"] = nodeIDcursor - 1
-                new_edge["node_end"] = nodeIDcursor
-            edgesExploded_expand = pd.concat([edgesExploded_expand, new_edge], ignore_index=True)
-        else:
-            new_edge = edgesExploded.loc[(ind1, ind2),:].to_frame().T.reset_index(drop = True)
-            newColumn = pd.DataFrame({"segID":[ind2]})
-            new_edge = pd.concat([new_edge, newColumn], axis = 1)
-            new_edge["node_start"] = nodeIDcursor 
-            edgesExploded_expand = pd.concat([edgesExploded_expand, new_edge], ignore_index=True)
-    ### Calculate road length with geopands
-    edgesExploded_expand_gdf = gpd.GeoDataFrame(edgesExploded_expand, geometry = "geometry", crs = "epsg:4269")
-    roadLength = edgesExploded_expand_gdf.to_crs("epsg:32610")["geometry"].length.values
-    del edgesExploded_expand_gdf
-    gc.collect() # Release the memory used by edgesExploded_expand_gdf
     ### Format and clean up roadway edges
     road_type = []
     lanes = []
     capacity = []
     edge_id = []
-    for row_ind in edgesExploded_expand.index:
-        mtfcc = edgesExploded_expand.loc[row_ind,"MTFCC"]
+    for row_ind in edges.index:
+        mtfcc = edges.loc[row_ind,"MTFCC"]
         road_type.append(ROADTYPE_MAP[mtfcc])
         lanes.append(ROADLANES_MAP[mtfcc])
         capacity.append(ROADCAPACITY_MAP[mtfcc])
-        edge_id.append(edgesExploded_expand.loc[row_ind,"OID"] + '_'
-                        + str(edgesExploded_expand.loc[row_ind,"segID"]))
-    edgesExploded_expand["ID"] = edge_id
-    edgesExploded_expand["length"] = roadLength
-    edgesExploded_expand["road_type"] = road_type
-    edgesExploded_expand["lanes"] = lanes
-    edgesExploded_expand["capacity"] = capacity
-    edgesExploded_expand = edgesExploded_expand.rename(columns={'node_start': 'start_node', 'node_end': 'end_node'})
+        edge_id.append(edges.loc[row_ind,"OID"])
+    edges["ID"] = edge_id
+    edges["road_type"] = road_type
+    edges["lanes"] = lanes
+    edges["capacity"] = capacity
+    edges = edges.rename(columns={'node_start': 'start_node', 'node_end': 'end_node', 'mm_len':"length"})
     columnsNeeded=['ID','length','start_node','end_node','road_type','lanes','capacity']
-    edgesExploded_expand = edgesExploded_expand[columnsNeeded]
-    edgesDict = edgesExploded_expand.to_dict(orient='records')
+    edges = edges[columnsNeeded]
+    edgesDict = edges.to_dict(orient='records')
 
     ## Format roadway nodes
     rnodeDF["lat"] = rnodeDF["geometry"].apply(lambda pt:pt.y)
