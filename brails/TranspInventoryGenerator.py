@@ -168,7 +168,7 @@ def formatRoads(roads_gdf):
     expandedRoads = pd.concat(expandedRoads, ignore_index=True)
     expandedRoads = gpd.GeoDataFrame(expandedRoads, crs=roads_gdf.crs)
     ## Convert to graph to find the intersection nodes
-    graph = momepy.gdf_to_nx(expandedRoads.to_crs("epsg:32610"), approach='primal')
+    graph = momepy.gdf_to_nx(expandedRoads.to_crs("epsg:6500"), approach='primal')
     with warnings.catch_warnings(): #Suppress the warning of disconnected components in the graph
         warnings.simplefilter("ignore")
         nodes, edges, sw = momepy.nx_to_gdf(graph, points=True, lines=True,
