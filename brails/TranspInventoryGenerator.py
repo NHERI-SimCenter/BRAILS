@@ -146,6 +146,7 @@ def formatBridges(bridges_gdf):
     bridgeDict = pd.DataFrame(bridges_gdf)
     bridgeDict = bridgeDict.reset_index().rename(columns={"index":"location"})
     bridgeDict = bridgeDict[["ID", "location", "bridge_class", "year_built", "nspans", "lmaxspan", "state_code"]]
+    bridgeDict = bridgeDict.sort_values(by = 'ID') 
     bridgeDict = bridgeDict.to_dict("records")
     return bnodeDF, bridgeDict
     
@@ -158,8 +159,10 @@ def formatRoads(roads_gdf):
         for pt1, pt2 in zip(multiseg_line.coords, multiseg_line.coords[1:]):
             LS_list.append(shapely.LineString([pt1, pt2]))
         gdf_i = pd.concat([roads_gdf.loc[row_ind,:].to_frame().T]*len(LS_list), ignore_index=True)
-        for ind_i in range(len(LS_list)):    
-            gdf_i.loc[ind_i,"OID"] = gdf_i.loc[ind_i,"OID"]+"_"+str(ind_i)
+        for ind_i in range(len(LS_list)):
+            numDigit = len(str(len(LS_list)))
+            suffixID = str(ind_i).zfill(numDigit)        
+            gdf_i.loc[ind_i,"OID"] = gdf_i.loc[ind_i,"OID"]+"_"+suffixID
         gdf_i["geometry"] = LS_list
         expandedRoads.append(gdf_i)
     expandedRoads = pd.concat(expandedRoads, ignore_index=True)
@@ -213,6 +216,7 @@ def formatRoads(roads_gdf):
     edges = edges.rename(columns={'node_start': 'start_node', 'node_end': 'end_node', 'mm_len':"length"})
     columnsNeeded=['ID','length','start_node','end_node','road_type','lanes','capacity']
     edges = edges[columnsNeeded]
+    edges = edges.sort_values(by="ID")
     edgesDict = edges.to_dict(orient='records')
 
     ## Format roadway nodes
@@ -228,7 +232,7 @@ def formatTunnels(tunnels_gdf):
     tnodeDF["lat"] = tnodeDF["geometry"].apply(lambda pt:pt.y)
     tnodeDF["lon"] = tnodeDF["geometry"].apply(lambda pt:pt.x)
     tnodeDF.drop("geometry", axis=1, inplace=True)
-    ## Format bridge items
+    ## Format tunnel items
     if "cons_type" not in tunnels_gdf.columns:
         tunnels_gdf["cons_type"] = "unclassified"
     tunnels_gdf = tunnels_gdf.rename(columns = {"tunnel_number":"ID"})
@@ -239,6 +243,7 @@ def formatTunnels(tunnels_gdf):
     tunnelDict = pd.DataFrame(tunnels_gdf)
     tunnelDict = tunnelDict.reset_index().rename(columns={"index":"location"})
     tunnelDict = tunnelDict[["ID", "location", "cons_type"]]
+    tunnelDict = tunnelDict.sort_values("ID")
     tunnelDict = tunnelDict.to_dict("records")
     return tnodeDF, tunnelDict
     
