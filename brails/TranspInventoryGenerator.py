@@ -136,10 +136,6 @@ class TranspInventoryGenerator:
         with open("hwy_inventory.json", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
         
-        # # Combine the geoJSON files into a single geoJSON
-        # combinedFileName = 'hwy_inventory.geojson'
-        # combineGeoJSON(bridgesFile, tunnelsFile, roadsFile, combinedFileName)
-        
         return
         
 # Break down long roads according to delta
@@ -193,10 +189,6 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf):
     if connectivity:
         bnodeDF = bridges_gdf["geometry"].reset_index().rename(columns = {"index":"nodeID"})
         bridges_gdf = bridges_gdf.reset_index().rename(columns={"index":"Location"})
-        # bnodeDF = pd.DataFrame({"geometry":bridges_gdf["geometry"]}).reset_index().rename(columns = {"index":"nodeID"})
-        # bnodeDF["lat"] = bnodeDF["geometry"].apply(lambda pt:pt.y)
-        # bnodeDF["lon"] = bnodeDF["geometry"].apply(lambda pt:pt.x)
-        # bnodeDF.drop("geometry", axis=1, inplace=True)
     else:
         bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=bridges_gdf.crs)
     ## Format bridge items
@@ -216,11 +208,6 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf):
     ## Format the hwy_bridges geojson
     bridges_gdf["type"] = "HwyBridge"
     bridgeDict = json.loads(bridges_gdf.to_json())
-    # bridgeDict = pd.DataFrame(bridges_gdf)
-    # bridgeDict = bridgeDict.reset_index().rename(columns={"index":"location"})
-    # bridgeDict = bridgeDict[["ID", "location", "bridgeClass", "yearBuilt", "numOfSpans", "maxSpanLength", "stateCode", "skew", "deckWidth"]]
-    # bridgeDict = bridgeDict.sort_values(by = 'ID') 
-    # bridgeDict = bridges_gdf.to_dict("records")
     return bnodeDF, bridgeDict
     
 def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
@@ -303,19 +290,10 @@ def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
     edges['type'] = "Roadway"
     edgesDict = json.loads(edges.to_json())
 
-    ## Format roadway nodes
-    # rnodeDF["lat"] = rnodeDF["geometry"].apply(lambda pt:pt.y)
-    # rnodeDF["lon"] = rnodeDF["geometry"].apply(lambda pt:pt.x)
-    # rnodeDF = rnodeDF.drop("geometry", axis=1)
-
     return rnodeDF, edgesDict
 
 def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     ## Format tunnel nodes
-    # tnodeDF = pd.DataFrame({"geometry":tunnels_gdf["geometry"]}).reset_index().rename(columns = {"index":"nodeID"})
-    # tnodeDF["lat"] = tnodeDF["geometry"].apply(lambda pt:pt.y)
-    # tnodeDF["lon"] = tnodeDF["geometry"].apply(lambda pt:pt.x)
-    # tnodeDF.drop("geometry", axis=1, inplace=True)
     if connectivity:
         tnodeDF = tunnels_gdf["geometry"].reset_index().rename(columns = {"index":"nodeID"})
         tunnels_gdf = tunnels_gdf.reset_index().rename(columns={"index":"Location"})
@@ -336,11 +314,6 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     ## Format the hwy_tunnels dict array
     tunnels_gdf["type"] = "HwyTunnel"
     tunnelDict = json.loads(tunnels_gdf.to_json())
-    # tunnelDict = pd.DataFrame(tunnels_gdf)
-    # tunnelDict = tunnelDict.reset_index().rename(columns={"index":"location"})
-    # tunnelDict = tunnelDict[["ID", "location", "consType"]]
-    # tunnelDict = tunnelDict.sort_values("ID")
-    # tunnelDict = tunnelDict.to_dict("records")
     return tnodeDF, tunnelDict
     
 
@@ -371,79 +344,3 @@ def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,\
         allNodeDict = json.loads(allNodeDict.to_json())
         combinedDict["features"]+=allNodeDict['features']
     return combinedDict
-# Not used
-def combineGeoJSON(bridgesFile, tunnelsFile, roadsFile, savePath):
-    # Format the bridge geoJSON
-    if bridgesFile is None:
-        bridgeJSON = {
-            "type": "FeatureCollection",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
-            "features": []
-        }
-    else:
-        BridgesRenameMap = {"STRUCTURE_NUMBER":"ID","geometry":"location", 
-            "YEAR_BUILT":"yearBuilt", "MAIN_UNIT_SPANS":"numOfSpans",
-            "MAX_SPAN_LEN_MT":"maxSpanLength","STATE_CODE":"stateCode",
-            "DEGREES_SKEW":"skew","DECK_WIDTH_MT":"deckWidth"}
-        with open(bridgesFile, 'r') as f:
-            bridgeJSON = json.load(f)
-        for brg in bridgeJSON['features']:
-            brg['properties'].update({'type':'hwyBridge'})
-            bridgeClass = int(brg['properties']["STRUCTURE_KIND"])*100 + \
-                int(brg['properties']["STRUCTURE_TYPE"])
-            brg['properties'].update({'bridgeClass':bridgeClass})
-            bridgeID = brg['properties']['ID'].replace(" ","")
-            brg['properties'].update({'ID':bridgeID})
-            for oldName, newName in BridgesRenameMap.items():
-                value = brg['properties'].pop(oldName)
-                brg['properties'].update({newName : value})
-    # Format the tunnel geoJSON
-    if tunnelsFile is None:
-        tunnelJSON = {
-            "type": "FeatureCollection",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
-            "features": []
-        }
-    else:
-        TunnelRenameMap = {"tunnel_number":"ID"}
-        with open(tunnelsFile, 'r') as f:
-            tunnelJSON = json.load(f)
-        for tul in tunnelJSON['features']:
-            tul['properties'].update({'type':'hwyTunnel'})
-            for oldName, newName in TunnelRenameMap.items():
-                value = tul['properties'].pop(oldName)
-                tul['properties'].update({newName : value})
-            # consType is not available in the national tunnel inventory. Set as
-            # unclassifed by default
-            tul['properties'].update({'consType':'unclassified'})
-            tunnelID = tul['properties']['ID'].replace(" ","")
-            tul['properties'].update({'ID':tunnelID})
-    # Format the roadway geoJSON
-    if roadsFile is None:
-        roadJSON = {
-            "type": "FeatureCollection",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
-            "features": []
-        }
-    else:
-        RoadRenameMap = {'OID': 'ID'}
-        with open(roadsFile, 'r') as f:
-            roadJSON = json.load(f)
-        for rd in roadJSON['features']:
-            rd['properties'].update({'type':'roadway'})
-            mtfcc = rd['properties']["MTFCC"]
-            rd['properties'].update({'roadType':ROADTYPE_MAP[mtfcc]})
-            rd['properties'].update({'lanes':ROADLANES_MAP[mtfcc]})
-            rd['properties'].update({'maxMPH':ROADCAPACITY_MAP[mtfcc]})
-            for oldName, newName in RoadRenameMap.items():
-                value = rd['properties'].pop(oldName)
-                rd['properties'].update({newName : value})
-    # Combine three geoJSON
-    combined = dict()
-    combined.update(bridgeJSON)
-    combined['features'] = combined['features']  + tunnelJSON['features']
-    combined['features'] = combined['features']  + roadJSON['features']
-    
-    with open(savePath, 'w') as f:
-        json.dump(combined, f, indent = 2)
-    return
