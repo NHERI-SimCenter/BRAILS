@@ -133,7 +133,7 @@ class TranspInventoryGenerator:
         combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,\
                                       tnodeDF, tunnelsDict, connectivity)
         # Dump to json file
-        with open("hwy_inventory.json", "w") as f:
+        with open("hwy_inventory.geojson", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
         
         return
