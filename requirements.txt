@@ -17,3 +17,5 @@ torchvision>0.13
 yacs
 Pillow
 scikit-learn
+geopandas
+momepy
