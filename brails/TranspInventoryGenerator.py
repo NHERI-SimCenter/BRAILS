@@ -264,7 +264,7 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
 # Needs parallel
 def remove2neighborEdges(nodes, edges, graph):
     import datetime
-    print(f"Start remove 2 neighbor at {datetime.datetime.now()}")
+    print(f"Start combining 2 neighbor roadways at {datetime.datetime.now()}")
     ### Some edges has start_node as the last point in the geometry and end_node
     #  as the first point, check and reorder
     for ind in edges.index:
@@ -289,22 +289,22 @@ def remove2neighborEdges(nodes, edges, graph):
     removedID_list = [] # nodes with two neighbors. Removed from graph
     skippedID_list = [] # nodes involved in loops. Skipped removing.
     error_list = [] #nodes run into error. Left the node in the graph as is. 
-    import time
-    timeList = np.zeros([5,1])
-    start = time.process_time_ns()
+    # import time
+    # timeList = np.zeros([5,1])
+    # start = time.process_time_ns()
     edges_end_index = edges.reset_index().set_index("node_end")
     edges_start_index = edges.reset_index().set_index("node_start")
-    timeList[4] += time.process_time_ns() - start
+    # timeList[4] += time.process_time_ns() - start
     # for i in range(2000):
     for i in range(len(nodesID_to_remove)):
-        start = time.process_time_ns()
+        # start = time.process_time_ns()
         nodeid = nodesID_to_remove[i]
         node = nodes_to_remove[i]
         #Option 1, 6.9+e9
         edge1 = edges[edges["node_end"] == nodeid]
         edge2 = edges[edges["node_start"] == nodeid]
-        timeList[0] += time.process_time_ns() - start
-        start = time.process_time_ns()
+        # timeList[0] += time.process_time_ns() - start
+        # start = time.process_time_ns()
 
         if (edge1.shape[0]==1 and edge2.shape[0]==1 and 
             edge1["node_start"].values[0]!= edge2["node_end"].values[0]):
@@ -331,8 +331,8 @@ def remove2neighborEdges(nodes, edges, graph):
             skippedID_list.append(nodeid)
             continue
 
-        timeList[1] += time.process_time_ns() - start
-        start = time.process_time_ns()
+        # timeList[1] += time.process_time_ns() - start
+        # start = time.process_time_ns()
         
         try:
             removedID_list.append(nodeid)
@@ -344,16 +344,16 @@ def remove2neighborEdges(nodes, edges, graph):
                                                       edge2["ExplodeID"].values[0])
             edges.drop(edge2.index, axis = 0, inplace=True)
 
-            timeList[2] += time.process_time_ns() - start
-            start = time.process_time_ns()
+            # timeList[2] += time.process_time_ns() - start
+            # start = time.process_time_ns()
 
             newEdge = list(graph.neighbors(node))
             graph.add_edge(newEdge[0], newEdge[1])
             # And delete the node
             graph.remove_node(node)
 
-            timeList[3] += time.process_time_ns() - start
-            start = time.process_time_ns()
+            # timeList[3] += time.process_time_ns() - start
+            # start = time.process_time_ns()
         except:
             error_list.append(nodeid)
     
@@ -368,8 +368,8 @@ def remove2neighborEdges(nodes, edges, graph):
     # Reset explode ID
     edges = edges.sort_values(by=["OID", 'ExplodeID'])
     edges['ExplodeID'] = edges.groupby('OID').cumcount()
-    print(f"timeList in remove neighbor {timeList}")
-    print(f"End remove 2 neighbor at {datetime.datetime.now()}")
+    # print(f"timeList in remove neighbor {timeList}")
+    print(f"End combining 2 neighbor roadways at {datetime.datetime.now()}")
     return nodes, edges
 
 def explodeLineString(roads_gdf):
