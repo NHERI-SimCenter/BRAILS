@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-19-2022
+# 12-28-2023
 
 import math
 import torch
@@ -49,22 +49,25 @@ from PIL import Image
 import torchvision.transforms as T
 from shapely.geometry import Polygon
 from tqdm import tqdm
-from random import random
+from sklearn.linear_model import LinearRegression
+from copy import deepcopy
 
 class FacadeParser:
     
     def __init__(self):                
+        self.cam_elevs = []
+        self.depthmaps = []
         self.footprints = []
-        self.streetScales = []
+        self.model_path = []        
         self.street_images = []        
-        self.model_path = []
 
-    def predict(self,imhandler,storymodel,model_path='tmp/models/facadeParser.pth',
+    def predict(self,imhandler,model_path='tmp/models/facadeParser.pth',
                 save_segimages=False):
+        self.cam_elevs = imhandler.cam_elevs[:]
+        self.depthmaps = imhandler.depthmaps[:]
         self.footprints = imhandler.footprints[:]
-        self.streetScales = imhandler.streetScales[:]
-        self.street_images = imhandler.street_images[:]        
         self.model_path = model_path
+        self.street_images = imhandler.street_images[:]        
         
         def compute_roofrun(footprint):
             # Find the mimumum area rectangle that fits around the footprint
@@ -269,19 +272,13 @@ class FacadeParser:
             if self.footprints[polyNo] is None:
                     continue
             
-            # Extract building footprint information and download the image viewing
-            # this footprint:
+            # Extract building footprint information :
             footprint = np.fliplr(np.squeeze(np.array(self.footprints[polyNo])))                        
 
-            if self.streetScales[polyNo] is None:
-                    continue            
-
-
-            # Run image through the segmentation model
+            # Run building image through the segmentation model:
             img = Image.open(self.street_images[polyNo])
             
-            trf = T.Compose([T.Resize(640),
-                             T.ToTensor(), 
+            trf = T.Compose([T.ToTensor(), 
                              T.Normalize(mean = [0.485, 0.456, 0.406], 
                                          std = [0.229, 0.224, 0.225])])
             
@@ -301,8 +298,7 @@ class FacadeParser:
             maskFacade = cv2.morphologyEx(openedFacadeMask, cv2.MORPH_CLOSE, kernel)
             openedWinMask = cv2.morphologyEx(maskWin, cv2.MORPH_OPEN, kernel)
             maskWin = cv2.morphologyEx(openedWinMask, cv2.MORPH_CLOSE, kernel)
-
-            
+       
             
             # Find roof contours
             contours, _ = cv2.findContours(maskRoof,cv2.RETR_EXTERNAL,
@@ -348,23 +344,71 @@ class FacadeParser:
             R0PixHeight = max(y)-min(y)
             R1PixHeight = R0PixHeight + roofPixHeight
         
+            # Get the raw depthmap for the building and crop it so that it covers 
+            # just the segmentation mask of the bbox for the building facade:
+            depthmap = self.depthmaps[polyNo]
+            depthmapbbox = depthmap.crop((min(x),min(y),max(x),max(y)))
             
-            # Calculate heigths of interest
-            ind = storymodel.system_dict['infer']['images'].index(self.street_images[polyNo])
-            normalizer = storymodel.system_dict['infer']['predictions'][ind]*14*(1.3-random()*0.4)
-            R0 = R0PixHeight*self.streetScales[polyNo]
-            if R0>normalizer:
-                normfact = normalizer/R0
-                R0 = normalizer
-            elif R0<0.8*normalizer:
-                normfact = normalizer/R0
-                R0 = normalizer            
-            else:
-                normfact = 1
-            R1 = R1PixHeight*self.streetScales[polyNo]*normfact
-            if (R1-R0)>1.5*normalizer:
-                R1 = R0 + (1.2-random()*0.4)*normalizer
+            # Convert the depthmap to a Numpy array for further processing and
+            # sample the raw depthmap at its vertical centerline:
+            depthmapbbox_arr = np.asarray(depthmapbbox)
+            depthmap_cl = depthmapbbox_arr[:,round(depthmapbbox.size[0]/2)]
+            
+            # Calculate the vertical camera angles corresponding to the bottom
+            # and top of the facade bounding box:
+            imHeight = img.size[1]
+            angleTop = (imHeight/2 - min(y))*90
+            angleBottom = (imHeight/2 - max(y))*90
+            
+            # Take the first derivative of the depthmap with respect to vertical
+            # pixel location and identify the depthmap discontinuity (break) 
+            # locations:
+            break_pts = [0]
+            boolval_prev = True
+            depthmap_cl_dx = np.append(abs(np.diff(depthmap_cl))<0.1,True)
+            for (counter, boolval_curr) in enumerate(depthmap_cl_dx):
+                if (boolval_prev==True and boolval_curr==False) or (boolval_prev==False and boolval_curr==True):
+                    break_pts.append(counter)
+                boolval_prev = boolval_curr
+            break_pts.append(counter)
+            
+            # Identify the depthmap segments to keep for extrapolation, i.e., 
+            # segments that are not discontinuities in the depthmap: 
+            segments_keep = []
+            for i in range(len(break_pts)-1):
+                if all(depthmap_cl_dx[break_pts[i]:break_pts[i+1]]) and all(depthmap_cl[break_pts[i]:break_pts[i+1]]!=255):
+                   segments_keep.append((break_pts[i],break_pts[i+1]))
+            
+            # Fit line models to individual (kept) segments of the depthmap and
+            # determine the model that results in the smallest residual for 
+            # all kept depthmap points:
+            lm = LinearRegression(fit_intercept = True)
+            x = np.arange(depthmapbbox.size[1])
+            xKeep = np.hstack([x[segment[0]:segment[1]] for segment in segments_keep])
+            yKeep = np.hstack([depthmap_cl[segment[0]:segment[1]] for segment in segments_keep])
+            residualprev = 1e10
+            model = deepcopy(lm)
+            for segment in segments_keep:
+                xvect = x[segment[0]:segment[1]]
+                yvect = depthmap_cl[segment[0]:segment[1]]
                 
+                # Fit model:
+                lm.fit(xvect.reshape(-1, 1),yvect)
+                preds = lm.predict(xKeep.reshape(-1,1))
+                residual = np.sum(np.square(yKeep-preds))
+                if residual<residualprev:
+                    model = deepcopy(lm)                
+                residualprev = residual
+            
+            # Extrapolate depthmap using the best-fit model:
+            depthmap_cl_depths = model.predict(x.reshape(-1,1))
+            
+            # Calculate heigths of interest:
+            R0 = (depthmap_cl_depths[0]*math.sin(angleTop) - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
+            scale = R0/R0PixHeight
+            R1 = R1PixHeight*scale                
+        
+            # Calculate roof pitch:            
             roof_run = compute_roofrun(footprint)
             roofPitch = (R1-R0)/roof_run
             self.predictions.loc[polyNo] = [self.street_images[polyNo], 
