@@ -41,7 +41,7 @@
 # Satish Rao
 #
 # Last updated:
-# 05-06-2023 
+# 12-29-2023 
 
 import random
 import sys
@@ -265,7 +265,7 @@ class InventoryGenerator:
                                    'garageExists')
                 self.inventory['garageExists'] = self.inventory['garageExists'].astype(dtype="boolean")
                 
-            elif attribute=='numstories' and 'storyModel' not in locals():
+            elif attribute=='numstories':
                 # Initialize the floor detector object:
                 storyModel = NFloorDetector()
 
@@ -325,28 +325,13 @@ class InventoryGenerator:
                                                     'satellite_images')
                 
             elif attribute in ['buildingheight','roofeaveheight','roofpitch']:
-                if 'storyModel' not in locals():
-                    # Initialize the floor detector object:
-                    storyModel = NFloorDetector()
-
-                    # Call the floor detector to determine number of floors of 
-                    # buildings in each image:
-                    storyModel.predict(imstreet)
-                    
-                    # Write the results to the inventory DataFrame:
-                    self.inventory = write_to_dataframe(self.inventory,
-                                       [storyModel.system_dict['infer']['images'],
-                                       storyModel.system_dict['infer']['predictions']],
-                                       'NumberOfStories')
-                    self.inventory['NumberOfStories'] = self.inventory['NumberOfStories'].astype(dtype='Int64')
-                
-                if 'facadeParserModel' not in locals():   
+                if 'facadeParserModel' not in locals():                
                     # Initialize the facade parser object:
                     facadeParserModel = FacadeParser()              
                     
                     # Call the facade parser to determine the requested 
                     # attribute for each building:
-                    facadeParserModel.predict(image_handler,storyModel)
+                    facadeParserModel.predict(image_handler)
                     
                 self.inventory = write_to_dataframe(self.inventory,
                                                     [facadeParserModel.predictions['image'].to_list(),
@@ -383,35 +368,35 @@ class InventoryGenerator:
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
         # titled IncompleteInventory.csv:  
-        dfout2merge['fp_as_string'] = dfout2merge['Footprint'].apply(lambda x: "".join(str(x)))
+        # dfout2merge['fp_as_string'] = dfout2merge['Footprint'].apply(lambda x: "".join(str(x)))
             
-        dfout_incomp = self.incompleteInventory.copy(deep=True)
-        dfout_incomp['fp_as_string'] = dfout_incomp['Footprint'].apply(lambda x: "".join(str(x)))
+        # dfout_incomp = self.incompleteInventory.copy(deep=True)
+        # dfout_incomp['fp_as_string'] = dfout_incomp['Footprint'].apply(lambda x: "".join(str(x)))
         
-        dfout_incomp = pd.merge(left=dfout_incomp, 
-                                right=dfout2merge.drop(columns=['Footprint'], errors='ignore'),
-                                how='left', left_on=['fp_as_string','PlanArea'], 
-                                right_on=['fp_as_string','PlanArea'],
-                                sort=False)
+        # dfout_incomp = pd.merge(left=dfout_incomp, 
+        #                         right=dfout2merge.drop(columns=['Footprint'], errors='ignore'),
+        #                         how='left', left_on=['fp_as_string','PlanArea'], 
+        #                         right_on=['fp_as_string','PlanArea'],
+        #                         sort=False)
         
-        dfout_incomp = dfout2merge.append(dfout_incomp[dfout_incomp.roofshape.isnull()])
-        dfout_incomp = dfout_incomp.reset_index(drop=True).drop(columns=['fp_as_string'], errors='ignore')
+        # dfout_incomp = dfout2merge.append(dfout_incomp[dfout_incomp.roofshape.isnull()])
+        # dfout_incomp = dfout_incomp.reset_index(drop=True).drop(columns=['fp_as_string'], errors='ignore')
 
-        self.incompleteInventory = dfout_incomp.copy(deep=True)
+        # self.incompleteInventory = dfout_incomp.copy(deep=True)
         
-        dfout_incomp4print = dfout_incomp.copy(deep=True)         
-        for index, row in dfout_incomp.iterrows():            
-            dfout_incomp4print.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
-            '{"type":"Polygon","coordinates":[' + 
-            f"""{row['Footprint']}""" + 
-            ']},"properties":{}}')
-            centroid = Polygon(row['Footprint']).centroid
-            dfout_incomp4print.loc[index, 'Latitude'] = centroid.y
-            dfout_incomp4print.loc[index, 'Longitude'] = centroid.x 
+        # dfout_incomp4print = dfout_incomp.copy(deep=True)         
+        # for index, row in dfout_incomp.iterrows():            
+        #     dfout_incomp4print.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
+        #     '{"type":"Polygon","coordinates":[' + 
+        #     f"""{row['Footprint']}""" + 
+        #     ']},"properties":{}}')
+        #     centroid = Polygon(row['Footprint']).centroid
+        #     dfout_incomp4print.loc[index, 'Latitude'] = centroid.y
+        #     dfout_incomp4print.loc[index, 'Longitude'] = centroid.x 
         
-        cols = [col for col in dfout_incomp4print.columns if col!='Footprint'] 
-        new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
-        dfout_incomp4print = dfout_incomp4print[new_cols]
+        # cols = [col for col in dfout_incomp4print.columns if col!='Footprint'] 
+        # new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
+        # dfout_incomp4print = dfout_incomp4print[new_cols]
          
-        dfout_incomp4print.to_csv('IncompleteInventory.csv', index=True, index_label='id', na_rep='NA') 
-        print('Incomplete inventory data available in IncompleteInventory.csv')        
+        # dfout_incomp4print.to_csv('IncompleteInventory.csv', index=True, index_label='id', na_rep='NA') 
+        # print('Incomplete inventory data available in IncompleteInventory.csv')        
