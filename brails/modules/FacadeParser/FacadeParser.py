@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 12-28-2023
+# 12-29-2023
 
 import math
 import torch
@@ -277,14 +277,17 @@ class FacadeParser:
 
             # Run building image through the segmentation model:
             img = Image.open(self.street_images[polyNo])
+            imsize = img.size
             
-            trf = T.Compose([T.ToTensor(), 
+            trf = T.Compose([T.Resize(round(1000/max(imsize)*min(imsize))),
+                             T.ToTensor(), 
                              T.Normalize(mean = [0.485, 0.456, 0.406], 
-                                         std = [0.229, 0.224, 0.225])])
+                                         std = [0.229, 0.224, 0.225])]) #
             
             inp = trf(img).unsqueeze(0).to(dev)
             scores = model.to(dev)(inp)['out']
-            pred = torch.argmax(scores.squeeze(), dim=0).detach().cpu().numpy()
+            predraw = torch.argmax(scores.squeeze(), dim=0).detach().cpu().numpy()
+            pred = np.array(Image.fromarray(np.uint8(predraw)).resize(imsize))
             
             # Extract component masks
             maskRoof = (pred==1).astype(np.uint8)
@@ -357,8 +360,8 @@ class FacadeParser:
             # Calculate the vertical camera angles corresponding to the bottom
             # and top of the facade bounding box:
             imHeight = img.size[1]
-            angleTop = (imHeight/2 - min(y))*90
-            angleBottom = (imHeight/2 - max(y))*90
+            angleTop = ((imHeight/2 - min(y))/(imHeight/2))*math.pi/2
+            angleBottom = ((imHeight/2 - max(y))/(imHeight/2))*math.pi/2
             
             # Take the first derivative of the depthmap with respect to vertical
             # pixel location and identify the depthmap discontinuity (break) 
@@ -387,7 +390,7 @@ class FacadeParser:
             xKeep = np.hstack([x[segment[0]:segment[1]] for segment in segments_keep])
             yKeep = np.hstack([depthmap_cl[segment[0]:segment[1]] for segment in segments_keep])
             residualprev = 1e10
-            model = deepcopy(lm)
+            model_lm = deepcopy(lm)
             for segment in segments_keep:
                 xvect = x[segment[0]:segment[1]]
                 yvect = depthmap_cl[segment[0]:segment[1]]
@@ -397,14 +400,15 @@ class FacadeParser:
                 preds = lm.predict(xKeep.reshape(-1,1))
                 residual = np.sum(np.square(yKeep-preds))
                 if residual<residualprev:
-                    model = deepcopy(lm)                
+                    model_lm = deepcopy(lm)                
                 residualprev = residual
             
             # Extrapolate depthmap using the best-fit model:
-            depthmap_cl_depths = model.predict(x.reshape(-1,1))
+            depthmap_cl_depths = model_lm.predict(x.reshape(-1,1))
             
             # Calculate heigths of interest:
-            R0 = (depthmap_cl_depths[0]*math.sin(angleTop) - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
+            R0 = (depthmap_cl_depths[0]*math.sin(angleTop) 
+                      - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
             scale = R0/R0PixHeight
             R1 = R1PixHeight*scale                
         
