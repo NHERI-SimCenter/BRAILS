@@ -364,7 +364,7 @@ class ImageHandler:
                 f.write(requests.get(query_url).content)
             self.satellite_images.append(im_name)
 
-    def GetGoogleStreetImage(self,footprints,save_interim_images=False):
+    def GetGoogleStreetImage(self,footprints,save_interim_images=False,save_all_cam_metadata=False):
         def get_bin(a):
             ba = bin(a)[2:]
             return "0"*(8 - len(ba)) + ba
@@ -757,7 +757,8 @@ class ImageHandler:
                                                           (fp_cent.y,fp_cent.x),
                                                           im_name,
                                                           self.apikey,
-                                                          saveInterIm=save_interim_images)
+                                                          saveInterIm=save_interim_images,
+                                                          saveAllCamMeta=save_all_cam_metadata)
             self.cam_elevs.append(camElev)
             self.depthmaps.append(depthMap)
 
