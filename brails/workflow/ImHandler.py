@@ -92,18 +92,22 @@ class ImageHandler:
 
             base_url = "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
 
+            # Define a retry stratey fgor common error codes to use when
+            # downloading tiles:
+            s = requests.Session()
+            retries = Retry(total=5, 
+                            backoff_factor=0.1,
+                            status_forcelist=[500, 502, 503, 504])
+            s.mount('https://', HTTPAdapter(max_retries=retries))
+            
+            # Get the tiles for the satellite image:
             tiles = []; offsets = []; imbnds = []
             ntiles = (len(xlist), len(ylist))
             for (yind,y) in enumerate(ylist):
               for (xind,x) in enumerate(xlist):
                   url = base_url.format(x=x, y=y, z=20)
                   
-                  # Download tile using a retry strategy for common error codes:
-                  s = requests.Session()
-                  retries = Retry(total=5, 
-                                  backoff_factor=0.1,
-                                  status_forcelist=[500, 502, 503, 504])
-                  s.mount('https://', HTTPAdapter(max_retries=retries))
+                  # Download tile using the defined retry strategy:
                   response = s.get(url)
 
                   # Save downloaded tile as a PIL image in tiles and calculate
@@ -506,7 +510,7 @@ class ImageHandler:
                 pano['depthImFile'] = ''
             return pano
         
-        def save_image_from_url(url, fout):        
+        def download_tiles(urls):    
             # Define a retry strategy for downloading a tile if a common error code
             # is encountered:
             s = requests.Session()
@@ -514,51 +518,28 @@ class ImageHandler:
                             backoff_factor=0.1,
                             status_forcelist=[500, 502, 503, 504])
             s.mount('https://', HTTPAdapter(max_retries=retries))
-            response = s.get(url)
-            
-            # Given a URL and a filename (fout) download a tile and save it in fout:    
-            with open(fout, "wb") as f:
-                f.write(response.content)
-        
-        def download_tiles(inps):    
-            # Download image tiles using up to 16 workers in parallel:   
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future_to_url = {
-                    executor.submit(save_image_from_url, url, fout): url
-                    for url, fout in inps
-                }
-                for future in concurrent.futures.as_completed(
-                    future_to_url
-                ):
-                    url = future_to_url[future]
-                    try:
-                        future.result()
-                    except Exception as exc:
-                        print(
-                            "%r generated an exception: %s" % (url, exc)
-                        )
+            # Given the URLs, download tiles and save them as a PIL images: 
+            tiles = []
+            for url in urls:
+                response = s.get(url)
+                tiles.append(Image.open(BytesIO(response.content)))
+            return tiles
         
         def download_pano(pano, saveim=False, imname='pano.jpg'):
             panoID = pano['id']
             imSize = pano['imageSize']
             zoomVal = pano['zoom']
-            outfolder = 'Tiles'
             
-            # Calculate tile locations (offsets) and determine corresponding tile URL
-            # links and filenames:
+            # Calculate tile locations (offsets) and determine corresponding
+            # tile URL links:
             baseurl = f'https://cbk0.google.com/cbk?output=tile&panoid={panoID}&zoom={zoomVal}'
-            os.makedirs(outfolder,exist_ok='True')
-            
-            inps = []
+            urls = []
             offsets = []
             for x in range(int(imSize[0]/512)):
                 for y in range(int(imSize[1]/512)):
-                    inps.append((baseurl+f'&x={x}&y={y}',outfolder + f'/Tile_{x}&{y}.jpg'))
+                    urls.append(baseurl+f'&x={x}&y={y}')
                     offsets.append((x*512,y*512))
-            download_tiles(inps)
-            
-            # Open the downloaded tile images:
-            images = [Image.open(tile) for _,tile in inps]
+            images = download_tiles(urls)
             
             # Combine the downloaded tiles to get the uncropped pano:
             combined_im = Image.new('RGB', imSize)
@@ -739,9 +720,7 @@ class ImageHandler:
         self.footprints = footprints
         self.centroids = []
         self.street_images = []
-        self.cam_elevs = []
-        self.depthmaps = []
-
+        inps = [] 
         for footprint in tqdm(footprints, desc='Obtaining street-level imagery'):
             fp = np.fliplr(np.squeeze(np.array(footprint))).tolist()
             fp_cent = Polygon(footprint).centroid
@@ -750,6 +729,8 @@ class ImageHandler:
             imName.replace(".","")
             im_name = f"tmp/images/street/imstreet_{imName}.jpg"
             self.street_images.append(im_name)
+            inps.append((fp,(fp_cent.y,fp_cent.x),im_name))
+            """
             (camElev,depthMap) = download_streetlev_image(fp,
                                                           (fp_cent.y,fp_cent.x),
                                                           im_name,
@@ -758,7 +739,31 @@ class ImageHandler:
                                                           saveAllCamMeta=save_all_cam_metadata)
             self.cam_elevs.append(camElev)
             self.depthmaps.append(depthMap)
+            """
+        pbar = tqdm(total=len(footprints), desc='Obtaining street-level imagery')     
+        results = []        
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_url = {
+                executor.submit(download_streetlev_image, fp, fpcent, fout,
+                                self.apikey, 
+                                saveInterIm=save_interim_images,
+                                saveAllCamMeta=save_all_cam_metadata): fout
+                for fp, fpcent, fout in inps
+            }
+            for future in concurrent.futures.as_completed(future_to_url):
+                fout = future_to_url[future]
+                pbar.update(n=1)
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    print("%r generated an exception: %s" % (fout, exc))
 
+        self.cam_elevs = []
+        self.depthmaps = []            
+        for result in results:
+            self.cam_elevs = result[0]
+            self.depthmaps = result[1]
 
     def GetGoogleStreetImageAPI(self,footprints):
         self.footprints = footprints[:]
