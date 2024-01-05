@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 07-14-2023   
+# 01-05-2024   
 
 
 import os
@@ -53,6 +53,7 @@ import matplotlib as mpl
 
 from PIL import Image
 from requests.adapters import HTTPAdapter, Retry
+from io import BytesIO
 from math import radians, sin, cos, atan2, sqrt, log, floor
 from shapely.geometry import Point, Polygon, MultiPoint
 from tqdm import tqdm
@@ -91,8 +92,7 @@ class ImageHandler:
 
             base_url = "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
 
-            counter = 0
-            tilelist = []; offsets = []; imbnds = []
+            tiles = []; offsets = []; imbnds = []
             ntiles = (len(xlist), len(ylist))
             for (yind,y) in enumerate(ylist):
               for (xind,x) in enumerate(xlist):
@@ -105,12 +105,10 @@ class ImageHandler:
                                   status_forcelist=[500, 502, 503, 504])
                   s.mount('https://', HTTPAdapter(max_retries=retries))
                   response = s.get(url)
-                  tilelist.append(f"{imname}_Tile{counter}.jpg")
-                  with open(tilelist[counter],'wb') as f:
-                      f.write(response.content)
-                      
-                  # Update tile counter and calculate tile offsets and bounds:
-                  counter+=1
+
+                  # Save downloaded tile as a PIL image in tiles and calculate
+                  # tile offsets and bounds:
+                  tiles.append(Image.open(BytesIO(response.content)))
                   offsets.append((xind*256,yind*256))
                   tilebnds = tile_bbox(zoom=20,x=x,y=y)
                   
@@ -142,13 +140,13 @@ class ImageHandler:
                       elif xind==ntiles[0]-1:
                         imbnds.append(tilebnds[3]) 
                         imbnds.append(tilebnds[1])            
-        
-            images = [Image.open(tile) for tile in tilelist]
+            
+            # Combine tiles into a single image using the calculated offsets:
             combined_im = Image.new('RGB', (256*ntiles[0], 256*ntiles[1]))
-        
-            for (ind,im) in enumerate(images):
+            for (ind,im) in enumerate(tiles):
               combined_im.paste(im, offsets[ind])
-        
+            
+            # Crop combined image around the footprint of the building:
             lonrange = imbnds[2]-imbnds[0]; latrange = imbnds[3]-imbnds[1]
         
             left = math.floor((bbox_buffered[0][0]-imbnds[0])/lonrange*256*ntiles[0])
@@ -158,6 +156,8 @@ class ImageHandler:
         
             cropped_im = combined_im.crop((left, top, right, bottom))
         
+            # Pad the image in horizontal or vertical directions to make it
+            # square:
             (newdim,indmax,mindim,_) = maxmin_and_ind(cropped_im.size)
             padded_im = Image.new('RGB', (newdim, newdim))
             buffer = round((newdim-mindim)/2)
@@ -167,10 +167,9 @@ class ImageHandler:
             else:
                 padded_im.paste(cropped_im, (0,buffer))     
             
+            # Resize the image to 640x640 and save it to impath:
             resized_im = padded_im.resize((640,640))
             resized_im.save(impath)
-            for tile in tilelist:
-                os.remove(tile)
         
         def determine_tile_coords(bbox_buffered):
             xlist = []; ylist = []
@@ -251,7 +250,7 @@ class ImageHandler:
 
         # Download satellite images corresponding to each building footprint:
         pbar = tqdm(total=len(footprints), desc='Obtaining satellite imagery') 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_url = {
                 executor.submit(download_satellite_image, fp, fout): fp
                 for fp, fout in inps
@@ -523,9 +522,7 @@ class ImageHandler:
         
         def download_tiles(inps):    
             # Download image tiles using up to 16 workers in parallel:   
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=16
-            ) as executor:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
                 future_to_url = {
                     executor.submit(save_image_from_url, url, fout): url
                     for url, fout in inps
