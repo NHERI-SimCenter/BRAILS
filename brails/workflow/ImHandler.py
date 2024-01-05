@@ -716,7 +716,7 @@ class ImageHandler:
         os.makedirs('tmp/images/street',exist_ok=True)
  
         # Compute building footprints, parse satellite image names, and 
-        # download building-wise street-level and depthmap imagery:
+        # create the list of inputs required for obtaining street-level imagery:
         self.footprints = footprints
         self.centroids = []
         self.street_images = []
@@ -730,19 +730,10 @@ class ImageHandler:
             im_name = f"tmp/images/street/imstreet_{imName}.jpg"
             self.street_images.append(im_name)
             inps.append((fp,(fp_cent.y,fp_cent.x),im_name))
-            """
-            (camElev,depthMap) = download_streetlev_image(fp,
-                                                          (fp_cent.y,fp_cent.x),
-                                                          im_name,
-                                                          self.apikey,
-                                                          saveInterIm=save_interim_images,
-                                                          saveAllCamMeta=save_all_cam_metadata)
-            self.cam_elevs.append(camElev)
-            self.depthmaps.append(depthMap)
-            """
-        pbar = tqdm(total=len(footprints), desc='Obtaining street-level imagery')     
-        results = []        
         
+        # Download building-wise street-level and depthmap imagery:
+        pbar = tqdm(total=len(footprints), desc='Obtaining street-level imagery')     
+        results = []              
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_url = {
                 executor.submit(download_streetlev_image, fp, fpcent, fout,
