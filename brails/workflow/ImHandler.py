@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 07-14-2023   
+# 01-05-2024   
 
 
 import os
@@ -53,6 +53,7 @@ import matplotlib as mpl
 
 from PIL import Image
 from requests.adapters import HTTPAdapter, Retry
+from io import BytesIO
 from math import radians, sin, cos, atan2, sqrt, log, floor
 from shapely.geometry import Point, Polygon, MultiPoint
 from tqdm import tqdm
@@ -91,26 +92,27 @@ class ImageHandler:
 
             base_url = "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
 
-            counter = 0
-            tilelist = []; offsets = []; imbnds = []
+            # Define a retry stratey fgor common error codes to use when
+            # downloading tiles:
+            s = requests.Session()
+            retries = Retry(total=5, 
+                            backoff_factor=0.1,
+                            status_forcelist=[500, 502, 503, 504])
+            s.mount('https://', HTTPAdapter(max_retries=retries))
+            
+            # Get the tiles for the satellite image:
+            tiles = []; offsets = []; imbnds = []
             ntiles = (len(xlist), len(ylist))
             for (yind,y) in enumerate(ylist):
               for (xind,x) in enumerate(xlist):
                   url = base_url.format(x=x, y=y, z=20)
                   
-                  # Download tile using a retry strategy for common error codes:
-                  s = requests.Session()
-                  retries = Retry(total=5, 
-                                  backoff_factor=0.1,
-                                  status_forcelist=[500, 502, 503, 504])
-                  s.mount('https://', HTTPAdapter(max_retries=retries))
+                  # Download tile using the defined retry strategy:
                   response = s.get(url)
-                  tilelist.append(f"{imname}_Tile{counter}.jpg")
-                  with open(tilelist[counter],'wb') as f:
-                      f.write(response.content)
-                      
-                  # Update tile counter and calculate tile offsets and bounds:
-                  counter+=1
+
+                  # Save downloaded tile as a PIL image in tiles and calculate
+                  # tile offsets and bounds:
+                  tiles.append(Image.open(BytesIO(response.content)))
                   offsets.append((xind*256,yind*256))
                   tilebnds = tile_bbox(zoom=20,x=x,y=y)
                   
@@ -142,13 +144,13 @@ class ImageHandler:
                       elif xind==ntiles[0]-1:
                         imbnds.append(tilebnds[3]) 
                         imbnds.append(tilebnds[1])            
-        
-            images = [Image.open(tile) for tile in tilelist]
+            
+            # Combine tiles into a single image using the calculated offsets:
             combined_im = Image.new('RGB', (256*ntiles[0], 256*ntiles[1]))
-        
-            for (ind,im) in enumerate(images):
+            for (ind,im) in enumerate(tiles):
               combined_im.paste(im, offsets[ind])
-        
+            
+            # Crop combined image around the footprint of the building:
             lonrange = imbnds[2]-imbnds[0]; latrange = imbnds[3]-imbnds[1]
         
             left = math.floor((bbox_buffered[0][0]-imbnds[0])/lonrange*256*ntiles[0])
@@ -158,6 +160,8 @@ class ImageHandler:
         
             cropped_im = combined_im.crop((left, top, right, bottom))
         
+            # Pad the image in horizontal or vertical directions to make it
+            # square:
             (newdim,indmax,mindim,_) = maxmin_and_ind(cropped_im.size)
             padded_im = Image.new('RGB', (newdim, newdim))
             buffer = round((newdim-mindim)/2)
@@ -167,10 +171,9 @@ class ImageHandler:
             else:
                 padded_im.paste(cropped_im, (0,buffer))     
             
+            # Resize the image to 640x640 and save it to impath:
             resized_im = padded_im.resize((640,640))
             resized_im.save(impath)
-            for tile in tilelist:
-                os.remove(tile)
         
         def determine_tile_coords(bbox_buffered):
             xlist = []; ylist = []
@@ -251,7 +254,7 @@ class ImageHandler:
 
         # Download satellite images corresponding to each building footprint:
         pbar = tqdm(total=len(footprints), desc='Obtaining satellite imagery') 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_url = {
                 executor.submit(download_satellite_image, fp, fout): fp
                 for fp, fout in inps
@@ -507,7 +510,7 @@ class ImageHandler:
                 pano['depthImFile'] = ''
             return pano
         
-        def save_image_from_url(url, fout):        
+        def download_tiles(urls):    
             # Define a retry strategy for downloading a tile if a common error code
             # is encountered:
             s = requests.Session()
@@ -515,53 +518,28 @@ class ImageHandler:
                             backoff_factor=0.1,
                             status_forcelist=[500, 502, 503, 504])
             s.mount('https://', HTTPAdapter(max_retries=retries))
-            response = s.get(url)
-            
-            # Given a URL and a filename (fout) download a tile and save it in fout:    
-            with open(fout, "wb") as f:
-                f.write(response.content)
-        
-        def download_tiles(inps):    
-            # Download image tiles using up to 16 workers in parallel:   
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=16
-            ) as executor:
-                future_to_url = {
-                    executor.submit(save_image_from_url, url, fout): url
-                    for url, fout in inps
-                }
-                for future in concurrent.futures.as_completed(
-                    future_to_url
-                ):
-                    url = future_to_url[future]
-                    try:
-                        future.result()
-                    except Exception as exc:
-                        print(
-                            "%r generated an exception: %s" % (url, exc)
-                        )
+            # Given the URLs, download tiles and save them as a PIL images: 
+            tiles = []
+            for url in urls:
+                response = s.get(url)
+                tiles.append(Image.open(BytesIO(response.content)))
+            return tiles
         
         def download_pano(pano, saveim=False, imname='pano.jpg'):
             panoID = pano['id']
             imSize = pano['imageSize']
             zoomVal = pano['zoom']
-            outfolder = 'Tiles'
             
-            # Calculate tile locations (offsets) and determine corresponding tile URL
-            # links and filenames:
+            # Calculate tile locations (offsets) and determine corresponding
+            # tile URL links:
             baseurl = f'https://cbk0.google.com/cbk?output=tile&panoid={panoID}&zoom={zoomVal}'
-            os.makedirs(outfolder,exist_ok='True')
-            
-            inps = []
+            urls = []
             offsets = []
             for x in range(int(imSize[0]/512)):
                 for y in range(int(imSize[1]/512)):
-                    inps.append((baseurl+f'&x={x}&y={y}',outfolder + f'/Tile_{x}&{y}.jpg'))
+                    urls.append(baseurl+f'&x={x}&y={y}')
                     offsets.append((x*512,y*512))
-            download_tiles(inps)
-            
-            # Open the downloaded tile images:
-            images = [Image.open(tile) for _,tile in inps]
+            images = download_tiles(urls)
             
             # Combine the downloaded tiles to get the uncropped pano:
             combined_im = Image.new('RGB', imSize)
@@ -738,13 +716,11 @@ class ImageHandler:
         os.makedirs('tmp/images/street',exist_ok=True)
  
         # Compute building footprints, parse satellite image names, and 
-        # download building-wise street-level and depthmap imagery:
+        # create the list of inputs required for obtaining street-level imagery:
         self.footprints = footprints
         self.centroids = []
         self.street_images = []
-        self.cam_elevs = []
-        self.depthmaps = []
-
+        inps = [] 
         for footprint in tqdm(footprints, desc='Obtaining street-level imagery'):
             fp = np.fliplr(np.squeeze(np.array(footprint))).tolist()
             fp_cent = Polygon(footprint).centroid
@@ -753,15 +729,63 @@ class ImageHandler:
             imName.replace(".","")
             im_name = f"tmp/images/street/imstreet_{imName}.jpg"
             self.street_images.append(im_name)
-            (camElev,depthMap) = download_streetlev_image(fp,
-                                                          (fp_cent.y,fp_cent.x),
-                                                          im_name,
-                                                          self.apikey,
-                                                          saveInterIm=save_interim_images,
-                                                          saveAllCamMeta=save_all_cam_metadata)
-            self.cam_elevs.append(camElev)
-            self.depthmaps.append(depthMap)
+            inps.append((fp,(fp_cent.y,fp_cent.x),im_name))
+        
+        # Download building-wise street-level and depthmap imagery:
+        pbar = tqdm(total=len(footprints), desc='Obtaining street-level imagery')     
+        results = {}             
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_url = {
+                executor.submit(download_streetlev_image, fp, fpcent, fout,
+                                self.apikey, 
+                                saveInterIm=save_interim_images,
+                                saveAllCamMeta=save_all_cam_metadata): fout
+                for fp, fpcent, fout in inps
+            }
+            for future in concurrent.futures.as_completed(future_to_url):
+                fout = future_to_url[future]
+                pbar.update(n=1)
+                try:
+                    results[fout] = future.result()
+                except Exception as exc:
+                    results[fout] = None
+                    print("%r generated an exception: %s" % (fout, exc))
 
+        if save_all_cam_metadata==False:
+            self.cam_elevs = []
+            self.depthmaps = [] 
+            for im in self.street_images:
+                if results[im] is not None:
+                    self.cam_elevs.append(results[im][0])
+                    self.depthmaps.append(results[im][1])
+                else:
+                    self.cam_elevs.append(None)
+                    self.depthmaps.append(None)
+        else:
+            self.cam_elevs = []
+            self.cam_latlons = []
+            self.depthmaps = []
+            self.fovs = []
+            self.headings = []
+            self.pitch = []
+            self.zoom_levels = []
+            for im in self.street_images:
+                if results[im] is not None:
+                    self.cam_elevs.append(results[im][0])
+                    self.cam_latlons.append(results[im][1])
+                    self.depthmaps.append(results[im][2])
+                    self.fovs.append(results[im][3])
+                    self.headings.append(results[im][4])
+                    self.pitch.append(results[im][5])
+                    self.zoom_levels.append(results[im][6])            
+                else:
+                    self.cam_elevs.append(None)
+                    self.cam_latlons.append(None)
+                    self.depthmaps.append(None)
+                    self.fovs.append(None)
+                    self.headings.append(None)
+                    self.pitch.append(None)
+                    self.zoom_levels.append(None)
 
     def GetGoogleStreetImageAPI(self,footprints):
         self.footprints = footprints[:]
