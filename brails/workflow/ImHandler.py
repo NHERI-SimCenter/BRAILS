@@ -733,7 +733,7 @@ class ImageHandler:
         
         # Download building-wise street-level and depthmap imagery:
         pbar = tqdm(total=len(footprints), desc='Obtaining street-level imagery')     
-        results = []              
+        results = {}             
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_url = {
                 executor.submit(download_streetlev_image, fp, fpcent, fout,
@@ -746,15 +746,46 @@ class ImageHandler:
                 fout = future_to_url[future]
                 pbar.update(n=1)
                 try:
-                    results.append(future.result())
+                    results[fout] = future.result()
                 except Exception as exc:
+                    results[fout] = None
                     print("%r generated an exception: %s" % (fout, exc))
 
-        self.cam_elevs = []
-        self.depthmaps = []            
-        for result in results:
-            self.cam_elevs = result[0]
-            self.depthmaps = result[1]
+        if save_all_cam_metadata==False:
+            self.cam_elevs = []
+            self.depthmaps = [] 
+            for im in self.street_images:
+                if results[im] is not None:
+                    self.cam_elevs.append(results[im][0])
+                    self.depthmaps.append(results[im][1])
+                else:
+                    self.cam_elevs.append(None)
+                    self.depthmaps.append(None)
+        else:
+            self.cam_elevs = []
+            self.cam_latlons = []
+            self.depthmaps = []
+            self.fovs = []
+            self.headings = []
+            self.pitch = []
+            self.zoom_levels = []
+            for im in self.street_images:
+                if results[im] is not None:
+                    self.cam_elevs.append(results[im][0])
+                    self.cam_latlons.append(results[im][1])
+                    self.depthmaps.append(results[im][2])
+                    self.fovs.append(results[im][3])
+                    self.headings.append(results[im][4])
+                    self.pitch.append(results[im][5])
+                    self.zoom_levels.append(results[im][6])            
+                else:
+                    self.cam_elevs.append(None)
+                    self.cam_latlons.append(None)
+                    self.depthmaps.append(None)
+                    self.fovs.append(None)
+                    self.headings.append(None)
+                    self.pitch.append(None)
+                    self.zoom_levels.append(None)
 
     def GetGoogleStreetImageAPI(self,footprints):
         self.footprints = footprints[:]
