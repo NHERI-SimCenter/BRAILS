@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-05-2024   
+# 01-06-2024   
 
 
 import os
@@ -176,6 +176,8 @@ class ImageHandler:
             resized_im.save(impath)
         
         def determine_tile_coords(bbox_buffered):
+            # Determine the tile x,y coordinates covering the area the bounding
+            # box:
             xlist = []; ylist = []
             for ind in range(4):
                 (lat, lon) = (bbox_buffered[1][ind],bbox_buffered[0][ind])
@@ -188,6 +190,8 @@ class ImageHandler:
             return (xlist,ylist)
         
         def bufferedfp(footprint):
+            # Place a buffer around the footprint to account for footprint
+            # inaccuracies with tall buildings:
             lon = [coord[0] for coord in footprint]
             lat = [coord[1] for coord in footprint]
         
@@ -204,6 +208,8 @@ class ImageHandler:
             return bbox_buffered
         
         def deg2num(lat, lon, zoom):
+            # Calculate the x,y coordinates corresponding to a lot/lon pair
+            # in degrees for a given zoom value:
             lat_rad = math.radians(lat)
             n = 2**zoom
             xtile = int((lon + 180)/360*n)
@@ -518,6 +524,7 @@ class ImageHandler:
                             backoff_factor=0.1,
                             status_forcelist=[500, 502, 503, 504])
             s.mount('https://', HTTPAdapter(max_retries=retries))
+            
             # Given the URLs, download tiles and save them as a PIL images: 
             tiles = []
             for url in urls:
@@ -751,6 +758,8 @@ class ImageHandler:
                     results[fout] = None
                     print("%r generated an exception: %s" % (fout, exc))
 
+        # Save the depthmap and all other required camera metadata in
+        # the class object:
         if save_all_cam_metadata==False:
             self.cam_elevs = []
             self.depthmaps = [] 
