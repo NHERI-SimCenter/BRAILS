@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 12-29-2023
+# 01-09-2024
 
 import math
 import torch
@@ -45,8 +45,11 @@ import cv2
 import os
 import pandas as pd
 import numpy as np
-from PIL import Image
+import base64
+import struct
 import torchvision.transforms as T
+
+from PIL import Image
 from shapely.geometry import Polygon
 from tqdm import tqdm
 from sklearn.linear_model import LinearRegression
@@ -249,6 +252,141 @@ class FacadeParser:
             
             rgb = np.stack([r, g, b], axis=2)
             return rgb
+        
+        def get_bin(a):
+            ba = bin(a)[2:]
+            return "0"*(8 - len(ba)) + ba
+
+        def getUInt16(arr, ind):
+            a = arr[ind]
+            b = arr[ind + 1]
+            return int(get_bin(b) + get_bin(a), 2)
+
+        def getFloat32(arr, ind):
+            return bin_to_float("".join(get_bin(i) for i in arr[ind : ind + 4][::-1]))
+
+        def bin_to_float(binary):
+            return struct.unpack("!f", struct.pack("!I", int(binary, 2)))[0]
+
+        def parse_dmap_str(b64_string):
+            # Ensure correct padding (The length of string needs to be divisible by 4):
+            b64_string += "="*((4 - len(b64_string)%4)%4)
+
+            # Convert the URL safe format to regular format:
+            data = b64_string.replace("-", "+").replace("_", "/")
+            
+            # Decode the string:
+            data = base64.b64decode(data)  
+            
+            return np.array([d for d in data])
+
+        def parse_dmap_header(depthMap):
+            return {
+                "headerSize": depthMap[0],
+                "numberOfPlanes": getUInt16(depthMap, 1),
+                "width": getUInt16(depthMap, 3),
+                "height": getUInt16(depthMap, 5),
+                "offset": getUInt16(depthMap, 7),
+            }
+
+        def parse_dmap_planes(header, depthMap):
+            indices = []
+            planes = []
+            n = [0, 0, 0]
+
+            for i in range(header["width"] * header["height"]):
+                indices.append(depthMap[header["offset"] + i])
+
+            for i in range(header["numberOfPlanes"]):
+                byteOffset = header["offset"] + header["width"]*header["height"] + i*4*4
+                n = [0, 0, 0]
+                n[0] = getFloat32(depthMap, byteOffset)
+                n[1] = getFloat32(depthMap, byteOffset + 4)
+                n[2] = getFloat32(depthMap, byteOffset + 8)
+                d = getFloat32(depthMap, byteOffset + 12)
+                planes.append({"n": n, "d": d})
+
+            return {"planes": planes, "indices": indices}
+
+        def compute_dmap(header, indices, planes):
+            v = [0, 0, 0]
+            w = header["width"]
+            h = header["height"]
+
+            depthMap = np.empty(w * h)
+
+            sin_theta = np.empty(h)
+            cos_theta = np.empty(h)
+            sin_phi = np.empty(w)
+            cos_phi = np.empty(w)
+
+            for y in range(h):
+                theta = (h - y - 0.5)/h*np.pi
+                sin_theta[y] = np.sin(theta)
+                cos_theta[y] = np.cos(theta)
+
+            for x in range(w):
+                phi = (w - x - 0.5)/w*2*np.pi + np.pi/2
+                sin_phi[x] = np.sin(phi)
+                cos_phi[x] = np.cos(phi)
+
+            for y in range(h):
+                for x in range(w):
+                    planeIdx = indices[y*w + x]
+
+                    v[0] = sin_theta[y]*cos_phi[x]
+                    v[1] = sin_theta[y]*sin_phi[x]
+                    v[2] = cos_theta[y]
+
+                    if planeIdx > 0:
+                        plane = planes[planeIdx]
+                        t = np.abs(
+                            plane["d"]
+                            / (
+                                v[0]*plane["n"][0]
+                                + v[1]*plane["n"][1]
+                                + v[2]*plane["n"][2]
+                            )
+                        )
+                        depthMap[y*w + (w - x - 1)] = t
+                    else:
+                        depthMap[y*w + (w - x - 1)] = 9999999999999999999.0
+            return {"width": w, "height": h, "depthMap": depthMap}
+
+        def get_depth_map(depthfile, imsize, bndangles):         
+            # Decode depth map string:
+            with open(depthfile,'r') as fout:
+                depthMapStr = fout.read()  
+            depthMapData = parse_dmap_str(depthMapStr)
+            
+            # Parse first bytes to get the data headers:
+            header = parse_dmap_header(depthMapData)
+            
+            # Parse remaining bytes into planes of float values:
+            data = parse_dmap_planes(header, depthMapData)
+            
+            # Compute position and depth values of pixels:
+            depthMap = compute_dmap(header, data["indices"], data["planes"])
+            
+            # Process float 1D array into integer 2D array with pixel values ranging 
+            # from 0 to 255:
+            im = depthMap["depthMap"]
+            im[np.where(im == max(im))[0]] = 255
+            if min(im) < 0:
+                im[np.where(im < 0)[0]] = 0
+            im = im.reshape((depthMap["height"], depthMap["width"]))
+            
+            # Flip the 2D array to have it line up with pano image pixels:
+            im = np.fliplr(im)
+            
+            # Read the 2D array into an image and resize this image to match the size 
+            # of pano:
+            imPanoDmap = Image.fromarray(im)
+            imPanoDmap = imPanoDmap.resize(imsize)
+            
+            # Crop the depthmap such that it includes the building of interest only:
+            imBldgDmap = imPanoDmap.crop((bndangles[0],0,bndangles[1],imsize[1]))     
+            return imBldgDmap
              
         # Set the computing environment
         if torch.cuda.is_available():
@@ -270,13 +408,19 @@ class FacadeParser:
         
         for polyNo in tqdm(range(len(self.footprints))):
             if self.footprints[polyNo] is None:
-                    continue
+                continue
             
             # Extract building footprint information :
             footprint = np.fliplr(np.squeeze(np.array(self.footprints[polyNo])))                        
 
             # Run building image through the segmentation model:
-            img = Image.open(self.street_images[polyNo])
+            try:
+                img = Image.open(self.street_images[polyNo])
+            except:
+                self.predictions.loc[polyNo] = [self.street_images[polyNo], 
+                                                None, None, None]
+                continue
+            
             imsize = img.size
             
             trf = T.Compose([T.Resize(round(1000/max(imsize)*min(imsize))),
@@ -349,7 +493,8 @@ class FacadeParser:
         
             # Get the raw depthmap for the building and crop it so that it covers 
             # just the segmentation mask of the bbox for the building facade:
-            depthmap = self.depthmaps[polyNo]
+            (depthfile, imsize, bndangles) = self.depthmaps[polyNo]
+            depthmap = get_depth_map(depthfile, imsize, bndangles)
             depthmapbbox = depthmap.crop((min(x),min(y),max(x),max(y)))
             
             # Convert the depthmap to a Numpy array for further processing and
