@@ -34,4 +34,4 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Author:
-# NHERI SimCenter
+# Barbaros Cetiner 
