@@ -47,6 +47,7 @@ from brails.workflow.FootprintHandler import FootprintHandler
 from shapely.geometry import box, Polygon
 import os
 import numpy as np
+from PIL import Image
 
 class imutils:
     def __init__(self): 
@@ -64,11 +65,11 @@ class imutils:
                 bbox_lonlat = feature_proj['coordinates'][0]
                 return (bbox_lonlat[0][0],bbox_lonlat[0][1],bbox_lonlat[2][0],bbox_lonlat[2][1])
             
-            def wgs842orgcrs(latlon,orgcrs):
+            def wgs842orgcrs(lonlat,orgcrs):
                 # In GeoJSON format
                 feature = {
                     "type": "Point",
-                    "coordinates": latlon
+                    "coordinates": lonlat
                 }
                 
                 # Project the feature to the desired CRS
@@ -87,10 +88,9 @@ class imutils:
             
             os.makedirs('images',exist_ok=True)
             os.makedirs('images/aerial',exist_ok=True)
-
             for fp in fpHandler.footprints:
                 cent = Polygon(fp).centroid
-                imname = f'images/aerial/imaerial_{cent.y:.8f}{cent.x:.8f}.tif'
+                imname = f'images/aerial/imaerial_{cent.y:.8f}{cent.x:.8f}.jpg'
                 fp_xy = []
                 for vert in fp:
                     fp_xy.append(wgs842orgcrs(vert,dataset.crs))
@@ -108,27 +108,19 @@ class imutils:
                                 xsize,
                                 ysize,
                                 )
-                transform = dataset.window_transform(window)
             
-                # Create a new cropped raster to write to
-                profile = dataset.profile
-                profile.update({
-                    'width': xsize,
-                    'height': ysize,
-                    'transform': transform})
-            
-                with rasterio.open(imname, 'w', **profile) as dst:
-                    # Read the data from the window and write it to the output raster
-                    imarray = dataset.read(window=window)
-                    unique, counts = np.unique(imarray, return_counts=True)
-                    try:
-                        zerocount = dict(zip(unique, counts))[0]
-                    except:
-                        zerocount = 0
-                    if (zerocount/imarray.size)<0.5:
-                        self.footprints.append(fp)
-                        self.aerialImageList.append(imname)
-                        dst.write(imarray)
-            
+                imarray = dataset.read(window=window)
+                unique, counts = np.unique(imarray, return_counts=True)
+                try:
+                    zerocount = dict(zip(unique, counts))[0]
+                except:
+                    zerocount = 0
+                if (zerocount/imarray.size)<0.5:
+                    self.footprints.append(fp)
+                    self.aerialImageList.append(imname)
+                    imout =  np.moveaxis(np.moveaxis(imarray, -1, 0),-1,1)
+                    imout = Image.fromarray(imout[:,:,:3])
+                    imout.save(imname)
+                    
             print(f'\nExtracted aerial imagery for a total of {len(self.footprints)} buildings.')
             print(f'You can access the extracted images at {os.getcwd()}/images/aerial')
