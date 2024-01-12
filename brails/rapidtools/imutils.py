@@ -37,14 +37,16 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-11-2024
+# 01-12-2024
 
 import rasterio
 import rasterio.warp
 from rasterio.crs import CRS
+from rasterio.windows import Window
 from brails.workflow.FootprintHandler import FootprintHandler
 from shapely.geometry import box, Polygon
-from rasterio.windows import Window
+import os
+import numpy as np
 
 class imutils:
     def __init__(self): 
@@ -77,25 +79,29 @@ class imutils:
                 )    
                 return feature_proj['coordinates']
             
-            dataset = rasterio.open('Trinity5camera60acreTest_transparent_mosaic_group1-001.tif')
+            dataset = rasterio.open(rasterMosaicFile)
             bbox_wgs84 = orgcrs2wgs84_bbox(box(*dataset.bounds),dataset.crs)
             
             fpHandler = FootprintHandler()
             fpHandler.fetch_footprint_data(bbox_wgs84,fpSource='osm')
             
-            self.footprints = fpHandler.footprints
-            for fp in self.footprints:
+            os.makedirs('images',exist_ok=True)
+            os.makedirs('images/aerial',exist_ok=True)
+
+            for fp in fpHandler.footprints:
                 cent = Polygon(fp).centroid
-                imname = f'imarial_{cent.y:.8f}{cent.x:.2f}.tif'
-                self.aerialImageList.append(imname)
+                imname = f'images/aerial/imaerial_{cent.y:.8f}{cent.x:.8f}.tif'
                 fp_xy = []
                 for vert in fp:
                     fp_xy.append(wgs842orgcrs(vert,dataset.crs))
-                poly_xy = Polygon(fp_xy).buffer(0.2).bounds
+                poly_xy = Polygon(fp_xy).bounds
+                bufferdist = max(abs(poly_xy[0]-poly_xy[2]),abs(poly_xy[1]-poly_xy[3]))*0.2
+                poly_xy = Polygon(fp_xy).buffer(bufferdist).bounds
                 row1, col1 = dataset.index(poly_xy[0],poly_xy[1])
                 row2, col2 = dataset.index(poly_xy[2],poly_xy[3])
                 ysize = max(row1,row2)-min(row1,row2)
                 xsize = max(col1,col2)-min(col1,col2)
+                
                 # Create a Window and calculate the transform from the source dataset    
                 window = Window(min(col1,col2),
                                 min(row1,row2),
@@ -107,10 +113,22 @@ class imutils:
                 # Create a new cropped raster to write to
                 profile = dataset.profile
                 profile.update({
-                    'height': xsize,
-                    'width': ysize,
+                    'width': xsize,
+                    'height': ysize,
                     'transform': transform})
             
                 with rasterio.open(imname, 'w', **profile) as dst:
                     # Read the data from the window and write it to the output raster
-                    dst.write(dataset.read(window=window))
+                    imarray = dataset.read(window=window)
+                    unique, counts = np.unique(imarray, return_counts=True)
+                    try:
+                        zerocount = dict(zip(unique, counts))[0]
+                    except:
+                        zerocount = 0
+                    if (zerocount/imarray.size)<0.5:
+                        self.footprints.append(fp)
+                        self.aerialImageList.append(imname)
+                        dst.write(imarray)
+            
+            print(f'\nExtracted aerial imagery for a total of {len(self.footprints)} buildings.')
+            print(f'You can access the extracted images at {os.getcwd()}/images/aerial')
