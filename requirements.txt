@@ -19,3 +19,4 @@ Pillow
 scikit-learn
 geopandas
 momepy
+rasterio
