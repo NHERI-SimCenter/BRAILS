@@ -47,7 +47,6 @@ from brails.workflow.FootprintHandler import FootprintHandler
 from shapely.geometry import box, Polygon
 import os
 import numpy as np
-import concurrent.futures
 from PIL import Image
 from tqdm import tqdm
 
@@ -119,44 +118,31 @@ class imutils:
                 results = None
             return results
         
+        # Read the aerial imagery GeoTIFF into a dataset object:
         dataset = rasterio.open(rasterMosaicFile, driver='GTiff', num_threads='all_cpus')
+        
+        # Compute the coordinates of the bounding box for the dataset
         bbox_wgs84 = orgcrs2wgs84_bbox(box(*dataset.bounds),dataset.crs)
         
+        # Get the footprints contained in the determined bounding box:
         fpHandler = FootprintHandler()
         fpHandler.fetch_footprint_data(bbox_wgs84,fpSource=fpData)
         
+        # Create the folder to extract the aerial imagery:
         os.makedirs('images',exist_ok=True)
         os.makedirs('images/aerial',exist_ok=True)
         
-        # Download building-wise aerial imagery:
+        # Extract building-wise aerial imagery:
         footprints = fpHandler.footprints
-        print('\n)')
-        results = []            
-        """
+        print('\n')
         for fp in tqdm(footprints, desc='Extracting aerial imagery...'):
            res = get_image_for_fp(dataset,fp) 
-           results.append(res)
-        """
-        pbar = tqdm(total=len(footprints), desc='Extracting aerial imagery...')     
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_to_url = {
-                executor.submit(get_image_for_fp, dataset, fp): fp
-                for fp in footprints
-            }
-            for future in concurrent.futures.as_completed(future_to_url):
-                fp = future_to_url[future]
-                pbar.update(n=1)
-                try:
-                    results.append(future.result())
-                except Exception as exc:
-                    print("%r generated an exception: %s" % (fp, exc))
-
-        for res in results:
-            if res is not None:
-                (fp,imout,fp_cent) = res
-                self.footprints.append(fp)
-                self.aerialImageList.append(imout)
-                self.centroids.append(fp_cent)
+           if res is not None:
+               (fp,imout,fp_cent) = res
+               self.footprints.append(fp)
+               self.aerialImageList.append(imout)
+               self.centroids.append(fp_cent)
         
+        # Report the total number of images extracted and their directory:    
         print(f'\nExtracted aerial imagery for a total of {len(self.footprints)} buildings.')
         print(f'You can access the extracted images at {os.getcwd()}/images/aerial')
