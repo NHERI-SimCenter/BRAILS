@@ -108,8 +108,8 @@ class NSIParser:
             # Construct the query URL for the bounding box input
             baseurl = "https://nsi.sec.usace.army.mil/nsiapi/structures?bbox="        
             bboxstr = (f'{minlon:.5f},{minlat:.5f},{minlon:.5f},{maxlat:.5f},'
-                       '{maxlon:.5f},{maxlat:.5f},{maxlon:.5f},{minlat:.5f},'
-                       '{minlon:.5f},{minlat:.5f}')
+                       f'{maxlon:.5f},{maxlat:.5f},{maxlon:.5f},{minlat:.5f},'
+                       f'{minlon:.5f},{minlat:.5f}')
             url = baseurl + bboxstr                  
             
             # Define a retry stratey for common error codes to use in downloading
