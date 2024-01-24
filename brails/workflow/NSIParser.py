@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-19-2024  
+# 01-24-2024  
 
 import requests 
 import numpy as np
@@ -134,7 +134,7 @@ class NSIParser:
                 datadict[pt] = data['properties']
             return datadict
         
-        def get_inv_from_datadict(datadict):
+        def get_inv_from_datadict(datadict,footprints):
             # Create an STR tree for the building points obtained from NBI: 
             points = list(datadict.keys())
             pttree = STRtree(points)
@@ -198,7 +198,7 @@ class NSIParser:
         datadict = get_nbi_data(bbox)  
         
         # Create a footprint-merged building inventory from extracted NBI data:
-        self.inventory = get_inv_from_datadict(datadict)
+        self.inventory = get_inv_from_datadict(datadict,footprints)
         
         # Write the created inventory in R2D-compatible CSV format:
         self.inventory.to_csv('inventory.csv', index=True, index_label='id') 
