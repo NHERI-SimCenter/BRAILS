@@ -37,17 +37,20 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 07-14-2023  
+# 01-24-2024  
 
 import math
 import json
 import requests
 import sys
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from itertools import groupby
-from shapely.geometry import Polygon, LineString, MultiPolygon, box
+from shapely.geometry import Point, Polygon, LineString, MultiPolygon, box
 from shapely.ops import linemerge, unary_union, polygonize
+from shapely.strtree import STRtree
+
 
 class FootprintHandler:
     def __init__(self): 
@@ -57,14 +60,16 @@ class FootprintHandler:
         self.footprints = []
         self.bldgheights = []
         
-    def fetch_footprint_data(self,queryarea,fpSource='osm'):
+    def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None):
         """
-        Function that loads footprint data from OpenStreetMap, Microsoft or USA
-        Structures data
+        Function that loads footprint data from OpenStreetMap, Microsoft, USA
+        Structures, user-defined data
         
         Input: Location entry defined as a string or a list of strings 
                containing the area name(s) or a tuple containing the longitude
                and longitude pairs for the bounding box of the area of interest
+               or a GeoJSON file containing footprint (or point location) and
+               inventory data 
         Output: Footprint information parsed as a list of lists with each
                 coordinate described in longitude and latitude pairs   
         """
@@ -196,7 +201,7 @@ class FootprintHandler:
             
             return footprints
  
-        def get_ms_footprints(self):
+        def get_ms_footprints(queryarea):
             def fetch_roi(queryarea):
                 # Search for the query area using Nominatim API:
                 print(f"\nSearching for {queryarea}...")
@@ -385,7 +390,11 @@ class FootprintHandler:
                         fp_poly = Polygon(row['geometry']['coordinates'][0])
                         if fp_poly.intersects(bpoly):
                             footprints.append(row['geometry']['coordinates'][0])
-                            bldgheights.append(row['properties']['height']*3.28084)
+                            height = row['properties']['height']
+                            if height!=-1:
+                                bldgheights.append(height*3.28084)
+                            else:
+                                bldgheights.append(0)
             
                 return (footprints, bldgheights)
             
@@ -414,7 +423,7 @@ class FootprintHandler:
             write_fp2geojson(footprints,bldgheights)
             
             print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")
-            return footprints        
+            return (footprints,bldgheights)        
      
         def get_usastruct_footprints(queryarea):
             if isinstance(queryarea,tuple):
@@ -485,7 +494,7 @@ class FootprintHandler:
             else: #return in ratio of sphere total area
                 return area
         
-        def load_footprint_data(fpfile):
+        def load_footprint_data(fpfile,attrmapfile,fpSource):
             """
             Function that loads footprint data from a GeoJSON file
             
@@ -500,14 +509,104 @@ class FootprintHandler:
                 else:
                     suffix = ''
                 return suffix
+
+            def get_bbox(points):
+                """
+                Function that determines the extent of the area covered by a set of points
+                as a tight-fit rectangular bounding box
+                
+                Input:  List of point data defined as a list of coordinates in EPSG 4326,
+                        i.e., [longitude,latitude].
+                Output: Tuple containing the minimum and maximum latitude and 
+                        longitude values 
+               """     
+               # :
+                minlat = points[0][1]
+                minlon = points[0][0]
+                maxlat = points[0][1]
+                maxlon = points[0][0]
+                for pt in points:
+                    if pt[1]>maxlat:
+                        maxlat = pt[1]
+                    if pt[0]>maxlon:
+                        maxlon = pt[0]
+                    if pt[1]<minlat:
+                        minlat = pt[1]
+                    if pt[0]<minlon:
+                        minlon = pt[0]
+                return (minlon-0.001,minlat-0.001,maxlon+0.001,maxlat+0.001)
+            
+            def fp_download(bbox,fpSource):
+                if fpSource=='osm':
+                    footprints = get_osm_footprints(bbox)
+                elif fpSource=='ms':
+                     (footprints, _) = get_ms_footprints(bbox)
+                elif fpSource=='usastr':
+                    footprints = get_usastruct_footprints(bbox)
+                return footprints
+                        
+            with open(attrmapfile) as f:
+                lines = [line.rstrip() for line in f]
+                attrmap = {}
+                for line in lines:
+                    lout = line.split(':')
+                    if lout[1]!='':
+                        attrmap[lout[1]] = lout[0]
+            
+            attributes = {}
+            for attr in attrmap.values():
+                attributes[attr] = []  
             
             with open(fpfile) as f:
                 data = json.load(f)['features']
-
-                footprints = []
+            
+            attrkeys = list(data[0]['properties'].keys()) 
+            print(attrkeys)
+            ptdata = all(loc['geometry']['type']=='Point' for loc in data)  
+            if ptdata:
+                # Write the data in datalist into a dictionary for better data access,
+                # and filtering the duplicate entries:
+                datadict = {}
+                ptcoords = []
+                for loc in data:
+                    ptcoord = loc['geometry']['coordinates']
+                    ptcoords.append(ptcoord)
+                    pt = Point(ptcoord)
+                    datadict[pt] = loc['properties']
+                
+                points = list(datadict.keys())
+                # Determine the coordinates of the bounding box including the points:
+                bbox = get_bbox(ptcoords)      
+                footprints = fp_download(bbox,fpSource)
+                pttree = STRtree(points)
+                
+                # Find the data points that are enclosed in each footprint:
+                ress = []
+                for fp in footprints:
+                    res = pttree.query(Polygon(fp))
+                    if res.size!=0:
+                        ress.append(res)
+                    else:
+                        ress.append(np.empty(shape=(0, 0)))       
+                    
+                # Match point data to each footprint:
+                footprints_out = []
+                for ind, fp in enumerate(footprints):
+                    if ress[ind].size!=0:
+                        footprints_out.append(fp) 
+                        ptind = ress[ind][0]
+                        ptres = datadict[points[ptind]]
+                        for key in attrkeys:
+                            try:
+                                attributes[attrmap[key]].append(ptres[key])
+                            except:
+                                pass
+                   
+            else:  
+                footprints_out = []
                 discardedfp_count = 0
-                correctedfp_count = 0
-                for count, loc in enumerate(data):
+                correctedfp_count = 0       
+                for loc in data:
                     if loc['geometry']['type']=='Polygon':
                         temp_fp = loc['geometry']['coordinates']
                         if len(temp_fp)>1:
@@ -522,42 +621,54 @@ class FootprintHandler:
                            fp = fp[list_len.index(max(list_len))]
                            correctedfp_count+=1
                         
-                        footprints.append(fp)
+                        footprints_out.append(fp)
+                        for key in attrkeys:
+                            try:
+                                attributes[attrmap[key]].append(loc['properties'][key])
+                            except:
+                                pass
                             
                     elif loc['geometry']['type']=='MultiPolygon':
-                        discardedfp_count+=1   
-                
+                        discardedfp_count+=1              
+
                 if discardedfp_count==0:   
-                    print(f"Extracted a total of {len(footprints)} building footprints from {fpfile}")
+                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
                 else: 
                     print(f"Corrected {correctedfp_count} building footprint{pluralsuffix(correctedfp_count)} with invalid geometry")
                     print(f"Discarded {discardedfp_count} building footprint{pluralsuffix(discardedfp_count)} with invalid geometry")
-                    print(f"Extracted a total of {len(footprints)} building footprints from {fpfile}")
-            return footprints
+                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
+
+            return (footprints_out, attributes)
 
         def fp_source_selector(self):
             if self.fpSource=='osm':
                 footprints = get_osm_footprints(self.queryarea)
+                bldgheights = []
             elif self.fpSource=='ms':
-                 footprints = get_ms_footprints(self.queryarea)
+                 (footprints,bldgheights) = get_ms_footprints(self.queryarea)
             elif self.fpSource=='usastr':
                 footprints = get_usastruct_footprints(self.queryarea)
-            return footprints
+                bldgheights = []
+            return (footprints,bldgheights)
 
         self.queryarea = queryarea
-        self.fpSource = fpSource   
-        
+        self.fpSource = fpSource
         if isinstance(self.queryarea,str):
             if 'geojson' in queryarea.lower():
-                self.footprints = load_footprint_data(self.queryarea)
+                (self.footprints,self.attributes) = load_footprint_data(
+                    self.queryarea,
+                    attrmap,
+                    self.fpSource)
             else:
-                self.footprints = fp_source_selector(self)
+                (self.footprints,self.bldgheights) = fp_source_selector(self)
         elif isinstance(queryarea,tuple):
-            self.footprints = fp_source_selector(self)
+            (self.footprints,self.bldgheights) = fp_source_selector(self)
         elif isinstance(queryarea,list):    
             self.footprints = []
             for query in self.queryarea: 
-                self.footprints.extend(fp_source_selector(self))
+                (fps, bldghts) = fp_source_selector(query)
+                self.footprints.extend(fps)
+                self.bldgheights.extend(bldghts)
         else:
             sys.exit('Incorrect location entry. The location entry must be defined as' + 
                      ' 1) a string or a list of strings containing the name(s) of the query areas,' + 
