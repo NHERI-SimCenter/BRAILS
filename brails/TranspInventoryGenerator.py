@@ -93,13 +93,18 @@ class TranspInventoryGenerator:
         outfiles = ", ".join(value for value in tphandler.output_files.values())
         print(f'\nTransportation inventory data available in {outfiles}')
     
-    def combineAndFormat_HWY(self, minimumHAZUS, connectivity, maxRoadLength):
+    def combineAndFormat_HWY(self, minimumHAZUS, connectivity, maxRoadLength, lengthUnit):
         print(f"Formatting and combining fetched data in {self.inventory_files}")
+
+        # convert maxRoadLength to a unit of m, which is used in the cartesian 
+        # coordinate epsg:6500
+        maxRoadLength = convertUnits(maxRoadLength, lengthUnit, 'm')
         # Format bridges
         bridgesFile = self.inventory_files.get("bridges", None)
         if bridgesFile is not None:
             bridges_gdf = gpd.read_file(bridgesFile)
-            bnodeDF, bridgesDict = formatBridges(minimumHAZUS, connectivity, bridges_gdf)
+            bnodeDF, bridgesDict = formatBridges(minimumHAZUS, connectivity,\
+                                                 bridges_gdf, lengthUnit)
         else:
             bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             bridgesDict = {'type':'FeatureCollection', 
@@ -112,6 +117,11 @@ class TranspInventoryGenerator:
             roads_gdf = gpd.read_file(roadsFile).explode(index_parts = False)
             rnodeDF, roadsDict = formatRoads(minimumHAZUS, connectivity,\
                                              maxRoadLength, roads_gdf)
+            formattedRoadsFile = "ProcessedRoadNetworkRoads.geojson"
+            with open(formattedRoadsFile, 'w') as f:
+                json.dump(roadsDict, f, indent = 2)
+            if connectivity:
+                rnodeDF.to_file('ProcessedRoadNetworkNodes.geojson',driver='GeoJSON')
         else:
             rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             roadsDict = {'type':'FeatureCollection', 
@@ -137,18 +147,38 @@ class TranspInventoryGenerator:
             json.dump(combinedGeoJSON, f, indent = 2)
         
         return
-        
+
+
+# Convert common length units
+def convertUnits(value, unit_in, unit_out):
+    aval_types = ['m', 'mm', 'cm', 'km', 'inch', 'ft', 'mile']
+    m = 1.
+    mm = 0.001 * m
+    cm = 0.01 * m
+    km = 1000. * m
+    inch = 0.0254
+    ft = 12. * inch
+    mile = 5280. * ft
+    scale_map = {'m':m, 'mm':mm, 'cm':cm, 'km':km, 'inch':inch, 'ft':ft,\
+                  'mile':mile}
+    if (unit_in not in aval_types) or (unit_out not in aval_types):
+        print(f"The unit {unit_in} or {unit_out} are used in Brails but not supported")
+        return
+    value = value*scale_map[unit_in]/scale_map[unit_out]
+    return value
+
+
 # Break down long roads according to delta
-def breakDownLongEdges(edges, delta, tolerance = 10e-3):
+def breakDownLongEdges(edges, delta, nodes = None, tolerance = 10e-3):
     dropedEdges = []
     newEdges = []
     crs = edges.crs
-    edgesOrig = edges.copy()
-    # edgesOrig["IDbase"] = edgesOrig["OID"].apply(lambda x: x.split('_')[0])
-    edgesOrig["IDbase"] = edgesOrig["OID"]
-    num_segExistingMap = edgesOrig.groupby("IDbase").count()["OID"].to_dict()
+    edges["SegID"] = 0
     edges_dict = edges.reset_index().to_crs("epsg:6500")
     edges_dict = edges_dict.to_dict(orient='records')
+    if nodes is not None:
+        newNodes = []
+        nodeCount = nodes.loc[:,"nodeID"].max()
     for row_ind in range(len(edges_dict)):
         LS = edges_dict[row_ind]["geometry"]
         num_seg = int(np.ceil(LS.length/delta))
@@ -163,28 +193,41 @@ def breakDownLongEdges(edges, delta, tolerance = 10e-3):
             warnings.simplefilter("ignore")
             splittedLS = shapely.ops.split(LS,points).geoms
         currentEdge = edges_dict[row_ind].copy()
-        num_segExisting = num_segExistingMap[currentEdge["OID"]]
         for sLS_ind, sLS in enumerate(splittedLS):
-            # create new edge
-            if sLS_ind ==0:
-                newID = currentEdge["OID"]
-            else:
-                newID = currentEdge["OID"]+"_"+str(num_segExisting)
-                num_segExisting +=1
-                num_segExistingMap[currentEdge["OID"]] += 1
             newGeom = sLS
             newEdge = currentEdge.copy()
-            newEdge.update({"OID":newID,"geometry":newGeom})
-            newEdges.append(newEdge)
+            newEdge.update({"geometry":newGeom,\
+                            "SegID":sLS_ind})
+            if nodes is not None:
+                if sLS_ind != len(splittedLS)-1:
+                    newNode = {"geometry":shapely.Point(sLS.coords[-1]),\
+                               "nodeID":nodeCount+1}
+                    newNodes.append(newNode)
+                    nodeCount += 1
+                if sLS_ind == 0:
+                    newEdge.update({'node_end':nodeCount})
+                elif sLS_ind==len(splittedLS)-1:
+                    newEdge.update({'node_start':nodeCount})
+                else:
+                    newEdge.update({'node_start':nodeCount-1,\
+                                    'node_end':nodeCount})
+            newEdges.append(newEdge)            
         dropedEdges.append(edges_dict[row_ind]["index"])
     edges = edges.drop(dropedEdges)
     if len(newEdges)>0:
         newEdges = gpd.GeoDataFrame(newEdges, crs="epsg:6500").to_crs(crs)
         edges = pd.concat([edges, newEdges], ignore_index=True)
     edges = edges.reset_index(drop=True).drop(columns = 'index', axis = 1)
-    return edges        
+    if nodes is not None:
+        edges = edges.sort_values(by=['OID','ExplodeID','SegID']).reset_index(drop=True)
+    else:
+        edges = edges.sort_values(by=['OID','SegID']).reset_index(drop=True)
+    if nodes is not None and len(newNodes)>0:
+        newNodes = gpd.GeoDataFrame(newNodes, crs="epsg:6500").to_crs(crs)
+        nodes = pd.concat([nodes, newNodes], ignore_index=True)
+    return edges, nodes        
     
-def formatBridges(minimumHAZUS, connectivity, bridges_gdf):
+def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
     ## Format bridge nodes
     if connectivity:
         bnodeDF = bridges_gdf["geometry"].reset_index().rename(columns = {"index":"nodeID"})
@@ -192,12 +235,17 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf):
     else:
         bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=bridges_gdf.crs)
     ## Format bridge items
-    bridges_gdf["BridgeClass"] = bridges_gdf["STRUCTURE_KIND"].apply(int)*100+bridges_gdf["STRUCTURE_TYPE"].apply(int)
+    bridges_gdf["BridgeClass"] = bridges_gdf["STRUCTURE_KIND"].apply(int)*100+\
+                        bridges_gdf["STRUCTURE_TYPE"].apply(int)
     bridges_gdf = bridges_gdf.rename(columns = {"STRUCTURE_NUMBER":"StructureNumber",\
         "YEAR_BUILT":"YearBuilt", "MAIN_UNIT_SPANS":"NumOfSpans",\
         "MAX_SPAN_LEN_MT":"MaxSpanLength","STATE_CODE":"StateCode",\
         "DEGREES_SKEW":"Skew","DECK_WIDTH_MT":"DeckWidth"})
     # bridges_gdf["StructureNumber"] = bridges_gdf["StructureNumber"].\apply(lambda x: x.replace(" ",""))
+    bridges_gdf["DeckWidth"] = bridges_gdf["DeckWidth"].apply(lambda x :\
+                                convertUnits(x, "m", lengthUnit))
+    bridges_gdf["MaxSpanLength"] = bridges_gdf["MaxSpanLength"].apply(lambda x :\
+                                convertUnits(x, "m", lengthUnit))
     if minimumHAZUS:
         columnsNeededByHAZUS = ["StructureNumber", "geometry", "BridgeClass", "YearBuilt",\
                                 "NumOfSpans", "MaxSpanLength", "StateCode", "Skew",\
@@ -206,18 +254,151 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf):
             columnsNeededByHAZUS.append('Location')
         bridges_gdf = bridges_gdf.loc[:,columnsNeededByHAZUS]
     ## Format the hwy_bridges geojson
-    bridges_gdf["type"] = "HwyBridge"
+    bridges_gdf["type"] = "Bridge"
+    bridges_gdf["assetSubtype"] = "HwyBridge"
     bridgeDict = json.loads(bridges_gdf.to_json())
     return bnodeDF, bridgeDict
+
+# Remove the nodes with 2 neibours 
+# https://stackoverflow.com/questions/56380053/combine-edges-when-node-degree-is-n-in-networkx
+# Needs parallel
+def remove2neighborEdges(nodes, edges, graph):
+    import datetime
+    print(f"Start combining 2 neighbor roadways at {datetime.datetime.now()}")
+    ### Some edges has start_node as the last point in the geometry and end_node
+    #  as the first point, check and reorder
+    for ind in edges.index:
+        start = nodes.loc[edges.loc[ind, "node_start"],"geometry"]
+        end = nodes.loc[edges.loc[ind, "node_end"],"geometry"]
+        first = shapely.geometry.Point(edges.loc[ind,"geometry"].coords[0])
+        last = shapely.geometry.Point(edges.loc[ind,"geometry"].coords[-1])
+        #check if first and last are the same
+        if (start == first and end == last):
+            continue
+        elif (start == last and end == first):
+            newStartID = edges.loc[ind, "node_end"]
+            newEndID = edges.loc[ind, "node_start"]
+            edges.loc[ind,"node_start"] = newStartID
+            edges.loc[ind,"node_end"] = newEndID
+        else:
+            print(ind, "th row of edges has wrong start/first, end/last pairs, likely a bug of momepy.gdf_to_nx function")
+    # Find nodes with only two neighbor
+    nodesID_to_remove = [i for i, n in enumerate(graph.nodes) if len(list(graph.neighbors(n))) == 2]
+    nodes_to_remove = [n for i, n in enumerate(graph.nodes) if len(list(graph.neighbors(n))) == 2]
+    # For each of those nodes
+    removedID_list = [] # nodes with two neighbors. Removed from graph
+    skippedID_list = [] # nodes involved in loops. Skipped removing.
+    error_list = [] #nodes run into error. Left the node in the graph as is. 
+    # import time
+    # timeList = np.zeros([5,1])
+    # start = time.process_time_ns()
+    edges_end_index = edges.reset_index().set_index("node_end")
+    edges_start_index = edges.reset_index().set_index("node_start")
+    # timeList[4] += time.process_time_ns() - start
+    # for i in range(2000):
+    for i in range(len(nodesID_to_remove)):
+        # start = time.process_time_ns()
+        nodeid = nodesID_to_remove[i]
+        node = nodes_to_remove[i]
+        #Option 1, 6.9+e9
+        edge1 = edges[edges["node_end"] == nodeid]
+        edge2 = edges[edges["node_start"] == nodeid]
+        # timeList[0] += time.process_time_ns() - start
+        # start = time.process_time_ns()
+
+        if (edge1.shape[0]==1 and edge2.shape[0]==1 and 
+            edge1["node_start"].values[0]!= edge2["node_end"].values[0]):
+            pass # Do things after continue
+        elif(edge1.shape[0]==0 and edge2.shape[0]==2):
+            ns = edges.loc[edge2.index[0],"node_start"]
+            ne = edges.loc[edge2.index[0],"node_end"]
+            edges.loc[edge2.index[0],"node_start"] = ne
+            edges.loc[edge2.index[0],"node_end"] = ns
+            # edges.loc[edge2.index[0],"geometry"] = shapely.LineString(list(edges.loc[edge2.index[0],"geometry"].coords)[::-1])
+            edges.loc[edge2.index[0],"geometry"] = edges.loc[edge2.index[0],"geometry"].reverse()
+            edge1 = edges[edges["node_end"] == nodeid]
+            edge2 = edges[edges["node_start"] == nodeid]
+        elif(edge1.shape[0]==2 and edge2.shape[0]==0):
+            ns = edges.loc[edge1.index[1],"node_start"]
+            ne = edges.loc[edge1.index[1],"node_end"]
+            edges.loc[edge1.index[1],"node_start"] = ne
+            edges.loc[edge1.index[1],"node_end"] = ns
+            # edges.loc[edge1.index[1],"geometry"] = shapely.LineString(list(edges.loc[edge1.index[1],"geometry"].coords)[::-1])
+            edges.loc[edge1.index[1],"geometry"] = edges.loc[edge1.index[1],"geometry"].reverse()
+            edge1 = edges[edges["node_end"] == nodeid]
+            edge2 = edges[edges["node_start"] == nodeid]
+        else:
+            skippedID_list.append(nodeid)
+            continue
+
+        # timeList[1] += time.process_time_ns() - start
+        # start = time.process_time_ns()
+        
+        try:
+            removedID_list.append(nodeid)
+            newLineCoords = list(edge1["geometry"].values[0].coords)+list(edge2["geometry"].values[0].coords[1:])
+            # newLineCoords.append(edge2["geometry"].values[0].coords[1:])
+            edges.loc[edge1.index, "geometry"] = shapely.LineString(newLineCoords)
+            edges.loc[edge1.index, "node_end"] = edge2["node_end"].values[0]
+            edges.loc[edge1.index, "ExplodeID"] = min(edge1["ExplodeID"].values[0],\
+                                                      edge2["ExplodeID"].values[0])
+            edges.drop(edge2.index, axis = 0, inplace=True)
+
+            # timeList[2] += time.process_time_ns() - start
+            # start = time.process_time_ns()
+
+            newEdge = list(graph.neighbors(node))
+            graph.add_edge(newEdge[0], newEdge[1])
+            # And delete the node
+            graph.remove_node(node)
+
+            # timeList[3] += time.process_time_ns() - start
+            # start = time.process_time_ns()
+        except:
+            error_list.append(nodeid)
+    
+    remainingNodesOldID = list(set(edges["node_start"].values.tolist() + edges["node_end"].values.tolist()))
+    nodes = nodes.loc[remainingNodesOldID,:].sort_index()
+    nodes = nodes.reset_index(drop=True).reset_index().rename(columns={"index":"nodeID", "nodeID":"oldNodeID"})
+    edges = edges.merge(nodes[["nodeID", "oldNodeID"]], left_on="node_start",
+            right_on = "oldNodeID", how="left").drop(["node_start", "oldNodeID"], axis=1).rename(columns = {"nodeID":"node_start"})
+    edges = edges.merge(nodes[["nodeID", "oldNodeID"]], left_on="node_end",
+            right_on = "oldNodeID", how="left").drop(["node_end", "oldNodeID"], axis=1).rename(columns = {"nodeID":"node_end"})
+    nodes = nodes.drop(columns = ["oldNodeID"])
+    # Reset explode ID
+    edges = edges.sort_values(by=["OID", 'ExplodeID'])
+    edges['ExplodeID'] = edges.groupby('OID').cumcount()
+    # print(f"timeList in remove neighbor {timeList}")
+    print(f"End combining 2 neighbor roadways at {datetime.datetime.now()}")
+    return nodes, edges
+
+def explodeLineString(roads_gdf):
+    expandedRoads = []
+    crs = roads_gdf.crs
+    roads_gdf_dict = roads_gdf.to_dict(orient = 'records')
+    for rd in roads_gdf_dict:
+        LS_list = []
+        multiseg_line = rd["geometry"]
+        for pt1, pt2 in zip(multiseg_line.coords, multiseg_line.coords[1:]):
+            LS_list.append(shapely.LineString([pt1, pt2]))
+        for ind_i in range(len(LS_list)):
+            newRoad = rd.copy()
+            newRoad.update({"geometry":LS_list[ind_i],\
+                                      "ExplodeID":int(ind_i)})
+            expandedRoads.append(newRoad)
+    expandedRoads = gpd.GeoDataFrame(expandedRoads, crs=crs)
+    return expandedRoads
+
     
 def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
-    ## Break long roads into multiple roads
-    if maxRoadLength is not None:
-        expandedRoads = breakDownLongEdges(roads_gdf, maxRoadLength)
-    else:
-        expandedRoads = roads_gdf
+    if roads_gdf.shape[0] == 0:
+        rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=roads_gdf.crs)
+        edgesDict = json.loads(roads_gdf.to_json())
+        return rnodeDF, edgesDict
+    roads_gdf = roads_gdf.sort_values(by="OID").reset_index(drop=True)
     if connectivity:
         ## Convert to graph to find the intersection nodes
+        expandedRoads = explodeLineString(roads_gdf)
         graph = momepy.gdf_to_nx(expandedRoads.to_crs("epsg:6500"), approach='primal')
         with warnings.catch_warnings(): #Suppress the warning of disconnected components in the graph
             warnings.simplefilter("ignore")
@@ -225,71 +406,56 @@ def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
                                                 spatial_weights=True)
         # The CRS of SimCenter is CRS:84 (equivalent to EPSG:4326)
         # The CRS of US Census is NAD83, which is https://epsg.io/4269
-        nodes = nodes.to_crs("epsg:4326")
-        edges = edges.to_crs("epsg:4326")
-        rnodeDF = nodes
-        ### Some edges has start_node as the last point in the geometry and end_node as the first point, check and reorder
-        for ind in edges.index:
-            start = nodes.loc[edges.loc[ind, "node_start"],"geometry"]
-            end = nodes.loc[edges.loc[ind, "node_end"],"geometry"]
-            first = shapely.geometry.Point(edges.loc[ind,"geometry"].coords[0])
-            last = shapely.geometry.Point(edges.loc[ind,"geometry"].coords[-1])
-            #check if first and last are the same
-            if (start == first and end == last):
-                continue
-            elif (start == last and end == first):
-                newStartID = edges.loc[ind, "node_end"]
-                newEndID = edges.loc[ind, "node_start"]
-                edges.loc[ind,"node_start"] = newStartID
-                edges.loc[ind,"node_end"] = newEndID
-            else:
-                print(ind, "th row of roadway has wrong start/first, end/last pairs, likely a bug of momepy.gdf_to_nx function")
+        nodes, edges = remove2neighborEdges(nodes, edges, graph)
         ### Some edges are duplicated, keep only the first one
         # edges = edges[edges.duplicated(['node_start', 'node_end'], keep="first")==False]
         # edges = edges.reset_index(drop=True)
-        edges = edges.rename(columns={'node_start': 'StartNode', 'node_end': 'EndNode'})
-        edges = edges.drop(columns="mm_len", axis=1)
+        ## Break long roads into multiple roads
+        if maxRoadLength is not None:
+            segmentedRoads, nodes = breakDownLongEdges(edges, maxRoadLength, nodes)
+        else:
+            segmentedRoads = edges
+        nodes = nodes.to_crs("epsg:4326")
+        segmentedRoads = segmentedRoads.to_crs("epsg:4326")
+        segmentedRoads = segmentedRoads.rename(columns={'node_start': 'StartNode', 'node_end': 'EndNode'})
+        segmentedRoads = segmentedRoads.drop(columns="mm_len", axis=1)
+        rnodeDF = nodes
     else:
         rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=roads_gdf.crs)
-        edges = expandedRoads
+        edges = roads_gdf
+        ## Break long roads into multiple roads
+        if maxRoadLength is not None:
+            segmentedRoads, _ = breakDownLongEdges(edges, maxRoadLength)
+        else:
+            segmentedRoads = edges
     ## Format roadways
     ### Format and clean up roadway edges
     road_type = []
     lanes = []
     capacity = []
     edge_id = []
-    for row_ind in edges.index:
-        mtfcc = edges.loc[row_ind,"MTFCC"]
+    for row_ind in segmentedRoads.index:
+        mtfcc = segmentedRoads.loc[row_ind,"MTFCC"]
         road_type.append(ROADTYPE_MAP[mtfcc])
         lanes.append(ROADLANES_MAP[mtfcc])
         capacity.append(ROADCAPACITY_MAP[mtfcc])
-        edge_id.append(edges.loc[row_ind,"OID"])
-    edges["ID"] = edge_id
-    edges["RoadType"] = road_type
-    edges["NumOfLanes"] = lanes
-    edges["MaxMPH"] = capacity
+        edge_id.append(segmentedRoads.loc[row_ind,"OID"])
+    segmentedRoads["TigerOID"] = edge_id
+    segmentedRoads["RoadType"] = road_type
+    segmentedRoads["NumOfLanes"] = lanes
+    segmentedRoads["MaxMPH"] = capacity
     if minimumHAZUS:
-        columnsNeededByHAZUS=['ID','RoadType','NumOfLanes','MaxMPH', 'geometry']
+        columnsNeededByHAZUS=['TigerOID','RoadType','NumOfLanes','MaxMPH', 'geometry']
         if connectivity:
-            columnsNeededByHAZUS+=["StartNode", "EndNode"]
-        edges = edges[columnsNeededByHAZUS]
-    
-    #sort the edges
-    if maxRoadLength is not None:
-        baseID = list(edges["ID"].apply(lambda x:float(x.split("_")[0])))
-        segID = list(edges["ID"].apply(lambda x: 0 if len(x.split("_"))==1\
-                                           else float(x.split("_")[1])))
-        with warnings.catch_warnings(): #Suppress the warning of pandas copy
-            warnings.simplefilter("ignore")
-            edges['baseID'] = baseID
-            edges['segID'] = segID
-        edges = edges.sort_values(by=['baseID','segID']).reset_index(drop=True)
-        edges = edges.drop(columns=['baseID','segID'],axis=1)
-    else:
-        edges = edges.sort_values(by="ID").reset_index(drop=True)
-    edges['type'] = "Roadway"
-    edgesDict = json.loads(edges.to_json())
+            columnsNeededByHAZUS+=["StartNode", "EndNode","ExplodeID"]
+        if maxRoadLength is not None:
+            columnsNeededByHAZUS+=["SegID"]
+        
+        segmentedRoads = segmentedRoads[columnsNeededByHAZUS]
 
+    segmentedRoads['type'] = "Roadway"
+    segmentedRoads['assetSubtype'] = "Roadway"
+    edgesDict = json.loads(segmentedRoads.to_json())
     return rnodeDF, edgesDict
 
 def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
@@ -301,18 +467,19 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
         tnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=tunnels_gdf.crs)
     ## Format tunnel items
     if "cons_type" not in tunnels_gdf.columns:
-        print("consType is not found in the retrived tunnel inventory data. Set as unclassified")
+        print("ConstructType is not found in the retrived tunnel inventory data. Set as unclassified")
         tunnels_gdf["cons_type"] = "unclassified"
     tunnels_gdf = tunnels_gdf.rename(columns = {"tunnel_number":"TunnelNumber", 
-                                                "cons_type":"ConsType"})
+                                                "cons_type":"ConstructType"})
     if minimumHAZUS:
-        columnsNeededByHAZUS = ["TunnelNumber", "ConsType", "geometry"]
+        columnsNeededByHAZUS = ["TunnelNumber", "ConstructType", "geometry"]
         if connectivity:
             columnsNeededByHAZUS.append('Location')
         tunnels_gdf = tunnels_gdf.loc[:,columnsNeededByHAZUS]
     # tunnels_gdf["ID"] = tunnels_gdf["ID"].apply(lambda x: x.replace(" ",""))
     ## Format the hwy_tunnels dict array
-    tunnels_gdf["type"] = "HwyTunnel"
+    tunnels_gdf["type"] = "Tunnel"
+    tunnels_gdf["assetSubtype"] = "HwyTunnel"
     tunnelDict = json.loads(tunnels_gdf.to_json())
     return tnodeDF, tunnelDict
     
@@ -340,7 +507,8 @@ def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,\
             road["properties"]["EndNode"] = road["properties"]["EndNode"] + NumOfBridgeNodes + NumOfTunnelNodes
     # Create the combined dic
         allNodeDict = pd.concat([bnodeDF, tnodeDF, rnodeDF], axis=0, ignore_index=True)
-        allNodeDict["type"] = "TransportationNode"
-        allNodeDict = json.loads(allNodeDict.to_json())
-        combinedDict["features"]+=allNodeDict['features']
+        allNodeDict.to_file('hwy_inventory_nodes.geojson',driver='GeoJSON')
+        # allNodeDict["type"] = "TransportationNode"
+        # allNodeDict = json.loads(allNodeDict.to_json())
+        # combinedDict["features"]+=allNodeDict['features']
     return combinedDict

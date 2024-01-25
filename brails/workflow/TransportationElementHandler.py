@@ -318,7 +318,9 @@ class TransportationElementHandler:
                 data = dataLists[i]
                 for left, right in zip(merged,data):
                     if left['attributes']['OBJECTID'] != right['attributes']['OBJECTID']:
-                        print(f"Merge fails at objectId {left['id']}")
+                        print(("Data downloaded from the National Bridge Inventory")+
+                              ("has miss matching OBJECTID between batches.")+ 
+                              ("This may be solved by running Brails again"))
                     left['attributes'].update(right['attributes'])
             return merged
 
