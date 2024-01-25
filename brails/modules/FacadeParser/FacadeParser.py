@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 05-19-2022
+# 01-09-2024
 
 import math
 import torch
@@ -45,26 +45,32 @@ import cv2
 import os
 import pandas as pd
 import numpy as np
-from PIL import Image
+import base64
+import struct
 import torchvision.transforms as T
+
+from PIL import Image
 from shapely.geometry import Polygon
 from tqdm import tqdm
-from random import random
+from sklearn.linear_model import LinearRegression
+from copy import deepcopy
 
 class FacadeParser:
     
     def __init__(self):                
+        self.cam_elevs = []
+        self.depthmaps = []
         self.footprints = []
-        self.streetScales = []
+        self.model_path = []        
         self.street_images = []        
-        self.model_path = []
 
-    def predict(self,imhandler,storymodel,model_path='tmp/models/facadeParser.pth',
+    def predict(self,imhandler,model_path='tmp/models/facadeParser.pth',
                 save_segimages=False):
+        self.cam_elevs = imhandler.cam_elevs[:]
+        self.depthmaps = imhandler.depthmaps[:]
         self.footprints = imhandler.footprints[:]
-        self.streetScales = imhandler.streetScales[:]
-        self.street_images = imhandler.street_images[:]        
         self.model_path = model_path
+        self.street_images = imhandler.street_images[:]        
         
         def compute_roofrun(footprint):
             # Find the mimumum area rectangle that fits around the footprint
@@ -246,6 +252,141 @@ class FacadeParser:
             
             rgb = np.stack([r, g, b], axis=2)
             return rgb
+        
+        def get_bin(a):
+            ba = bin(a)[2:]
+            return "0"*(8 - len(ba)) + ba
+
+        def getUInt16(arr, ind):
+            a = arr[ind]
+            b = arr[ind + 1]
+            return int(get_bin(b) + get_bin(a), 2)
+
+        def getFloat32(arr, ind):
+            return bin_to_float("".join(get_bin(i) for i in arr[ind : ind + 4][::-1]))
+
+        def bin_to_float(binary):
+            return struct.unpack("!f", struct.pack("!I", int(binary, 2)))[0]
+
+        def parse_dmap_str(b64_string):
+            # Ensure correct padding (The length of string needs to be divisible by 4):
+            b64_string += "="*((4 - len(b64_string)%4)%4)
+
+            # Convert the URL safe format to regular format:
+            data = b64_string.replace("-", "+").replace("_", "/")
+            
+            # Decode the string:
+            data = base64.b64decode(data)  
+            
+            return np.array([d for d in data])
+
+        def parse_dmap_header(depthMap):
+            return {
+                "headerSize": depthMap[0],
+                "numberOfPlanes": getUInt16(depthMap, 1),
+                "width": getUInt16(depthMap, 3),
+                "height": getUInt16(depthMap, 5),
+                "offset": getUInt16(depthMap, 7),
+            }
+
+        def parse_dmap_planes(header, depthMap):
+            indices = []
+            planes = []
+            n = [0, 0, 0]
+
+            for i in range(header["width"] * header["height"]):
+                indices.append(depthMap[header["offset"] + i])
+
+            for i in range(header["numberOfPlanes"]):
+                byteOffset = header["offset"] + header["width"]*header["height"] + i*4*4
+                n = [0, 0, 0]
+                n[0] = getFloat32(depthMap, byteOffset)
+                n[1] = getFloat32(depthMap, byteOffset + 4)
+                n[2] = getFloat32(depthMap, byteOffset + 8)
+                d = getFloat32(depthMap, byteOffset + 12)
+                planes.append({"n": n, "d": d})
+
+            return {"planes": planes, "indices": indices}
+
+        def compute_dmap(header, indices, planes):
+            v = [0, 0, 0]
+            w = header["width"]
+            h = header["height"]
+
+            depthMap = np.empty(w * h)
+
+            sin_theta = np.empty(h)
+            cos_theta = np.empty(h)
+            sin_phi = np.empty(w)
+            cos_phi = np.empty(w)
+
+            for y in range(h):
+                theta = (h - y - 0.5)/h*np.pi
+                sin_theta[y] = np.sin(theta)
+                cos_theta[y] = np.cos(theta)
+
+            for x in range(w):
+                phi = (w - x - 0.5)/w*2*np.pi + np.pi/2
+                sin_phi[x] = np.sin(phi)
+                cos_phi[x] = np.cos(phi)
+
+            for y in range(h):
+                for x in range(w):
+                    planeIdx = indices[y*w + x]
+
+                    v[0] = sin_theta[y]*cos_phi[x]
+                    v[1] = sin_theta[y]*sin_phi[x]
+                    v[2] = cos_theta[y]
+
+                    if planeIdx > 0:
+                        plane = planes[planeIdx]
+                        t = np.abs(
+                            plane["d"]
+                            / (
+                                v[0]*plane["n"][0]
+                                + v[1]*plane["n"][1]
+                                + v[2]*plane["n"][2]
+                            )
+                        )
+                        depthMap[y*w + (w - x - 1)] = t
+                    else:
+                        depthMap[y*w + (w - x - 1)] = 9999999999999999999.0
+            return {"width": w, "height": h, "depthMap": depthMap}
+
+        def get_depth_map(depthfile, imsize, bndangles):         
+            # Decode depth map string:
+            with open(depthfile,'r') as fout:
+                depthMapStr = fout.read()  
+            depthMapData = parse_dmap_str(depthMapStr)
+            
+            # Parse first bytes to get the data headers:
+            header = parse_dmap_header(depthMapData)
+            
+            # Parse remaining bytes into planes of float values:
+            data = parse_dmap_planes(header, depthMapData)
+            
+            # Compute position and depth values of pixels:
+            depthMap = compute_dmap(header, data["indices"], data["planes"])
+            
+            # Process float 1D array into integer 2D array with pixel values ranging 
+            # from 0 to 255:
+            im = depthMap["depthMap"]
+            im[np.where(im == max(im))[0]] = 255
+            if min(im) < 0:
+                im[np.where(im < 0)[0]] = 0
+            im = im.reshape((depthMap["height"], depthMap["width"]))
+            
+            # Flip the 2D array to have it line up with pano image pixels:
+            im = np.fliplr(im)
+            
+            # Read the 2D array into an image and resize this image to match the size 
+            # of pano:
+            imPanoDmap = Image.fromarray(im)
+            imPanoDmap = imPanoDmap.resize(imsize)
+            
+            # Crop the depthmap such that it includes the building of interest only:
+            imBldgDmap = imPanoDmap.crop((bndangles[0],0,bndangles[1],imsize[1]))     
+            return imBldgDmap
              
         # Set the computing environment
         if torch.cuda.is_available():
@@ -267,27 +408,30 @@ class FacadeParser:
         
         for polyNo in tqdm(range(len(self.footprints))):
             if self.footprints[polyNo] is None:
-                    continue
+                continue
             
-            # Extract building footprint information and download the image viewing
-            # this footprint:
+            # Extract building footprint information :
             footprint = np.fliplr(np.squeeze(np.array(self.footprints[polyNo])))                        
 
-            if self.streetScales[polyNo] is None:
-                    continue            
-
-
-            # Run image through the segmentation model
-            img = Image.open(self.street_images[polyNo])
+            # Run building image through the segmentation model:
+            try:
+                img = Image.open(self.street_images[polyNo])
+            except:
+                self.predictions.loc[polyNo] = [self.street_images[polyNo], 
+                                                None, None, None]
+                continue
             
-            trf = T.Compose([T.Resize(640),
+            imsize = img.size
+            
+            trf = T.Compose([T.Resize(round(1000/max(imsize)*min(imsize))),
                              T.ToTensor(), 
                              T.Normalize(mean = [0.485, 0.456, 0.406], 
-                                         std = [0.229, 0.224, 0.225])])
+                                         std = [0.229, 0.224, 0.225])]) #
             
             inp = trf(img).unsqueeze(0).to(dev)
             scores = model.to(dev)(inp)['out']
-            pred = torch.argmax(scores.squeeze(), dim=0).detach().cpu().numpy()
+            predraw = torch.argmax(scores.squeeze(), dim=0).detach().cpu().numpy()
+            pred = np.array(Image.fromarray(np.uint8(predraw)).resize(imsize))
             
             # Extract component masks
             maskRoof = (pred==1).astype(np.uint8)
@@ -301,8 +445,7 @@ class FacadeParser:
             maskFacade = cv2.morphologyEx(openedFacadeMask, cv2.MORPH_CLOSE, kernel)
             openedWinMask = cv2.morphologyEx(maskWin, cv2.MORPH_OPEN, kernel)
             maskWin = cv2.morphologyEx(openedWinMask, cv2.MORPH_CLOSE, kernel)
-
-            
+       
             
             # Find roof contours
             contours, _ = cv2.findContours(maskRoof,cv2.RETR_EXTERNAL,
@@ -348,23 +491,73 @@ class FacadeParser:
             R0PixHeight = max(y)-min(y)
             R1PixHeight = R0PixHeight + roofPixHeight
         
+            # Get the raw depthmap for the building and crop it so that it covers 
+            # just the segmentation mask of the bbox for the building facade:
+            (depthfile, imsize, bndangles) = self.depthmaps[polyNo]
+            depthmap = get_depth_map(depthfile, imsize, bndangles)
+            depthmapbbox = depthmap.crop((min(x),min(y),max(x),max(y)))
             
-            # Calculate heigths of interest
-            ind = storymodel.system_dict['infer']['images'].index(self.street_images[polyNo])
-            normalizer = storymodel.system_dict['infer']['predictions'][ind]*14*(1.3-random()*0.4)
-            R0 = R0PixHeight*self.streetScales[polyNo]
-            if R0>normalizer:
-                normfact = normalizer/R0
-                R0 = normalizer
-            elif R0<0.8*normalizer:
-                normfact = normalizer/R0
-                R0 = normalizer            
-            else:
-                normfact = 1
-            R1 = R1PixHeight*self.streetScales[polyNo]*normfact
-            if (R1-R0)>1.5*normalizer:
-                R1 = R0 + (1.2-random()*0.4)*normalizer
+            # Convert the depthmap to a Numpy array for further processing and
+            # sample the raw depthmap at its vertical centerline:
+            depthmapbbox_arr = np.asarray(depthmapbbox)
+            depthmap_cl = depthmapbbox_arr[:,round(depthmapbbox.size[0]/2)]
+            
+            # Calculate the vertical camera angles corresponding to the bottom
+            # and top of the facade bounding box:
+            imHeight = img.size[1]
+            angleTop = ((imHeight/2 - min(y))/(imHeight/2))*math.pi/2
+            angleBottom = ((imHeight/2 - max(y))/(imHeight/2))*math.pi/2
+            
+            # Take the first derivative of the depthmap with respect to vertical
+            # pixel location and identify the depthmap discontinuity (break) 
+            # locations:
+            break_pts = [0]
+            boolval_prev = True
+            depthmap_cl_dx = np.append(abs(np.diff(depthmap_cl))<0.1,True)
+            for (counter, boolval_curr) in enumerate(depthmap_cl_dx):
+                if (boolval_prev==True and boolval_curr==False) or (boolval_prev==False and boolval_curr==True):
+                    break_pts.append(counter)
+                boolval_prev = boolval_curr
+            break_pts.append(counter)
+            
+            # Identify the depthmap segments to keep for extrapolation, i.e., 
+            # segments that are not discontinuities in the depthmap: 
+            segments_keep = []
+            for i in range(len(break_pts)-1):
+                if all(depthmap_cl_dx[break_pts[i]:break_pts[i+1]]) and all(depthmap_cl[break_pts[i]:break_pts[i+1]]!=255):
+                   segments_keep.append((break_pts[i],break_pts[i+1]))
+            
+            # Fit line models to individual (kept) segments of the depthmap and
+            # determine the model that results in the smallest residual for 
+            # all kept depthmap points:
+            lm = LinearRegression(fit_intercept = True)
+            x = np.arange(depthmapbbox.size[1])
+            xKeep = np.hstack([x[segment[0]:segment[1]] for segment in segments_keep])
+            yKeep = np.hstack([depthmap_cl[segment[0]:segment[1]] for segment in segments_keep])
+            residualprev = 1e10
+            model_lm = deepcopy(lm)
+            for segment in segments_keep:
+                xvect = x[segment[0]:segment[1]]
+                yvect = depthmap_cl[segment[0]:segment[1]]
                 
+                # Fit model:
+                lm.fit(xvect.reshape(-1, 1),yvect)
+                preds = lm.predict(xKeep.reshape(-1,1))
+                residual = np.sum(np.square(yKeep-preds))
+                if residual<residualprev:
+                    model_lm = deepcopy(lm)                
+                residualprev = residual
+            
+            # Extrapolate depthmap using the best-fit model:
+            depthmap_cl_depths = model_lm.predict(x.reshape(-1,1))
+            
+            # Calculate heigths of interest:
+            R0 = (depthmap_cl_depths[0]*math.sin(angleTop) 
+                      - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
+            scale = R0/R0PixHeight
+            R1 = R1PixHeight*scale                
+        
+            # Calculate roof pitch:            
             roof_run = compute_roofrun(footprint)
             roofPitch = (R1-R0)/roof_run
             self.predictions.loc[polyNo] = [self.street_images[polyNo], 

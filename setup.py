@@ -21,7 +21,7 @@ setup(
     name='BRAILS',
     python_requires='>=3.6',
     version=brails.__version__,
-    description="Building Recognition Using AI at Large-Scale",
+    description="Building and Infrastructure Recognition Using AI at Large-Scale",
     long_description=read_file('README.md'),
     long_description_content_type="text/markdown",
     author="NHERI SimCenter",

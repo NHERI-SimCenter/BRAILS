@@ -2,7 +2,7 @@
 
 ## What is BRAILS?
 
-BRAILS (Building Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework also provides turn-key applications allowing users to put individual modules together to determine multiple attributes in a single pass or train general-purpose image classification, object detection, or semantic segmentation models.
+BRAILS (Building and Infrastructure Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework also provides turn-key applications allowing users to put individual modules together to determine multiple attributes in a single pass or train general-purpose image classification, object detection, or semantic segmentation models.
 
 ## Documentation
 
@@ -56,21 +56,22 @@ NHERI-SimCenter nheri-simcenter@berkeley.edu
 ## How to cite
 
 ```
-@software{cetiner_2022_7132010,
+@software{cetiner_2024_10448047,
   author       = {Barbaros Cetiner and
                   Charles Wang and
                   Frank McKenna and
                   Sascha Hornauer and
-                  Yunhui Guo},
-  title        = {BRAILS Release v3.0.0},
-  month        = sep,
-  year         = 2022,
-  note         = {{This work is based on material supported by the 
-                   National Science Foundation under grants CMMI
-                   1612843 and CMMI 2131111}},
+                  Jinyan Zhao and
+                  Yunhui Guo and
+                  Stella X. Yu and
+                  Ertugrul Taciroglu and
+                  Kincho H. Law},
+  title        = {BRAILS Release v3.1.0},
+  month        = jan,
+  year         = 2024,
   publisher    = {Zenodo},
-  version      = {v3.0.0},
-  doi          = {10.5281/zenodo.7132010},
-  url          = {https://doi.org/10.5281/zenodo.7132010}
+  version      = {v3.1.0},
+  doi          = {10.5281/zenodo.10448047},
+  url          = {https://doi.org/10.5281/zenodo.10448047}
 }
 ```

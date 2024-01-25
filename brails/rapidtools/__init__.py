@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2019-2021 The Regents of the University of California
+# Copyright (c) 2024 The Regents of the University of California
 #
 # This file is part of BRAILS.
 #
@@ -34,24 +34,4 @@
 # BRAILS. If not, see <http://www.opensource.org/licenses/>.
 #
 # Author:
-# NHERI SimCenter, nheri-simcenter@berkeley.edu
-
-from ._version import __version__
-
-
-__author__ = 'NHERI SimCenter'
-__copyright__ = 'Copyright 2019-2021, The Regents of the University of California'
-
-__license__ = "BSD 3-Clause License"
-
-
-import os
-import sys
-current_dir = os.path.dirname(os.path.abspath(__file__)) 
-sys.path.append(current_dir) 
-
-#from . import utils
-#__all__ = ['utils']
-
-
-
+# Barbaros Cetiner 
