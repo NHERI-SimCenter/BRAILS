@@ -93,7 +93,7 @@ class TranspInventoryGenerator:
         outfiles = ", ".join(value for value in tphandler.output_files.values())
         print(f'\nTransportation inventory data available in {outfiles} in {os.getcwd()}')
     
-    def combineAndFormat_HWY(self, minimumHAZUS=True, connectivity=True, maxRoadLength=100, lengthUnit='m'):
+    def combineAndFormat_HWY(self, minimumHAZUS=True, connectivity=False, maxRoadLength=100, lengthUnit='m'):
         outfiles = ", ".join(value for value in self.inventory_files.values())
         print(f"\nReformatting and combining the data in {outfiles}")
 
@@ -156,14 +156,14 @@ def convertUnits(value, unit_in, unit_out):
     m = 1.
     mm = 0.001 * m
     cm = 0.01 * m
-    km = 1000. * m
-    inch = 0.0254
+    km = 1000 * m
+    inch = 0.0254 * m
     ft = 12. * inch
     mile = 5280. * ft
     scale_map = {'m':m, 'mm':mm, 'cm':cm, 'km':km, 'inch':inch, 'ft':ft,\
                   'mile':mile}
     if (unit_in not in aval_types) or (unit_out not in aval_types):
-        print(f"The unit {unit_in} or {unit_out} are used in Brails but not supported")
+        print(f"The unit {unit_in} or {unit_out} are used in BRAILS but not supported")
         return
     value = value*scale_map[unit_in]/scale_map[unit_out]
     return value
