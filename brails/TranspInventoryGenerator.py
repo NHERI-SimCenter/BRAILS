@@ -40,18 +40,18 @@
 
 #
 # Last updated:
-# 08-29-2023 
+# 01-26-2024
 
-from brails.workflow.TransportationElementHandler import TransportationElementHandler
+
 import geopandas as gpd
 import pandas as pd
 import momepy
-from shapely.geometry import MultiLineString
+import os
 import shapely
-import gc
 import json
 import warnings
 import numpy as np
+from brails.workflow.TransportationElementHandler import TransportationElementHandler
 
 # The map defines the default values according to MTFCC code
 # https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2009/TGRSHP09AF.pdf
@@ -80,7 +80,7 @@ class TranspInventoryGenerator:
         self.inventory_files = ''
     
     def enabled_elements(self):
-        print('Here is the list of attributes currently enabled in InventoryGenerator:\n')
+        print('Here is the list of elements currently enabled in TranspInventoryGenerator:\n')
         for element in self.enabledElements:
             print(f'       {element}')
 
@@ -91,10 +91,11 @@ class TranspInventoryGenerator:
         self.inventory_files = tphandler.output_files
         
         outfiles = ", ".join(value for value in tphandler.output_files.values())
-        print(f'\nTransportation inventory data available in {outfiles}')
+        print(f'\nTransportation inventory data available in {outfiles} in {os.getcwd()}')
     
-    def combineAndFormat_HWY(self, minimumHAZUS, connectivity, maxRoadLength, lengthUnit):
-        print(f"Formatting and combining fetched data in {self.inventory_files}")
+    def combineAndFormat_HWY(self, minimumHAZUS=True, connectivity=True, maxRoadLength=100, lengthUnit='m'):
+        outfiles = ", ".join(value for value in self.inventory_files.values())
+        print(f"\nReformatting and combining the data in {outfiles}")
 
         # convert maxRoadLength to a unit of m, which is used in the cartesian 
         # coordinate epsg:6500
@@ -235,12 +236,12 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
     else:
         bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=bridges_gdf.crs)
     ## Format bridge items
-    bridges_gdf["BridgeClass"] = bridges_gdf["STRUCTURE_KIND"].apply(int)*100+\
-                        bridges_gdf["STRUCTURE_TYPE"].apply(int)
-    bridges_gdf = bridges_gdf.rename(columns = {"STRUCTURE_NUMBER":"StructureNumber",\
-        "YEAR_BUILT":"YearBuilt", "MAIN_UNIT_SPANS":"NumOfSpans",\
-        "MAX_SPAN_LEN_MT":"MaxSpanLength","STATE_CODE":"StateCode",\
-        "DEGREES_SKEW":"Skew","DECK_WIDTH_MT":"DeckWidth"})
+    bridges_gdf["BridgeClass"] = bridges_gdf['structure_kind'].apply(int)*100+\
+                        bridges_gdf['structure_kind'].apply(int)
+    bridges_gdf = bridges_gdf.rename(columns = {'structure_number':"StructureNumber",\
+        "year_built":"YearBuilt", "main_unit_spans":"NumOfSpans",\
+        'max_span_len_mt':"MaxSpanLength","state_code":"StateCode",\
+        'degrees_skew':"Skew","deck_width_mt":"DeckWidth"})
     # bridges_gdf["StructureNumber"] = bridges_gdf["StructureNumber"].\apply(lambda x: x.replace(" ",""))
     bridges_gdf["DeckWidth"] = bridges_gdf["DeckWidth"].apply(lambda x :\
                                 convertUnits(x, "m", lengthUnit))
@@ -264,7 +265,7 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
 # Needs parallel
 def remove2neighborEdges(nodes, edges, graph):
     import datetime
-    print(f"Start combining 2 neighbor roadways at {datetime.datetime.now()}")
+    print(f"Initialized roadway data correction at {datetime.datetime.now()}")
     ### Some edges has start_node as the last point in the geometry and end_node
     #  as the first point, check and reorder
     for ind in edges.index:
@@ -369,7 +370,7 @@ def remove2neighborEdges(nodes, edges, graph):
     edges = edges.sort_values(by=["OID", 'ExplodeID'])
     edges['ExplodeID'] = edges.groupby('OID').cumcount()
     # print(f"timeList in remove neighbor {timeList}")
-    print(f"End combining 2 neighbor roadways at {datetime.datetime.now()}")
+    print(f"Completed roadway data correction at {datetime.datetime.now()}")
     return nodes, edges
 
 def explodeLineString(roads_gdf):
@@ -467,7 +468,7 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
         tnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs=tunnels_gdf.crs)
     ## Format tunnel items
     if "cons_type" not in tunnels_gdf.columns:
-        print("ConstructType is not found in the retrived tunnel inventory data. Set as unclassified")
+        print("Construction type data could not be obtained for tunnels. Construction type for tunnels was set as unclassified")
         tunnels_gdf["cons_type"] = "unclassified"
     tunnels_gdf = tunnels_gdf.rename(columns = {"tunnel_number":"TunnelNumber", 
                                                 "cons_type":"ConstructType"})
@@ -508,6 +509,7 @@ def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,\
     # Create the combined dic
         allNodeDict = pd.concat([bnodeDF, tnodeDF, rnodeDF], axis=0, ignore_index=True)
         allNodeDict.to_file('hwy_inventory_nodes.geojson',driver='GeoJSON')
+        print(f"\nCombined inventory data available in hwy_inventory_nodes.geojson in {os.getcwd()}")
         # allNodeDict["type"] = "TransportationNode"
         # allNodeDict = json.loads(allNodeDict.to_json())
         # combinedDict["features"]+=allNodeDict['features']
