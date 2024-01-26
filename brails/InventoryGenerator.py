@@ -35,17 +35,17 @@
 #
 # Contributors:
 # Barbaros Cetiner
-# Yunhui Guo
 # Sascha Hornauer
 # Frank McKenna
 # Satish Rao
 #
 # Last updated:
-# 12-29-2023 
+# 01-26-2024 
 
 import random
 import sys
 import pandas as pd
+import os
 from shapely.geometry import Polygon
 #import os
 #import shutil
@@ -134,7 +134,8 @@ class InventoryGenerator:
         print('\nIf you want to get all of these attributes when you run '
               "InventoryGenerator.generate, simply set attributes='all'")
 
-    def generate(self,attributes=['numstories','occupancy','roofshape']):
+    def generate(self,attributes=['numstories','occupancy','roofshape'],
+                 outFile='inventory.csv'):
         
         def write_to_dataframe(df,predictions,column,imtype='street_images'):
             """
@@ -362,8 +363,8 @@ class InventoryGenerator:
         new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
         dfout = dfout[new_cols]
         
-        dfout.to_csv('inventory.csv', index=True, index_label='id') 
-        print('\nFinal inventory data available in inventory.csv')
+        dfout.to_csv(outFile, index=True, index_label='id') 
+        print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
         
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
