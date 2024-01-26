@@ -51,6 +51,8 @@ import shapely
 import json
 import warnings
 import numpy as np
+from datetime import datetime
+import brails
 from brails.workflow.TransportationElementHandler import TransportationElementHandler
 
 # The map defines the default values according to MTFCC code
@@ -109,8 +111,11 @@ class TranspInventoryGenerator:
         else:
             bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             bridgesDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+                           'generated':str(datetime.now()),
+                           'brails_version': brails.__version__,
+                           "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                           'units': {"length": lengthUnit},
+                           'features':[]}
 
         # Format roadways
         roadsFile = self.inventory_files.get("roads", None)
@@ -126,8 +131,11 @@ class TranspInventoryGenerator:
         else:
             rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             roadsDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+                        'generated':str(datetime.now()),
+                        'brails_version': brails.__version__,
+                        "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                        'units': {"length": lengthUnit},
+                        'features':[]}
         
         # Format tunnels
         tunnelsFile = self.inventory_files.get("tunnels", None)
@@ -136,13 +144,17 @@ class TranspInventoryGenerator:
             tnodeDF, tunnelsDict = formatTunnels(minimumHAZUS, connectivity, tunnels_gdf)
         else:
             tnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
-            tunnelsDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+            tunnelsDict = {'type':'FeatureCollection',
+                           'generated':str(datetime.now()),
+                           'brails_version': brails.__version__,
+                           "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                           'units': {"length": lengthUnit},
+                           'features':[]}
 
         # Combine nodes and update dicts
-        combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,\
-                                      tnodeDF, tunnelsDict, connectivity)
+        combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,
+                                      tnodeDF, tunnelsDict, connectivity,
+                                      lengthUnit)
         # Dump to json file
         with open("hwy_inventory.geojson", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
@@ -485,10 +497,13 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     return tnodeDF, tunnelDict
     
 
-def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,\
-                connectivity, crs="epsg:4326"):
+def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,
+                connectivity, lengthUnit, crs="epsg:4326"):
     combinedDict = {'type':'FeatureCollection', 
-                    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                    'generated':str(datetime.now()),
+                    'brails_version': brails.__version__,
+                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                    'units': {"length": lengthUnit},
                     'features':[]}
     combinedDict["features"] += bridgesDict['features']
     combinedDict["features"] += tunnelsDict['features']
