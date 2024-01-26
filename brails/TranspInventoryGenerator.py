@@ -51,6 +51,8 @@ import shapely
 import json
 import warnings
 import numpy as np
+from datetime import datetime
+import brails
 from brails.workflow.TransportationElementHandler import TransportationElementHandler
 
 # The map defines the default values according to MTFCC code
@@ -93,7 +95,7 @@ class TranspInventoryGenerator:
         outfiles = ", ".join(value for value in tphandler.output_files.values())
         print(f'\nTransportation inventory data available in {outfiles} in {os.getcwd()}')
     
-    def combineAndFormat_HWY(self, minimumHAZUS=True, connectivity=True, maxRoadLength=100, lengthUnit='m'):
+    def combineAndFormat_HWY(self, minimumHAZUS=True, connectivity=False, maxRoadLength=100, lengthUnit='m'):
         outfiles = ", ".join(value for value in self.inventory_files.values())
         print(f"\nReformatting and combining the data in {outfiles}")
 
@@ -109,8 +111,11 @@ class TranspInventoryGenerator:
         else:
             bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             bridgesDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+                           'generated':str(datetime.now()),
+                           'brails_version': brails.__version__,
+                           "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                           'units': {"length": lengthUnit},
+                           'features':[]}
 
         # Format roadways
         roadsFile = self.inventory_files.get("roads", None)
@@ -126,8 +131,11 @@ class TranspInventoryGenerator:
         else:
             rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             roadsDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+                        'generated':str(datetime.now()),
+                        'brails_version': brails.__version__,
+                        "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                        'units': {"length": lengthUnit},
+                        'features':[]}
         
         # Format tunnels
         tunnelsFile = self.inventory_files.get("tunnels", None)
@@ -136,13 +144,17 @@ class TranspInventoryGenerator:
             tnodeDF, tunnelsDict = formatTunnels(minimumHAZUS, connectivity, tunnels_gdf)
         else:
             tnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
-            tunnelsDict = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-                       'features':[]}
+            tunnelsDict = {'type':'FeatureCollection',
+                           'generated':str(datetime.now()),
+                           'brails_version': brails.__version__,
+                           "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                           'units': {"length": lengthUnit},
+                           'features':[]}
 
         # Combine nodes and update dicts
-        combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,\
-                                      tnodeDF, tunnelsDict, connectivity)
+        combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,
+                                      tnodeDF, tunnelsDict, connectivity,
+                                      lengthUnit)
         # Dump to json file
         with open("hwy_inventory.geojson", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
@@ -156,14 +168,14 @@ def convertUnits(value, unit_in, unit_out):
     m = 1.
     mm = 0.001 * m
     cm = 0.01 * m
-    km = 1000. * m
-    inch = 0.0254
+    km = 1000 * m
+    inch = 0.0254 * m
     ft = 12. * inch
     mile = 5280. * ft
     scale_map = {'m':m, 'mm':mm, 'cm':cm, 'km':km, 'inch':inch, 'ft':ft,\
                   'mile':mile}
     if (unit_in not in aval_types) or (unit_out not in aval_types):
-        print(f"The unit {unit_in} or {unit_out} are used in Brails but not supported")
+        print(f"The unit {unit_in} or {unit_out} are used in BRAILS but not supported")
         return
     value = value*scale_map[unit_in]/scale_map[unit_out]
     return value
@@ -485,10 +497,13 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     return tnodeDF, tunnelDict
     
 
-def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,\
-                connectivity, crs="epsg:4326"):
+def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,
+                connectivity, lengthUnit, crs="epsg:4326"):
     combinedDict = {'type':'FeatureCollection', 
-                    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                    'generated':str(datetime.now()),
+                    'brails_version': brails.__version__,
+                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                    'units': {"length": lengthUnit},
                     'features':[]}
     combinedDict["features"] += bridgesDict['features']
     combinedDict["features"] += tunnelsDict['features']

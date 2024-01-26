@@ -35,22 +35,25 @@
 #
 # Contributors:
 # Barbaros Cetiner
-# Yunhui Guo
 # Sascha Hornauer
 # Frank McKenna
 # Satish Rao
 #
 # Last updated:
-# 12-29-2023 
+# 01-26-2024 
 
 import random
 import sys
 import pandas as pd
+import os
 from shapely.geometry import Polygon
+import json
+from datetime import datetime
 #import os
 #import shutil
 
 #import brails.models as models
+import brails
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, RoofClassifier, 
                             OccupancyClassifier, RoofCoverClassifier, 
@@ -134,7 +137,8 @@ class InventoryGenerator:
         print('\nIf you want to get all of these attributes when you run '
               "InventoryGenerator.generate, simply set attributes='all'")
 
-    def generate(self,attributes=['numstories','occupancy','roofshape']):
+    def generate(self,attributes=['numstories','occupancy','roofshape'],
+                 outFile='inventory.csv', lengthUnit='ft'):
         
         def write_to_dataframe(df,predictions,column,imtype='street_images'):
             """
@@ -341,6 +345,14 @@ class InventoryGenerator:
             elif attribute=='constype':
                 self.inventory['StructureType'] = ['W1' for ind in range(len(self.inventory.index))] 
         
+        # Bring the attribute values to the desired length unit:
+        if lengthUnit.lower()=='m':
+            self.inventory['PlanArea'] = self.inventory['PlanArea'].apply(lambda x: x*0.0929)
+            if 'buildingheight' in self.attributes:
+                self.inventory['buildingheight'] = self.inventory['buildingheight'].apply(lambda x: x*0.3048)
+            if 'roofeaveheight' in self.attributes:
+                self.inventory['roofeaveheight'] = self.inventory['roofeaveheight'].apply(lambda x: x*0.3048)
+
         # Remove the columns that list the image names corresponding to each
         # building from the inventory DataFrame, add an ID column, and print 
         # the resulting table to the output file titled inventory.csv:
@@ -362,9 +374,39 @@ class InventoryGenerator:
         new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
         dfout = dfout[new_cols]
         
-        dfout.to_csv('inventory.csv', index=True, index_label='id') 
-        print('\nFinal inventory data available in inventory.csv')
+        if '.csv' in outFile.lower():
+            dfout.to_csv(outFile, index=True, index_label='id') 
+            print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
+        else:
+            if '.geojson' not in outFile.lower():
+                print('Output format unimplemented!')
+                outFile = outFile.replace(outFile.split('.')[-1],'geojson')
+            geojson = {'type':'FeatureCollection', 
+                        'generated':str(datetime.now()),
+                        'brails_version': brails.__version__,
+                        "crs": {"type": "name", 
+                                "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
+                        'units': {"length": lengthUnit},
+                        'features':[]}
+
+            attrs = dfout.columns.values.tolist()
+            attrs.remove('Footprint')
+            for index, row in dfout.iterrows(): 
+                feature = {'type':'Feature',
+                           'properties':{},
+                           'geometry':{'type':'Polygon',
+                                       'coordinates':[]}}
+                feature['geometry']['coordinates'] = json.loads(dfout.loc[index, 'Footprint'].split('"coordinates":')[-1].replace('},"properties":{}}',''))
+                for attr in attrs:
+                    feature['properties'][attr] = row[attr]
+                geojson['features'].append(feature)
+
+            with open(outFile, 'w') as output_file:
+                json.dump(geojson, output_file, indent=2)
         
+        print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
+      
+            
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
         # titled IncompleteInventory.csv:  
