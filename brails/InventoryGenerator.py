@@ -40,20 +40,18 @@
 # Satish Rao
 #
 # Last updated:
-# 01-26-2024 
+# 01-29-2024 
 
 import random
 import sys
 import pandas as pd
 import os
-from shapely.geometry import Polygon
 import json
+from shapely.geometry import Polygon
 from datetime import datetime
-#import os
-#import shutil
+from importlib.metadata import version
 
 #import brails.models as models
-import brails
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, RoofClassifier, 
                             OccupancyClassifier, RoofCoverClassifier, 
@@ -180,33 +178,136 @@ class InventoryGenerator:
                           
             return df
         
-        # Pre-process the attribute entries such that incorrect entries are 
-        # removed:
-        if isinstance(attributes,str) and attributes=='all':    
-            self.attributes = self.enabledAttributes[:]
-        elif isinstance(attributes,list):
-            self.attributes = [attribute.lower() for attribute in attributes]
-            ignore_entries = []
-            for attribute in self.attributes:
-                if attribute not in self.enabledAttributes:
-                    ignore_entries.append(attribute)
-                    self.attributes.remove(attribute)
-            if len(ignore_entries)==1:
-                print('Found an entry in attributes that was not enabled in ' + 
-                      'InventoryGenerator.\nIgnoring entry: ' +
-                      ', '.join(ignore_entries))
-            elif len(ignore_entries)>1:
-                print('Found entries in attributes that were not enabled in ' + 
-                      'InventoryGenerator.\nIgnoring entries: ' +
-                      ', '.join(ignore_entries))
         
-        if len(self.attributes)==0:
-            sys.exit('Defined list of attributes does not contain a ' + 
-                     'correct attribute entry. Attribute entries enabled' +
-                     ' are: ' + ', '.join(self.enabledAttributes))
+        def parse_attribute_input(attrIn,attrEnabled):             
+            """
+            Function that pre-processes the user attribute entries to 
+            InventoryGenerator().generate method such that pre-defined 
+            attribute sets are correctly parsed and incorrect entries are 
+            removed:
+            
+            Inputs: 
+                df: list
+                    A list of string descriptions for the user requested 
+                    building attributes
+                attrEnabled: list 
+                    A list of string descriptions for the building attributes
+                    currently enabled in InventoryGenerator().generate method
+            
+            Output: A list of string descriptions for the user requested 
+                    building attributes that were determined to valid for use
+                    with InventoryGenerator().generate method
+            """       
+            
+            if isinstance(attrIn,str) and attrIn=='all':    
+                attrOut = attrEnabled[:]
+            elif isinstance(attrIn,str) and attrIn=='hazuseq':
+                attrOut = ['numstories']
+            elif isinstance(attrIn,list):
+                attrOut = [attribute.lower() for attribute in attrIn]
+                ignore_entries = []
+                for attribute in attrOut:
+                    if attribute not in attrEnabled:
+                        ignore_entries.append(attribute)
+                        attrOut.remove(attribute)
+                if len(ignore_entries)==1:
+                    print('An entry in attributes is not enabled.'
+                          f'\nIgnoring entry: {ignore_entries[0]}') 
+                elif len(ignore_entries)>1:
+                    print('Several entries in attributes are not enabled.' 
+                          '\nIgnoring entries: ' + ', '.join(ignore_entries))
+                    
+            if len(attrOut)==0:
+                sys.exit('Defined list of attributes does not contain a ' + 
+                         'correct attribute entry. Attribute entries enabled' +
+                         ' are: ' + ', '.join(attrEnabled))
+            
+            # Remove duplicate attribute entries:
+            attrOut = sorted(list(set(attrOut)))
+            
+            return attrOut
+ 
+        def write_inventory_output(inventorydf,outFile):          
+            """
+            Function that writes the data in inventorydf DataFrame into a CSV 
+            or GeoJSON file based on the file name defined in the outFile.  
+            
+            Inputs: 
+                df: DataFrame
+                    A DataFrame containing building attributes. If this 
+                    DataFrame contains columns for satellite_images and 
+                    street_images, these columns are removed before the 
+                    output file is created.
+                outFile: string
+                    String for the name of the output file, e.g., out.geojson. 
+                    This function writes data only in CSV and GeoJSON formats.
+                    If an output format different than these two formats is 
+                    defined in the file extension, the function defaults to 
+                    GeoJSON format.
+            """   
+            
+            # Create a new table with does not list the image names 
+            # corresponding to each building but includes building ID, latitude, 
+            # and longitudecolumns added:
+            dfout = inventorydf.copy(deep=True)
+            dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
+                               errors='ignore')
+    
+          
+            for index, row in inventorydf.iterrows():            
+                dfout.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
+                '{"type":"Polygon","coordinates":[' + 
+                f"""{row['Footprint']}""" + 
+                ']},"properties":{}}')
+                centroid = Polygon(row['Footprint']).centroid
+                dfout.loc[index, 'Latitude'] = centroid.y
+                dfout.loc[index, 'Longitude'] = centroid.x 
+            
+            # Rearrange the column order of dfout such that the Footprint field is 
+            # the last:
+            cols = [col for col in dfout.columns if col!='Footprint'] 
+            new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
+            dfout = dfout[new_cols]
+            
+            # If the inventory is desired in CSV format, write dfout to a CSV:
+            if '.csv' in outFile.lower():
+                dfout.to_csv(outFile, index=True, index_label='id') 
+
+            # Else write the inventory into a GeoJSON file:
+            else:
+                if '.geojson' not in outFile.lower():
+                    print('Output format unimplemented!')
+                    outFile = outFile.replace(outFile.split('.')[-1],'geojson')
+                geojson = {'type':'FeatureCollection', 
+                            'generated':str(datetime.now()),
+                            'brails_version': version('BRAILS'),
+                            "crs": {"type": "name", 
+                                    "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
+                            'units': {"length": lengthUnit},
+                            'features':[]}
+    
+                attrs = dfout.columns.values.tolist()
+                attrs.remove('Footprint')
+                for index, row in dfout.iterrows(): 
+                    feature = {'type':'Feature',
+                               'properties':{},
+                               'geometry':{'type':'Polygon',
+                                           'coordinates':[]}}
+                    fp = dfout.loc[index, 'Footprint'].split('"coordinates":')[-1]
+                    fp = fp.replace('},"properties":{}}','')
+                    feature['geometry']['coordinates'] = json.loads(fp)
+                    feature['properties']['id'] = index
+                    for attr in attrs:
+                        feature['properties'][attr] = row[attr]
+                    geojson['features'].append(feature)
+    
+                with open(outFile, 'w') as output_file:
+                    json.dump(geojson, output_file, indent=2)
+            
+            print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
         
-        # Remove duplicate attribute entries:
-        self.attributes = sorted(list(set(self.attributes)))
+        # Parse/correct the list of user requested building attributes:
+        self.attributes = parse_attribute_input(attributes, self.enabledAttributes)      
         
         # Create a list of footprints for easier module calls:
         footprints = self.inventory['Footprint'].values.tolist()
@@ -353,63 +454,13 @@ class InventoryGenerator:
             if 'roofeaveheight' in self.attributes:
                 self.inventory['roofeaveheight'] = self.inventory['roofeaveheight'].apply(lambda x: x*0.3048)
 
-        # Remove the columns that list the image names corresponding to each
-        # building from the inventory DataFrame, add an ID column, and print 
-        # the resulting table to the output file titled inventory.csv:
-        dfout = self.inventory.copy(deep=True)
-        dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
-                           errors='ignore')
-        dfout2merge = dfout.copy(deep=True)
-        
-        for index, row in self.inventory.iterrows():            
-            dfout.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
-            '{"type":"Polygon","coordinates":[' + 
-            f"""{row['Footprint']}""" + 
-            ']},"properties":{}}')
-            centroid = Polygon(row['Footprint']).centroid
-            dfout.loc[index, 'Latitude'] = centroid.y
-            dfout.loc[index, 'Longitude'] = centroid.x 
-        
-        cols = [col for col in dfout.columns if col!='Footprint'] 
-        new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
-        dfout = dfout[new_cols]
-        
-        if '.csv' in outFile.lower():
-            dfout.to_csv(outFile, index=True, index_label='id') 
-            print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
-        else:
-            if '.geojson' not in outFile.lower():
-                print('Output format unimplemented!')
-                outFile = outFile.replace(outFile.split('.')[-1],'geojson')
-            geojson = {'type':'FeatureCollection', 
-                        'generated':str(datetime.now()),
-                        'brails_version': brails.__version__,
-                        "crs": {"type": "name", 
-                                "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
-                        'units': {"length": lengthUnit},
-                        'features':[]}
-
-            attrs = dfout.columns.values.tolist()
-            attrs.remove('Footprint')
-            for index, row in dfout.iterrows(): 
-                feature = {'type':'Feature',
-                           'properties':{},
-                           'geometry':{'type':'Polygon',
-                                       'coordinates':[]}}
-                feature['geometry']['coordinates'] = json.loads(dfout.loc[index, 'Footprint'].split('"coordinates":')[-1].replace('},"properties":{}}',''))
-                for attr in attrs:
-                    feature['properties'][attr] = row[attr]
-                geojson['features'].append(feature)
-
-            with open(outFile, 'w') as output_file:
-                json.dump(geojson, output_file, indent=2)
-        
-        print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
-      
+        # Write the genereated inventory in outFile:
+        write_inventory_output(self.inventory,outFile)   
             
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
         # titled IncompleteInventory.csv:  
+        # dfout2merge = dfout.copy(deep=True) 
         # dfout2merge['fp_as_string'] = dfout2merge['Footprint'].apply(lambda x: "".join(str(x)))
             
         # dfout_incomp = self.incompleteInventory.copy(deep=True)
