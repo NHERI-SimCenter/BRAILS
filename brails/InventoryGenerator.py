@@ -40,7 +40,7 @@
 # Satish Rao
 #
 # Last updated:
-# 01-29-2024 
+# 02-01-2024 
 
 import random
 import sys
@@ -58,6 +58,7 @@ from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector,
                             YearBuiltClassifier)
 from .workflow.ImHandler import ImageHandler
 from .workflow.FootprintHandler import FootprintHandler
+from brails.workflow.NSIParser import NSIParser
 
 class InventoryGenerator:
 
@@ -136,7 +137,8 @@ class InventoryGenerator:
               "InventoryGenerator.generate, simply set attributes='all'")
 
     def generate(self,attributes=['numstories','occupancy','roofshape'],
-                 outFile='inventory.csv', lengthUnit='ft'):
+                 useNSIBaseline= True, outFile='inventory.csv', 
+                 lengthUnit='ft'):
         
         def write_to_dataframe(df,predictions,column,imtype='street_images'):
             """
@@ -266,7 +268,7 @@ class InventoryGenerator:
             # Rearrange the column order of dfout such that the Footprint field is 
             # the last:
             cols = [col for col in dfout.columns if col!='Footprint'] 
-            new_cols = ['Latitude','Longitude'] + cols[:-2] + ['Footprint']
+            new_cols = ['Latitude','Longitude'] + cols + ['Footprint']
             dfout = dfout[new_cols]
             
             # If the inventory is desired in CSV format, write dfout to a CSV:
@@ -305,17 +307,25 @@ class InventoryGenerator:
                     json.dump(geojson, output_file, indent=2)
             
             print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
-        
         # Parse/correct the list of user requested building attributes:
         self.attributes = parse_attribute_input(attributes, self.enabledAttributes)      
         
         # Create a list of footprints for easier module calls:
         footprints = self.inventory['Footprint'].values.tolist()
+
+        if useNSIBaseline:
+            nsi = NSIParser()
+            nsi.GenerateBldgInventory(footprints)
+            attributes_process = set(self.attributes) - set(nsi.attributes)
+            self.inventory = nsi.inventory.copy(deep=True)
+            footprints = self.inventory['Footprint'].values.tolist()
+        else:
+            attributes_process = self.attributes.copy()
         
         # Download the images required for the requested attributes:
         image_handler = ImageHandler(self.apiKey)
         
-        if 'roofshape' in self.attributes: #or 'roofcover' in self.attributes:
+        if 'roofshape' in attributes_process: #or 'roofcover' in attributes_process:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
             self.inventory['satellite_images'] = image_handler.satellite_images
@@ -323,12 +333,12 @@ class InventoryGenerator:
         streetAttributes = self.enabledAttributes[:]
         streetAttributes.remove('roofshape')
         #streetAttributes.remove('roofcover')
-        if set.intersection(set(streetAttributes),set(self.attributes))!=set():
+        if set.intersection(set(streetAttributes),set(attributes_process))!=set():
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
             self.inventory['street_images'] = image_handler.street_images
         
-        for attribute in self.attributes:
+        for attribute in attributes_process:
  
             if attribute=='chimney':
                 # Initialize the chimney detector object:
@@ -449,9 +459,9 @@ class InventoryGenerator:
         # Bring the attribute values to the desired length unit:
         if lengthUnit.lower()=='m':
             self.inventory['PlanArea'] = self.inventory['PlanArea'].apply(lambda x: x*0.0929)
-            if 'buildingheight' in self.attributes:
+            if 'buildingheight' in attributes_process:
                 self.inventory['buildingheight'] = self.inventory['buildingheight'].apply(lambda x: x*0.3048)
-            if 'roofeaveheight' in self.attributes:
+            if 'roofeaveheight' in attributes_process:
                 self.inventory['roofeaveheight'] = self.inventory['roofeaveheight'].apply(lambda x: x*0.3048)
 
         # Write the genereated inventory in outFile:
