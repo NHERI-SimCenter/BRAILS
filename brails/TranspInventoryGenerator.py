@@ -157,8 +157,8 @@ class TranspInventoryGenerator:
         # Dump to json file
         with open("hwy_inventory.geojson", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
-            print('Combined transportation inventory saved in hwy_inventory.geojson'
-                  'This file is suitable for R2D use and is available in {os.getcwd()}')
+            print('Combined transportation inventory saved in hwy_inventory.geojson.'
+                  f' This file is suitable for R2D use and is available in {os.getcwd()}')
         return
 
 # Convert common length units

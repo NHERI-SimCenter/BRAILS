@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-24-2024  
+# 02-01-2024  
 
 import math
 import json
@@ -58,7 +58,6 @@ class FootprintHandler:
         self.availableDataSources = ['osm','ms','usastr']
         self.fpSource = 'osm'
         self.footprints = []
-        self.bldgheights = []
         
     def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None):
         """
@@ -494,7 +493,7 @@ class FootprintHandler:
             else: #return in ratio of sphere total area
                 return area
         
-        def load_footprint_data(fpfile,attrmapfile,fpSource):
+        def load_footprint_data(fpfile,fpSource,attrmapfile):
             """
             Function that loads footprint data from a GeoJSON file
             
@@ -544,26 +543,70 @@ class FootprintHandler:
                 elif fpSource=='usastr':
                     footprints = get_usastruct_footprints(bbox)
                 return footprints
+           
+            def parse_fp_geojson(data, attrmap, attrkeys, fpfile):     
+                # Create the attribute fields that will be extracted from the 
+                # GeoJSON file:
+                attributes = {}
+                for attr in attrmap.values():
+                    attributes[attr] = [] 
+                
+                footprints_out = []
+                discardedfp_count = 0
+                correctedfp_count = 0       
+                for loc in data:
+                    # If the footprint is a polygon:
+                    if loc['geometry']['type']=='Polygon':
+                        # Read footprint coordinates:
+                        temp_fp = loc['geometry']['coordinates']
                         
-            with open(attrmapfile) as f:
-                lines = [line.rstrip() for line in f]
-                attrmap = {}
-                for line in lines:
-                    lout = line.split(':')
-                    if lout[1]!='':
-                        attrmap[lout[1]] = lout[0]
-            
-            attributes = {}
-            for attr in attrmap.values():
-                attributes[attr] = []  
-            
-            with open(fpfile) as f:
-                data = json.load(f)['features']
-            
-            attrkeys = list(data[0]['properties'].keys()) 
-            print(attrkeys)
-            ptdata = all(loc['geometry']['type']=='Point' for loc in data)  
-            if ptdata:
+                        # Check down to two levels deep into extracted JSON
+                        # structure to account for inconsistencies in the 
+                        # provided footprint data 
+                        if len(temp_fp)>1:
+                            fp = temp_fp[:] 
+                        elif len(temp_fp[0])>1:
+                            fp = temp_fp[0][:] 
+                        elif len(temp_fp[0][0])>1:
+                            fp = temp_fp[0][0][:]
+                        
+                        # If mutliple polygons are detected for a location, 
+                        # take the outermost polygon:
+                        if len(fp)==2:
+                           list_len = [len(i) for i in fp]
+                           fp = fp[list_len.index(max(list_len))]
+                           correctedfp_count+=1
+                        
+                        # Add the footprint and attributes to the output 
+                        # variables
+                        footprints_out.append(fp)  
+                        if attrkeys:
+                            for key in attrkeys:
+                                try:
+                                    attributes[attrmap[key]].append(loc['properties'][key])
+                                except:
+                                    pass
+                    # If the footprint is a multi-polygon, discard the footprint:        
+                    elif loc['geometry']['type']=='MultiPolygon':
+                        discardedfp_count+=1              
+
+                # Print the results of the footprint extraction:
+                if discardedfp_count==0:   
+                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
+                else: 
+                    print(f"Corrected {correctedfp_count} building footprint{pluralsuffix(correctedfp_count)} with invalid geometry")
+                    print(f"Discarded {discardedfp_count} building footprint{pluralsuffix(discardedfp_count)} with invalid geometry")
+                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
+                
+                return (footprints_out, attributes)
+           
+            def parse_pt_geojson(data, attrmap, attrkeys, fpSource):   
+                # Create the attribute fields that will be extracted from the 
+                # GeoJSON file:
+                attributes = {}
+                for attr in attrmap.values():
+                    attributes[attr] = [] 
+
                 # Write the data in datalist into a dictionary for better data access,
                 # and filtering the duplicate entries:
                 datadict = {}
@@ -575,9 +618,21 @@ class FootprintHandler:
                     datadict[pt] = loc['properties']
                 
                 points = list(datadict.keys())
-                # Determine the coordinates of the bounding box including the points:
+                
+                # Determine the coordinates of the bounding box containing the 
+                # points:
                 bbox = get_bbox(ptcoords)      
-                footprints = fp_download(bbox,fpSource)
+                
+                # Get the footprint data corresponding to the point GeoJSON
+                # input:
+                if 'geojson' in fpSource.lower():
+                    with open(fpSource) as f:
+                        data = json.load(f)['features']
+                    (footprints,_) = parse_fp_geojson(data, {}, {}, fpSource)
+                else:
+                    footprints = fp_download(bbox,fpSource)
+                
+                # Create an STR tree for efficient parsing of point coordinates:
                 pttree = STRtree(points)
                 
                 # Find the data points that are enclosed in each footprint:
@@ -601,44 +656,64 @@ class FootprintHandler:
                                 attributes[attrmap[key]].append(ptres[key])
                             except:
                                 pass
-                   
+                
+                return (footprints_out, attributes)                
+            
+            if attrmapfile:
+                # Create a dictionary for mapping the attributes in the GeoJSON 
+                # file to BRAILS inventory naming conventions:
+                with open(attrmapfile) as f:
+                    lines = [line.rstrip() for line in f]
+                    attrmap = {}
+                    for line in lines:
+                        lout = line.split(':')
+                        if lout[1]!='':
+                            attrmap[lout[1]] = lout[0] 
+                
+                # Read the GeoJSON file and check if all the data in the file is 
+                # point data:
+                with open(fpfile) as f:
+                    data = json.load(f)['features']
+                ptdata = all(loc['geometry']['type']=='Point' for loc in data)  
+                
+                # Identify the attribute keys in the GeoJSON file:
+                attrkeys0 = list(data[0]['properties'].keys())
+                if attrkeys0:
+                    print('Building attributes detected in the input GeoJSON: ' +
+                          ', '.join(attrkeys0))
+                    
+                # Check if all of the attribute keys in the GeoJSON have 
+                # correspondence in the map. Ignore the keys that do not have 
+                # correspondence:
+                attrkeys = set()
+                for key in attrkeys0:
+                    try:
+                        attrmap[key]
+                        attrkeys.add(key)
+                    except:
+                        pass            
+                ignored_Attr = set(attrkeys0) - attrkeys
+                if ignored_Attr:
+                    print('Attribute mapping does not cover all attributes detected in' 
+                          'the input GeoJSON. Ignoring detected attributes: ' +
+                          ', '.join(ignored_Attr))
+            else:
+                attrmap = {}
+                attrkeys = {}
+            
+            if ptdata:
+                (footprints_out, attributes) = parse_pt_geojson(data, 
+                                                                attrmap, 
+                                                                attrkeys, 
+                                                                fpSource)  
             else:  
-                footprints_out = []
-                discardedfp_count = 0
-                correctedfp_count = 0       
-                for loc in data:
-                    if loc['geometry']['type']=='Polygon':
-                        temp_fp = loc['geometry']['coordinates']
-                        if len(temp_fp)>1:
-                            fp = temp_fp[:] 
-                        elif len(temp_fp[0])>1:
-                            fp = temp_fp[0][:] 
-                        elif len(temp_fp[0][0])>1:
-                            fp = temp_fp[0][0][:]
-                        
-                        if len(fp)==2:
-                           list_len = [len(i) for i in fp]
-                           fp = fp[list_len.index(max(list_len))]
-                           correctedfp_count+=1
-                        
-                        footprints_out.append(fp)
-                        for key in attrkeys:
-                            try:
-                                attributes[attrmap[key]].append(loc['properties'][key])
-                            except:
-                                pass
-                            
-                    elif loc['geometry']['type']=='MultiPolygon':
-                        discardedfp_count+=1              
+                (footprints_out, attributes) = parse_fp_geojson(data, 
+                                                                attrmap, 
+                                                                attrkeys, 
+                                                                fpfile)
+                fpSource = fpfile
 
-                if discardedfp_count==0:   
-                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
-                else: 
-                    print(f"Corrected {correctedfp_count} building footprint{pluralsuffix(correctedfp_count)} with invalid geometry")
-                    print(f"Discarded {discardedfp_count} building footprint{pluralsuffix(discardedfp_count)} with invalid geometry")
-                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
-
-            return (footprints_out, attributes)
+            return (footprints_out, attributes, fpSource)
 
         def fp_source_selector(self):
             if self.fpSource=='osm':
@@ -655,20 +730,22 @@ class FootprintHandler:
         self.fpSource = fpSource
         if isinstance(self.queryarea,str):
             if 'geojson' in queryarea.lower():
-                (self.footprints,self.attributes) = load_footprint_data(
+                (self.footprints,self.attributes,self.fpSource) = load_footprint_data(
                     self.queryarea,
-                    attrmap,
-                    self.fpSource)
+                    self.fpSource,
+                    attrmap)
+                bldgheights = []
             else:
-                (self.footprints,self.bldgheights) = fp_source_selector(self)
+                (self.footprints,bldgheights) = fp_source_selector(self)
         elif isinstance(queryarea,tuple):
-            (self.footprints,self.bldgheights) = fp_source_selector(self)
+            (self.footprints,bldgheights) = fp_source_selector(self)
         elif isinstance(queryarea,list):    
             self.footprints = []
+            bldgheights = []
             for query in self.queryarea: 
                 (fps, bldghts) = fp_source_selector(query)
                 self.footprints.extend(fps)
-                self.bldgheights.extend(bldghts)
+                bldgheights.extend(bldghts)
         else:
             sys.exit('Incorrect location entry. The location entry must be defined as' + 
                      ' 1) a string or a list of strings containing the name(s) of the query areas,' + 
@@ -677,8 +754,11 @@ class FootprintHandler:
                      ' bounding box of interest in (lon1, lat1, lon2, lat2) format.' +
                      ' For defining a bounding box, longitude and latitude values' +
                      ' shall be entered for the vertex pairs of any of the two' +
-                     ' diagonals of the rectangular bounding box.')   
-             
+                     ' diagonals of the rectangular bounding box.')  
+
+        if bldgheights!=[]:
+            self.attributes['buildingheight'] = bldgheights.copy()
+           
         self.fpAreas = []
         for fp in self.footprints:
             lons = []
