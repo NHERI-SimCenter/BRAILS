@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-24-2024  
+# 02-01-2024  
 
 import requests 
 import numpy as np
@@ -51,7 +51,7 @@ class NSIParser:
     def __init__(self): 
         self.inventory = []
     
-    def GenerateBldgInventory(self,footprints):
+    def GenerateBldgInventory(self,footprints,outFile=None):
         """
         Function that reads NSI buildings points and matches the data to a set
         of footprints. 
@@ -122,7 +122,8 @@ class NSIParser:
             
             # Download NBI data using the defined retry strategy, read downloaded
             # GeoJSON data into a list:
-            print('\nGetting National Structure Inventory (NSI) building points for the building footprints...')
+            print('\nGetting National Structure Inventory (NSI) building data'
+                  ' for the building footprints...')
             response = s.get(url)       
             datalist = response.json()['features']
             
@@ -149,6 +150,7 @@ class NSIParser:
                     ress.append(np.empty(shape=(0, 0)))
             
             # Match NBI data to each footprint:
+            footprints_out_json = []
             footprints_out = []
             lat = []
             lon = []
@@ -160,7 +162,8 @@ class NSIParser:
             occ = []
             for ind, fp in enumerate(footprints):
                 if ress[ind].size!=0:
-                    footprints_out.append(('{"type":"Feature","geometry":' + 
+                    footprints_out.append(fp)
+                    footprints_out_json.append(('{"type":"Feature","geometry":' + 
                     '{"type":"Polygon","coordinates":[' + 
                     f"""{fp}""" + 
                     ']},"properties":{}}'))
@@ -172,8 +175,16 @@ class NSIParser:
                     nstories.append(ptres['num_story'])
                     yearbuilt.append(ptres['med_yr_blt'])
                     repcost.append(ptres['val_struct'])
-                    strtype.append(ptres['bldgtype'])
-                    occ.append(ptres['occtype'])
+                    bldgtype = ptres['bldgtype'] + '1'
+                    if bldgtype=='M1':
+                        strtype.append('RM1')
+                    else:
+                        strtype.append(bldgtype)
+                    if '-' in ptres['occtype']:
+                        occ.append(ptres['occtype'].split('-')[0])
+                    else:
+                        occ.append(ptres['occtype'])
+                    
             
             # Display the number of footprints that can be matched to NSI points:
             print(f'Found a total of {len(footprints_out)} building points in'
@@ -189,7 +200,7 @@ class NSIParser:
             inventory['StructureType'] = strtype
             inventory['OccupancyClass'] = occ
             inventory['Footprint'] = footprints_out
-            return inventory
+            return (inventory, footprints_out_json)
 
         # Determine the coordinates of the bounding box including the footprints:
         bbox = get_bbox(footprints)          
@@ -198,8 +209,13 @@ class NSIParser:
         datadict = get_nbi_data(bbox)  
         
         # Create a footprint-merged building inventory from extracted NBI data:
-        self.inventory = get_inv_from_datadict(datadict,footprints)
+        (self.inventory, footprints_out_json) = get_inv_from_datadict(datadict,footprints)    
         
-        # Write the created inventory in R2D-compatible CSV format:
-        self.inventory.to_csv('inventory.csv', index=True, index_label='id') 
-        print(f'\nFinal inventory data available in {os.getcwd()}/inventory.csv')
+        # If requested, write the created inventory in R2D-compatible CSV format:
+        if outFile:
+            inventory = self.inventory.copy(deep=True)
+            n = inventory.columns[1]
+            inventory.drop(n, axis = 1, inplace = True)
+            inventory[n] = footprints_out_json
+            inventory.to_csv(outFile, index=True, index_label='id') 
+            print(f'\nFinal inventory data available in {os.getcwd()}/{outFile}')
