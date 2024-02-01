@@ -50,6 +50,7 @@ from shapely import Polygon, Point
 class NSIParser:
     def __init__(self): 
         self.inventory = []
+        self.attributes = ['erabuilt','numstories','occupancy','constype']
     
     def GenerateBldgInventory(self,footprints,outFile=None):
         """
