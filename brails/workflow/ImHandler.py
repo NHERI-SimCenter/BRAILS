@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-09-2024   
+# 02-07-2024   
 
 
 import os
@@ -707,7 +707,7 @@ class ImageHandler:
             try:
                 pano['id'] = get_pano_id(pano['queryLatLon'],apikey)
             except:
-                return
+                return None
             
             # Get the metdata for the pano:
             pano = get_pano_meta(pano, savedmap = True, dmapoutname = depthmap_name)
@@ -740,7 +740,7 @@ class ImageHandler:
         # street-level imagery:
         self.footprints = footprints
         self.centroids = []
-        self.street_images = []
+        street_images = []
         inps = [] 
         for footprint in footprints:
             fp = np.fliplr(np.squeeze(np.array(footprint))).tolist()
@@ -750,7 +750,7 @@ class ImageHandler:
             imName.replace(".","")
             im_name = f"tmp/images/street/imstreet_{imName}.jpg"
             depthmap_name = f"tmp/images/depthmap/dmstreet_{imName}.txt"            
-            self.street_images.append(im_name)
+            street_images.append(im_name)
             inps.append((fp,(fp_cent.y,fp_cent.x),im_name,depthmap_name))
         
         # Download building-wise street-level imagery and depthmap strings:
@@ -778,11 +778,12 @@ class ImageHandler:
         if save_all_cam_metadata==False:
             self.cam_elevs = []
             self.depthmaps = [] 
-            for im in self.street_images:
+            for (ind,im) in enumerate(street_images):
                 if results[im] is not None:
                     self.cam_elevs.append(results[im][0])
                     self.depthmaps.append(results[im][1])
                 else:
+                    street_images[ind] = None
                     self.cam_elevs.append(None)
                     self.depthmaps.append(None)
         else:
@@ -793,7 +794,7 @@ class ImageHandler:
             self.headings = []
             self.pitch = []
             self.zoom_levels = []
-            for im in self.street_images:
+            for (ind,im) in enumerate(street_images):
                 if results[im] is not None:
                     self.cam_elevs.append(results[im][0])
                     self.cam_latlons.append(results[im][1])
@@ -810,7 +811,9 @@ class ImageHandler:
                     self.headings.append(None)
                     self.pitch.append(None)
                     self.zoom_levels.append(None)
-
+                    street_images[ind] = None
+        self.street_images = street_images.copy()
+        
     def GetGoogleStreetImageAPI(self,footprints):
         self.footprints = footprints[:]
         # Function that downloads a file given its URL and the desired path to save it:
