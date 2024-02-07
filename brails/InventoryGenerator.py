@@ -40,7 +40,7 @@
 # Satish Rao
 #
 # Last updated:
-# 02-01-2024 
+# 02-07-2024 
 
 import random
 import sys
@@ -229,7 +229,7 @@ class InventoryGenerator:
             
             return attrOut
  
-        def write_inventory_output(inventorydf,outFile):          
+        def write_inventory_output(inventorydf,outFile,lengthUnit):          
             """
             Function that writes the data in inventorydf DataFrame into a CSV 
             or GeoJSON file based on the file name defined in the outFile.  
@@ -254,7 +254,7 @@ class InventoryGenerator:
             dfout = inventorydf.copy(deep=True)
             dfout = dfout.drop(columns=['satellite_images', 'street_images'], 
                                errors='ignore')
-    
+        
           
             for index, row in inventorydf.iterrows():            
                 dfout.loc[index, 'Footprint'] = ('{"type":"Feature","geometry":' + 
@@ -267,14 +267,14 @@ class InventoryGenerator:
             
             # Rearrange the column order of dfout such that the Footprint field is 
             # the last:
-            cols = [col for col in dfout.columns if col!='Footprint'] 
+            cols = [col for col in dfout.columns if col not in ['Footprint','Latitude','Longitude']] 
             new_cols = ['Latitude','Longitude'] + cols + ['Footprint']
             dfout = dfout[new_cols]
             
             # If the inventory is desired in CSV format, write dfout to a CSV:
             if '.csv' in outFile.lower():
                 dfout.to_csv(outFile, index=True, index_label='id') 
-
+        
             # Else write the inventory into a GeoJSON file:
             else:
                 if '.geojson' not in outFile.lower():
@@ -287,7 +287,7 @@ class InventoryGenerator:
                                     "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84" }},
                             'units': {"length": lengthUnit},
                             'features':[]}
-    
+        
                 attrs = dfout.columns.values.tolist()
                 attrs.remove('Footprint')
                 for index, row in dfout.iterrows(): 
@@ -300,13 +300,18 @@ class InventoryGenerator:
                     feature['geometry']['coordinates'] = json.loads(fp)
                     feature['properties']['id'] = index
                     for attr in attrs:
-                        feature['properties'][attr] = row[attr]
+                        res = row[attr]
+                        if pd.isnull(res):
+                            feature['properties'][attr] = 'NA'
+                        else:
+                            feature['properties'][attr] = res
                     geojson['features'].append(feature)
-    
+        
                 with open(outFile, 'w') as output_file:
                     json.dump(geojson, output_file, indent=2)
             
             print(f'\nFinal inventory data available in {outFile} in {os.getcwd()}')
+        
         # Parse/correct the list of user requested building attributes:
         self.attributes = parse_attribute_input(attributes, self.enabledAttributes)      
         
@@ -465,7 +470,7 @@ class InventoryGenerator:
                 self.inventory['roofeaveheight'] = self.inventory['roofeaveheight'].apply(lambda x: x*0.3048)
 
         # Write the genereated inventory in outFile:
-        write_inventory_output(self.inventory,outFile)   
+        write_inventory_output(self.inventory,outFile,lengthUnit)   
             
         # Merge the DataFrame of predicted attributes with the DataFrame of
         # incomplete inventory and print the resulting table to the output file
