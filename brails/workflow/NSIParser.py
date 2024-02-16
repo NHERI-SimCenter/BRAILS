@@ -215,7 +215,7 @@ class NSIParser:
         # If requested, write the created inventory in R2D-compatible CSV format:
         if outFile:
             inventory = self.inventory.copy(deep=True)
-            n = inventory.columns[1]
+            n = inventory.columns[-1]
             inventory.drop(n, axis = 1, inplace = True)
             inventory[n] = footprints_out_json
             inventory.to_csv(outFile, index=True, index_label='id') 
