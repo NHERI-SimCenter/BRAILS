@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 02-01-2024  
+# 02-16-2024  
 
 import math
 import json
@@ -58,6 +58,7 @@ class FootprintHandler:
         self.availableDataSources = ['osm','ms','usastr']
         self.fpSource = 'osm'
         self.footprints = []
+        self.attributes = {}
         
     def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None):
         """
