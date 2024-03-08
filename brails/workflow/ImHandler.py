@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 02-07-2024   
+# 03-08-2024   
 
 
 import os
@@ -60,24 +60,20 @@ from tqdm import tqdm
 
 class ImageHandler:
     def __init__(self,apikey: str):        
-        # Check if the provided Google API Key successfully obtains street-level
-        # imagery for Doe Memorial Library of UC Berkeley:
-        responseStreet = requests.get('https://maps.googleapis.com/maps/api/streetview?' + 
-                                      'size=600x600&location=37.87251874078189,' +
-                                      '-122.25960286494328&heading=280&fov=120&' +
-                                      f"pitch=20&key={apikey}").ok
+        # Check if the provided Google API Key successfully obtains street view
+        # imagery metadata for Doe Memorial Library of UC Berkeley:
+        responseStreet = requests.get('https://maps.googleapis.com/maps/api/streetview/metadata?' + 
+                                      'location=37.8725187407,-122.2596028649' +
+                                      '&source=outdoor' + 
+                                      f'&key={apikey}')
 
         # If the requested image cannot be downloaded, notify the user of the
         # error and stop program execution:
-        if responseStreet==False:
+        if 'error' in responseStreet.text.lower():
             error_message = ('Google API key error. The entered API key is valid '
                              + 'but does not have Street View Static API enabled. ' 
-                             + 'Please enter a key that has both Maps Static API '
-                             + 'and Street View Static API enabled.')
-        else:
-            error_message = None
-    
-        if error_message!=None:
+                             + 'Please enter a key that has the Street View' 
+                             + 'Static API enabled.')
             sys.exit(error_message)
             
         self.apikey = apikey
