@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-07-2024  
+# 03-08-2024  
 
 import math
 import json
@@ -192,6 +192,35 @@ class FootprintHandler:
         """
         
         def get_osm_footprints(queryarea):              
+            def cleanstr(inpstr):
+                return ''.join(char for char in inpstr if not char.isalpha()
+                               and not char.isspace() and 
+                               (char == '.' or not char.isalnum()))
+            def yearstr2int(inpstr):
+                if inpstr!='NA':
+                    yearout =  cleanstr(inpstr)
+                    yearout = yearout[:4]
+                    if len(yearout)==4:
+                        try:
+                            yearout = int(yearout)
+                        except:
+                            yearout = None
+                    else:
+                        yearout = None
+                else:
+                    yearout = None
+                return yearout
+            def height2float(inpstr):    
+                if inpstr!='NA':
+                    heightout =  cleanstr(inpstr)
+                    try:
+                        heightout = round(float(heightout)*3.28084,1)
+                    except:
+                        heightout = None
+                else:
+                    heightout = None
+                return heightout
+
             if isinstance(queryarea,str):
                 bpoly, queryarea_printname, osmid = self.__fetch_roi(queryarea)
                 queryarea_turboid = osmid + 3600000000
@@ -273,10 +302,9 @@ class FootprintHandler:
                     for attr in attrkeys:
                         if len(attributes[attr])!=fpcount:
                             attributes[attr].append('NA')
-            attributes['buildingheight'] = [round(float(height)*3.28084,1) if height!='NA' else None 
+            attributes['buildingheight'] = [height2float(height)
                                             for height in attributes['buildingheight']]
-            attributes['erabuilt'] = [int(year[:4]) if year!='NA' else None 
-                                      for year in attributes['erabuilt']]            
+            attributes['erabuilt'] = [yearstr2int(year) for year in attributes['erabuilt']]            
             attributes['numstories'] = [nstories if nstories!='NA' else None 
                                         for nstories in attributes['numstories']] 
             
@@ -403,7 +431,10 @@ class FootprintHandler:
 
             print(f"\nFetching FEMA USA Structures footprint data for {queryarea_printname}...")
 
-            query = f'https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/rest/services/USA_Structures_View/FeatureServer/0/query?geometry={queryarea[0]},{queryarea[1]},{queryarea[2]},{queryarea[3]}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=pjson'
+            query = ('https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/' + 
+                     'rest/services/USA_Structures_View/FeatureServer/0/query?' +
+                     f'geometry={queryarea[0]},{queryarea[1]},{queryarea[2]},{queryarea[3]}'
+                     '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=pjson')
 
             r = requests.get(query)
             if 'error' in r.text:
@@ -584,6 +615,12 @@ class FootprintHandler:
                                 pass
                 
                 return (footprints_out, attributes)                
+
+            # Read the GeoJSON file and check if all the data in the file is 
+            # point data:
+            with open(fpfile) as f:
+                data = json.load(f)['features']
+            ptdata = all(loc['geometry']['type']=='Point' for loc in data) 
             
             if attrmapfile:
                 # Create a dictionary for mapping the attributes in the GeoJSON 
@@ -594,13 +631,7 @@ class FootprintHandler:
                     for line in lines:
                         lout = line.split(':')
                         if lout[1]!='':
-                            attrmap[lout[1]] = lout[0] 
-                
-                # Read the GeoJSON file and check if all the data in the file is 
-                # point data:
-                with open(fpfile) as f:
-                    data = json.load(f)['features']
-                ptdata = all(loc['geometry']['type']=='Point' for loc in data)  
+                            attrmap[lout[1]] = lout[0]  
                 
                 # Identify the attribute keys in the GeoJSON file:
                 attrkeys0 = list(data[0]['properties'].keys())
@@ -697,19 +728,19 @@ class FootprintHandler:
         self.fpSource = fpSource
         if isinstance(self.queryarea,str):
             if 'geojson' in queryarea.lower():
-                self.footprints,self.attributes,self.fpSource = load_footprint_data(
+                footprints,self.attributes,self.fpSource = load_footprint_data(
                     self.queryarea,
                     self.fpSource,
                     attrmap)
             else:
-                self.footprints,self.attributes = fp_source_selector(self)
+                footprints,self.attributes = fp_source_selector(self)
         elif isinstance(queryarea,tuple):
-            self.footprints,self.attributes = fp_source_selector(self)
+            footprints,self.attributes = fp_source_selector(self)
         elif isinstance(queryarea,list):    
             for query in self.queryarea: 
                 (fps, attributes) = fp_source_selector(query)
                 attrkeys = list(attributes.keys())
-                self.footprints.extend(fps)
+                footprints.extend(fps)
                 for key in attrkeys:
                     self.attributes[key].extend(attributes[key])
         else:
@@ -723,13 +754,30 @@ class FootprintHandler:
                      ' diagonals of the rectangular bounding box.')  
            
         self.attributes['fpAreas'] = []
-        for fp in self.footprints:
+        for fp in footprints:
             lons = []
             lats = []
             for pt in fp:
                 lons.append(pt[0])
                 lats.append(pt[1])        
             self.attributes['fpAreas'].append(int(polygon_area(lats, lons)))
+
+        # Calculate centroids of the footprints and remove footprint data that
+        # does not form a polygon:
+        self.centroids = []
+        ind_remove = []
+        for (ind,footprint) in enumerate(footprints):
+            try:
+                self.centroids.append(Polygon(footprint).centroid)
+                self.footprints.append(footprint)
+            except:
+                ind_remove.append(ind)
+                pass
         
+        # Remove attribute corresponding to the removed footprints:
+        for i in sorted(ind_remove, reverse=True):
+            for key in self.attributes.keys():
+                del self.attributes[key][i]
+                       
         # Write the footprint data into a GeoJSON file:
         self.__write_fp2geojson(self.footprints, self.attributes, outputFile)
