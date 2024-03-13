@@ -66,12 +66,12 @@ NHERI-SimCenter nheri-simcenter@berkeley.edu
                   Stella X. Yu and
                   Ertugrul Taciroglu and
                   Kincho H. Law},
-  title        = {BRAILS Release v3.1.0},
-  month        = jan,
+  title        = {BRAILS Release v3.1.1},
+  month        = feb,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {v3.1.0},
-  doi          = {10.5281/zenodo.10448047},
-  url          = {https://doi.org/10.5281/zenodo.10448047}
+  version      = {v3.1.1},
+  doi          = {10.5281/zenodo.10606032},
+  url          = {https://doi.org/10.5281/zenodo.10606032}
 }
 ```
