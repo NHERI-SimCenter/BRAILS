@@ -21,7 +21,7 @@ rst_prolog = """
 .. |s3harkName| replace:: SURF
 .. |surfName| replace:: SURF
 .. |brailsName| replace:: BRAILS
-.. |full tool name| replace:: Building Recognition using AI at Large-Scale
+.. |full tool name| replace:: Building and Infrastructure Recognition using AI at Large-Scale
 .. _MessageBoard: https://simcenter-messageboard.designsafe-ci.org/smf/index.php?board=10.0
 .. |messageBoard| replace:: `MessageBoard`_
 .. |short tool name| replace:: BRAILS

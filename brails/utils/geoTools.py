@@ -37,10 +37,11 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-12-2024
+# 03-13-2024
 
 from math import radians, sin, cos, atan2, sqrt
 from shapely.geometry import Polygon
+import matplotlib.pyplot as plt
 
 def haversine_dist(p1,p2):
     """
@@ -109,3 +110,26 @@ def mesh_polygon(polygon, rows:int, cols:int):
                 if poly.area > 0:
                     rectangles.append(poly.envelope)
     return rectangles
+
+def plot_polygon_cells(bpoly, rectangles, fout=False):
+    """
+    Function that plots the mesh for a polygon and saves the plot into a PNG image
+    
+    Inputs: A Shapely polygon and a list of rectangular mesh cells saved as
+            Shapely polygons. Optional input is a string containing the name of the
+            output file
+    """
+    
+    if bpoly.geom_type == 'MultiPolygon':
+        for poly in bpoly.geoms:
+            plt.plot(*poly.exterior.xy,'k')
+    else:
+        plt.plot(*bpoly.exterior.xy,'k')
+    for rect in rectangles:
+        try:
+            plt.plot(*rect.exterior.xy)
+        except:
+            pass        
+    if fout:
+        plt.savefig(fout, dpi=600, bbox_inches="tight")
+    plt.show()
