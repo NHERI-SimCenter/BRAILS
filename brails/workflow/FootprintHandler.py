@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-13-2024  
+# 03-14-2024  
 
 import math
 import json
@@ -83,13 +83,7 @@ class FootprintHandler:
         for data in datalist:
             queryarea_osmid = data['osm_id']
             queryarea_name = data['display_name']
-            if(data['osm_type']=='relation' and 
-                'university' in queryarea.lower() and
-                data['type']=='university'):
-                areafound = True
-                break
-            elif (data['osm_type']=='relation' and 
-                  data['type']=='administrative'): 
+            if data['osm_type']=='relation':
                 areafound = True
                 break
         
