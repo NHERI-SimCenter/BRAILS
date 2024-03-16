@@ -149,9 +149,14 @@ def write_polygon2geojson(poly,outfile):
                "crs": {"type": "name", 
                        "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                'features':[]}
+    if poly.geom_type == 'MultiPolygon':
+        polytype = 'MultiPolygon'
+    elif poly.geom_type == 'Polygon':
+        polytype = 'Polygon'
+        
     feature = {'type':'Feature',
                'properties':{},
-               'geometry':{'type':'Polygon',
+               'geometry':{'type': polytype,
                            'coordinates':[]}}
     feature['geometry']['coordinates'] = json.loads(
         to_geojson(poly).split('"coordinates":')[-1][:-1])
