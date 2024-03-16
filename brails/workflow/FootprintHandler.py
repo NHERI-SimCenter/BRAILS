@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-14-2024  
+# 03-15-2024  
 
 import math
 import json
@@ -50,7 +50,7 @@ from itertools import groupby
 from shapely.geometry import Point, Polygon, LineString, MultiPolygon, box
 from shapely.ops import linemerge, unary_union, polygonize
 from shapely.strtree import STRtree
-from brails.utils.geoTools import haversine_dist, mesh_polygon, plot_polygon_cells
+from brails.utils.geoTools import *
 import concurrent.futures
 from requests.adapters import HTTPAdapter, Retry
 
@@ -62,7 +62,7 @@ class FootprintHandler:
         self.footprints = []
         self.attributes = {}
     
-    def __fetch_roi(self,queryarea):
+    def __fetch_roi(self,queryarea,outfile=False):
         # Search for the query area using Nominatim API:
         print(f"\nSearching for {queryarea}...")
         queryarea = queryarea.replace(" ", "+").replace(',','+')
@@ -130,9 +130,11 @@ class FootprintHandler:
             sys.exit(f"Could not retrieve the boundary for {queryarea}. " + 
                      'Please check your location query to make sure ' +
                      'it was entered correctly.')    
+        if outfile:
+            write_polygon2geojson(bpoly,outfile)   
         return bpoly, queryarea_printname, queryarea_osmid
     
-    def __bbox2poly(self,queryarea):
+    def __bbox2poly(self,queryarea,outfile=False):
         # Parse the entered bounding box into a polygon:
         if len(queryarea)%2==0 and len(queryarea)!=0:                        
             if len(queryarea)==4:
@@ -152,6 +154,8 @@ class FootprintHandler:
         else:
                 raise ValueError('Incorrect number of elements detected in the tuple for the bounding box. ' 
                                  'Please check to see if you are missing a longitude or latitude value.')  
+        if outfile:
+            write_polygon2geojson(bpoly,outfile)  
         return bpoly, queryarea_printname
     
     def __write_fp2geojson(self,footprints,attributes,outputFilename):
