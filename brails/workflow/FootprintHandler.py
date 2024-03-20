@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-18-2024  
+# 03-19-2024  
 
 import math
 import json
@@ -53,14 +53,16 @@ from shapely.strtree import STRtree
 from brails.utils.geoTools import *
 import concurrent.futures
 from requests.adapters import HTTPAdapter, Retry
+import unicodedata
 
 class FootprintHandler:
     def __init__(self): 
-        self.queryarea = []
-        self.availableDataSources = ['osm','ms','usastr']
-        self.fpSource = 'osm'
-        self.footprints = []
         self.attributes = {}
+        self.availableDataSources = ['osm','ms','usastr']
+        self.footprints = []
+        self.fpSource = 'osm'
+        self.lengthUnit = 'ft'
+        self.queryarea = []
     
     def __fetch_roi(self,queryarea,outfile=False):
         # Search for the query area using Nominatim API:
@@ -91,7 +93,13 @@ class FootprintHandler:
                 break
         
         if areafound==True:
-            print(f"Found {queryarea_name}")
+            try:
+                print(f"Found {queryarea_name}")
+            except:
+                queryareaNameUTF = unicodedata.normalize(
+                    'NFKD', queryarea_name).encode('ascii', 'ignore')
+                queryareaNameUTF = queryareaNameUTF.decode("utf-8")
+                print(f"Found {queryareaNameUTF}") 
         else:
             sys.exit(f"Could not locate an area named {queryarea}. " + 
                      'Please check your location query to make sure ' +
@@ -180,8 +188,8 @@ class FootprintHandler:
         with open(outputFilename, 'w') as outputFile:
             json.dump(geojson, outputFile, indent=2)    
     
-    def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None, 
-                             outputFile='footprints.geojson'):
+    def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None,
+                             lengthUnit='ft',outputFile='footprints.geojson'):
         """
         Function that loads footprint data from OpenStreetMap, Microsoft, USA
         Structures, user-defined data
@@ -195,11 +203,12 @@ class FootprintHandler:
                 coordinate described in longitude and latitude pairs   
         """
         
-        def get_osm_footprints(queryarea):              
+        def get_osm_footprints(queryarea,lengthUnit='ft'):              
             def cleanstr(inpstr):
                 return ''.join(char for char in inpstr if not char.isalpha()
                                and not char.isspace() and 
                                (char == '.' or not char.isalnum()))
+            
             def yearstr2int(inpstr):
                 if inpstr!='NA':
                     yearout =  cleanstr(inpstr)
@@ -214,11 +223,15 @@ class FootprintHandler:
                 else:
                     yearout = None
                 return yearout
-            def height2float(inpstr):    
+            
+            def height2float(inpstr,lengthUnit):    
                 if inpstr!='NA':
                     heightout =  cleanstr(inpstr)
                     try:
-                        heightout = round(float(heightout)*3.28084,1)
+                        if lengthUnit=='ft':
+                            heightout = round(float(heightout)*3.28084,1)
+                        else:
+                            heightout = round(float(heightout),1)
                     except:
                         heightout = None
                 else:
@@ -306,7 +319,7 @@ class FootprintHandler:
                     for attr in attrkeys:
                         if len(attributes[attr])!=fpcount:
                             attributes[attr].append('NA')
-            attributes['buildingheight'] = [height2float(height)
+            attributes['buildingheight'] = [height2float(height,lengthUnit)
                                             for height in attributes['buildingheight']]
             attributes['erabuilt'] = [yearstr2int(year) for year in attributes['erabuilt']]            
             attributes['numstories'] = [nstories if nstories!='NA' else None 
@@ -315,7 +328,7 @@ class FootprintHandler:
             print(f"\nFound a total of {fpcount} building footprints in {queryarea_printname}")           
             return footprints, attributes
         
-        def get_ms_footprints(queryarea):
+        def get_ms_footprints(queryarea,lengthUnit='ft'):
             def deg2num(lat, lon, zoom):
                 lat_rad = math.radians(lat)
                 n = 2**zoom
@@ -386,8 +399,15 @@ class FootprintHandler:
                     "https://minedbuildings.blob.core.windows.net/global-buildings/dataset-links.csv"
                 )
                 
+
+                # Define length unit conversion factor:
+                if lengthUnit=='ft':
+                    convFactor = 3.28084
+                else:
+                    convFactor = 1
+                 
                 footprints = []
-                bldgheights = []
+                bldgheights = []    
                 for quadkey in tqdm(quadkeys):
                     rows = dftiles[dftiles['QuadKey'] == quadkey]
                     if rows.shape[0] == 1:
@@ -405,7 +425,7 @@ class FootprintHandler:
                             footprints.append(row['geometry']['coordinates'][0])
                             height = row['properties']['height']
                             if height!=-1:
-                                bldgheights.append(round(height*3.28084,1))
+                                bldgheights.append(round(height*convFactor,1))
                             else:
                                 bldgheights.append(None)
             
@@ -424,7 +444,7 @@ class FootprintHandler:
             print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")
             return footprints,attributes
      
-        def get_usastruct_footprints(queryarea):          
+        def get_usastruct_footprints(queryarea,lengthUnit='ft'):          
             def get_usastruct_bldg_counts(bpoly):
                 # Get the coordinates of the bounding box for input polygon bpoly:
                 bbox = bpoly.bounds 
@@ -565,7 +585,7 @@ class FootprintHandler:
                         footprints.append(footprint)
                         height = data['attributes']['HEIGHT']
                         try:
-                            height = round(float(height*3.28084),1)
+                            height = float(height)
                         except:
                             height = None
                         bldgheight.append(height)
@@ -591,7 +611,8 @@ class FootprintHandler:
                             print("%r generated an exception: %s" % (cell, exc))
                 pbar.close() 
                 
-                # Parse the API results into building id, footprints and height information:    
+                # Parse the API results into building id, footprints and height
+                # information:    
                 ids = []
                 footprints = []
                 bldgheight = []
@@ -601,22 +622,33 @@ class FootprintHandler:
                     footprints+=res[1]
                     bldgheight+=res[2]
 
-                # Remove the duplicate footprint data by recording the API outputs to a 
-                # dictionary:
+                # Remove the duplicate footprint data by recording the API 
+                # outputs to a dictionary:
                 data = {}
                 for ind,bldgid in enumerate(ids):
                     data[bldgid] = [footprints[ind],bldgheight[ind]]
                 
-                # Calculate building centroids and save the API outputs into their
-                # corresponding variables:
+                # Define length unit conversion factor:
+                if lengthUnit=='ft':
+                    convFactor = 3.28084
+                else:
+                    convFactor = 1
+
+                # Calculate building centroids and save the API outputs into 
+                # their corresponding variables:
                 footprints = []
                 attributes = {'buildingheight':[]}
-                centroids = []
+                centroids = [] 
                 for value in data.values():
                     fp = value[0]
                     centroids.append(Polygon(fp).centroid)
                     footprints.append(fp)
-                    attributes['buildingheight'].append(value[1]) 
+                    heightout = value[1]
+                    if heightout is not None:
+                        attributes['buildingheight'].append(
+                            round(heightout*convFactor,1)) 
+                    else:
+                        attributes['buildingheight'].append(None)
              
                 # Identify building centroids and that fall outside of bpoly:   
                 results = {} 
@@ -677,7 +709,7 @@ class FootprintHandler:
 
             return footprints, attributes    
         
-        def load_footprint_data(fpfile,fpSource,attrmapfile):
+        def load_footprint_data(fpfile,fpSource,attrmapfile,lengthUnit):
             """
             Function that loads footprint data from a GeoJSON file
             
@@ -721,11 +753,11 @@ class FootprintHandler:
             
             def fp_download(bbox,fpSource):
                 if fpSource=='osm':
-                    footprints = get_osm_footprints(bbox)
+                    footprints, _ = get_osm_footprints(bbox)
                 elif fpSource=='ms':
-                     (footprints, _) = get_ms_footprints(bbox)
+                     footprints,_ = get_ms_footprints(bbox)
                 elif fpSource=='usastr':
-                    footprints = get_usastruct_footprints(bbox)
+                    footprints, _ = get_usastruct_footprints(bbox)
                 return footprints
            
             def parse_fp_geojson(data, attrmap, attrkeys, fpfile):     
@@ -857,9 +889,11 @@ class FootprintHandler:
                     attrmap = {}
                     for line in lines:
                         lout = line.split(':')
-                        if lout[1]!='':
-                            attrmap[lout[1]] = lout[0]  
-                
+                        if lout[1]!='' and lout[0]!='LengthUnit':
+                            attrmap[lout[1]] = lout[0] 
+                        else:
+                            attrmap[lout[0]] = lout[1]
+                            
                 # Identify the attribute keys in the GeoJSON file:
                 attrkeys0 = list(data[0]['properties'].keys())
                 if attrkeys0:
@@ -885,6 +919,13 @@ class FootprintHandler:
                 attrmap = {}
                 attrkeys = {}
             
+            # Get the length unit for the input data:                
+            try:
+                lengthUnitInp = attrmap['LengthUnit'].lower()[0]
+                if lengthUnitInp=='f': lengthUnitInp='ft'
+            except:
+                pass
+            
             if ptdata:
                 (footprints_out, attributes) = parse_pt_geojson(data, 
                                                                 attrmap, 
@@ -896,10 +937,27 @@ class FootprintHandler:
                                                                 attrkeys, 
                                                                 fpfile)
                 fpSource = fpfile
+            
+
+
+            
+            if lengthUnitInp!=lengthUnit:
+                if lengthUnit=='ft':
+                    convFactor = 3.28084
+                else:
+                    convFactor = 1/3.28084      
+                try:
+                    bldgheights = attributes['BldgHeight'].copy()
+                    bldgheightsConverted = []
+                    for height in bldgheights:
+                        bldgheightsConverted.append(round(height*convFactor),1)
+                    attributes['BldgHeight'].update(bldgheightsConverted)
+                except:
+                    pass
 
             return footprints_out, attributes, fpSource
 
-        def polygon_area(lats, lons):
+        def polygon_area(lats,lons,lengthUnit):
         
             radius = 20925721.784777 # Earth's radius in feet
             
@@ -935,22 +993,27 @@ class FootprintHandler:
             # Integrate 
             area = abs(sum(integrands))/(4*pi)
         
+            # Area in ratio of sphere total area:
             area = min(area,1-area)
-            if radius is not None: #return in units of radius
-                return area * 4*pi*radius**2
-            else: #return in ratio of sphere total area
-                return area
-
+            
+            # Area in sqft:
+            areaout = area * 4*pi*radius**2
+            
+            # Area in sqm:
+            if lengthUnit=='m': areaout = areaout/(3.28084**2)
+            
+            return areaout
+            
         def fp_source_selector(self):
             if self.fpSource=='osm':
-                footprints, attributes = get_osm_footprints(self.queryarea)
+                footprints, attributes = get_osm_footprints(self.queryarea,lengthUnit)
             elif self.fpSource=='ms':
-                footprints, attributes = get_ms_footprints(self.queryarea)
+                footprints, attributes = get_ms_footprints(self.queryarea,lengthUnit)
             elif self.fpSource=='usastr':
-                footprints, attributes = get_usastruct_footprints(self.queryarea)
+                footprints, attributes = get_usastruct_footprints(self.queryarea,lengthUnit)
             else:
                 print('Unimplemented footprint source. Setting footprint source to OSM')
-                footprints, attributes = get_osm_footprints(self.queryarea)
+                footprints, attributes = get_osm_footprints(self.queryarea,lengthUnit)
             return footprints, attributes
 
         self.queryarea = queryarea
@@ -960,7 +1023,8 @@ class FootprintHandler:
                 footprints,self.attributes,self.fpSource = load_footprint_data(
                     self.queryarea,
                     self.fpSource,
-                    attrmap)
+                    attrmap,
+                    lengthUnit)
             else:
                 footprints,self.attributes = fp_source_selector(self)
         elif isinstance(queryarea,tuple):
@@ -989,7 +1053,8 @@ class FootprintHandler:
             for pt in fp:
                 lons.append(pt[0])
                 lats.append(pt[1])        
-            self.attributes['fpAreas'].append(int(polygon_area(lats, lons)))
+            self.attributes['fpAreas'].append(int(polygon_area(lats,lons,
+                                                               lengthUnit)))
 
         # Calculate centroids of the footprints and remove footprint data that
         # does not form a polygon:
