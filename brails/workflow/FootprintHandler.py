@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-19-2024  
+# 03-20-2024  
 
 import math
 import json
@@ -207,7 +207,7 @@ class FootprintHandler:
             def cleanstr(inpstr):
                 return ''.join(char for char in inpstr if not char.isalpha()
                                and not char.isspace() and 
-                               (char == '.' or not char.isalnum()))
+                               (char == '.' or char.isalnum()))
             
             def yearstr2int(inpstr):
                 if inpstr!='NA':
@@ -764,7 +764,8 @@ class FootprintHandler:
                 # Create the attribute fields that will be extracted from the 
                 # GeoJSON file:
                 attributes = {}
-                for attr in attrmap.values():
+                attributestr = [attr for attr in attrmap.values() if attr!='']
+                for attr in attributestr:
                     attributes[attr] = [] 
                 
                 footprints_out = []
@@ -807,12 +808,10 @@ class FootprintHandler:
                         discardedfp_count+=1              
 
                 # Print the results of the footprint extraction:
-                if discardedfp_count==0:   
-                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
-                else: 
+                if discardedfp_count!=0:   
                     print(f"Corrected {correctedfp_count} building footprint{pluralsuffix(correctedfp_count)} with invalid geometry")
                     print(f"Discarded {discardedfp_count} building footprint{pluralsuffix(discardedfp_count)} with invalid geometry")
-                    print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}")
+                print(f"Extracted a total of {len(footprints_out)} building footprints from {fpfile}\n")
                 
                 return (footprints_out, attributes)
            
@@ -913,18 +912,19 @@ class FootprintHandler:
                 ignored_Attr = set(attrkeys0) - attrkeys
                 if ignored_Attr:
                     print('Attribute mapping does not cover all attributes detected in' 
-                          'the input GeoJSON. Ignoring detected attributes: ' +
-                          ', '.join(ignored_Attr))
+                          ' the input GeoJSON. Ignoring detected attributes: ' +
+                          ', '.join(ignored_Attr) + '\n')
             else:
                 attrmap = {}
                 attrkeys = {}
             
-            # Get the length unit for the input data:                
-            try:
-                lengthUnitInp = attrmap['LengthUnit'].lower()[0]
-                if lengthUnitInp=='f': lengthUnitInp='ft'
-            except:
-                pass
+            lengthUnitInp = ''
+            if 'LengthUnit' in attrmap.keys():          
+                # Get the length unit for the input data:                
+                if attrmap['LengthUnit']!='':
+                    lengthUnitInp = attrmap['LengthUnit'].lower()[0]
+                    if lengthUnitInp=='f': lengthUnitInp='ft'
+                del attrmap['LengthUnit']
             
             if ptdata:
                 (footprints_out, attributes) = parse_pt_geojson(data, 
@@ -938,22 +938,28 @@ class FootprintHandler:
                                                                 fpfile)
                 fpSource = fpfile
             
-
-
-            
-            if lengthUnitInp!=lengthUnit:
-                if lengthUnit=='ft':
-                    convFactor = 3.28084
+            if 'BldgHeight' in attributes.keys():
+                if lengthUnitInp!='' and lengthUnitInp!=lengthUnit:
+                    if lengthUnit=='ft':
+                        convFactor = 3.28084
+                    else:
+                        convFactor = 1/3.28084
+                elif lengthUnitInp!='' and lengthUnitInp==lengthUnit:
+                    convFactor = 1
                 else:
-                    convFactor = 1/3.28084      
-                try:
+                    convFactor = None
+                
+                if convFactor is not None:
                     bldgheights = attributes['BldgHeight'].copy()
                     bldgheightsConverted = []
                     for height in bldgheights:
-                        bldgheightsConverted.append(round(height*convFactor),1)
-                    attributes['BldgHeight'].update(bldgheightsConverted)
-                except:
-                    pass
+                        try:
+                            heightFloat = round(height*convFactor,1)
+                        except:
+                            heightFloat = 0
+                        bldgheightsConverted.append(heightFloat)
+                    del attributes['BldgHeight']
+                    attributes['BldgHeight'] = bldgheightsConverted
 
             return footprints_out, attributes, fpSource
 
