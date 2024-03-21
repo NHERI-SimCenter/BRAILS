@@ -40,7 +40,7 @@
 # Satish Rao
 #
 # Last updated:
-# 02-07-2024 
+# 03-21-2024 
 
 import random
 import sys
@@ -52,6 +52,7 @@ from datetime import datetime
 from importlib.metadata import version
 
 #import brails.models as models
+from brails.EnabledAttributes import BldgAttributes
 from brails.modules import (ChimneyDetector, FacadeParser, GarageDetector, 
                             NFloorDetector, RoofClassifier, 
                             OccupancyClassifier, RoofCoverClassifier, 
@@ -65,11 +66,7 @@ class InventoryGenerator:
     def __init__(self, location='Berkeley', nbldgs=10, randomSelection=True,
                  fpSource='osm', GoogleAPIKey=''):                
         self.apiKey = GoogleAPIKey
-        self.enabledAttributes = ['buildingheight','chimney','erabuilt',
-                                  'garage','numstories','occupancy',
-                                  'roofeaveheight','roofshape','roofpitch',
-                                  'constype'] #roofcover,'constype']
-
+        self.enabledAttributes = BldgAttributes()
         self.inventory = None
         self.incompleteInventory = None
         self.location = location
@@ -129,6 +126,7 @@ class InventoryGenerator:
         # is valid:
         image_handler = ImageHandler(self.apiKey)
     
+    @staticmethod
     def enabled_attributes(self):
         print('Here is the list of attributes currently enabled in InventoryGenerator:\n')
         for attribute in self.enabledAttributes:
