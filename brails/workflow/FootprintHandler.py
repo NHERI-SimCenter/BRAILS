@@ -67,10 +67,10 @@ class FootprintHandler:
     def __fetch_roi(self,queryarea,outfile=False):
         # Search for the query area using Nominatim API:
         print(f"\nSearching for {queryarea}...")
-        queryarea = queryarea.replace(" ", "+").replace(',','+')
+        queryareaProcessed = queryarea.replace(" ", "+").replace(',','+')
         
         queryarea_formatted = ""
-        for i, j in groupby(queryarea):
+        for i, j in groupby(queryareaProcessed):
             if i=='+':
                 queryarea_formatted += i
             else:
@@ -95,17 +95,21 @@ class FootprintHandler:
         if areafound==True:
             try:
                 print(f"Found {queryarea_name}")
+                queryarea_printname = queryarea_name.split(",")[0]  
             except:
                 queryareaNameUTF = unicodedata.normalize(
                     'NFKD', queryarea_name).encode('ascii', 'ignore')
                 queryareaNameUTF = queryareaNameUTF.decode("utf-8")
-                print(f"Found {queryareaNameUTF}") 
+                queryarea_printname = queryareaNameUTF.split(",")[0] 
+                if  queryarea_printname=='':
+                    queryarea_printname = queryarea.title()
+                    print(queryarea_printname)
+                else:
+                    print(f"Found {queryareaNameUTF}") 
         else:
             sys.exit(f"Could not locate an area named {queryarea}. " + 
                      'Please check your location query to make sure ' +
                      'it was entered correctly.')
-        
-        queryarea_printname = queryarea_name.split(",")[0]  
         
         url = 'http://overpass-api.de/api/interpreter'
         
