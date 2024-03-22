@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-20-2024  
+# 03-22-2024  
 
 import math
 import json
@@ -67,10 +67,10 @@ class FootprintHandler:
     def __fetch_roi(self,queryarea,outfile=False):
         # Search for the query area using Nominatim API:
         print(f"\nSearching for {queryarea}...")
-        queryareaProcessed = queryarea.replace(" ", "+").replace(',','+')
+        queryarea = queryarea.replace(" ", "+").replace(',','+')
         
         queryarea_formatted = ""
-        for i, j in groupby(queryareaProcessed):
+        for i, j in groupby(queryarea):
             if i=='+':
                 queryarea_formatted += i
             else:
@@ -95,21 +95,17 @@ class FootprintHandler:
         if areafound==True:
             try:
                 print(f"Found {queryarea_name}")
-                queryarea_printname = queryarea_name.split(",")[0]  
             except:
                 queryareaNameUTF = unicodedata.normalize(
                     'NFKD', queryarea_name).encode('ascii', 'ignore')
                 queryareaNameUTF = queryareaNameUTF.decode("utf-8")
-                queryarea_printname = queryareaNameUTF.split(",")[0] 
-                if  queryarea_printname=='':
-                    queryarea_printname = queryarea.title()
-                    print(queryarea_printname)
-                else:
-                    print(f"Found {queryareaNameUTF}") 
+                print(f"Found {queryareaNameUTF}") 
         else:
             sys.exit(f"Could not locate an area named {queryarea}. " + 
                      'Please check your location query to make sure ' +
                      'it was entered correctly.')
+        
+        queryarea_printname = queryarea_name.split(",")[0]  
         
         url = 'http://overpass-api.de/api/interpreter'
         
@@ -823,8 +819,10 @@ class FootprintHandler:
                 # Create the attribute fields that will be extracted from the 
                 # GeoJSON file:
                 attributes = {}
-                for attr in attrmap.values():
-                    attributes[attr] = [] 
+                attributestr = [attr for attr in attrmap.values() if attr!='']
+                for attr in attributestr:
+                    attributes[attr] = []                    
+     
 
                 # Write the data in datalist into a dictionary for better data access,
                 # and filtering the duplicate entries:
@@ -915,8 +913,9 @@ class FootprintHandler:
                         pass            
                 ignored_Attr = set(attrkeys0) - attrkeys
                 if ignored_Attr:
-                    print('Attribute mapping does not cover all attributes detected in' 
-                          ' the input GeoJSON. Ignoring detected attributes: ' +
+                    print('\nAttribute mapping does not cover all attributes detected in' 
+                          ' the input GeoJSON. Ignoring detected attributes '
+                          '(building positions extracted from geometry info): ' +
                           ', '.join(ignored_Attr) + '\n')
             else:
                 attrmap = {}
