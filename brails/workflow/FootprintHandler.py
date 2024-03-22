@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-20-2024  
+# 03-22-2024  
 
 import math
 import json
@@ -819,8 +819,10 @@ class FootprintHandler:
                 # Create the attribute fields that will be extracted from the 
                 # GeoJSON file:
                 attributes = {}
-                for attr in attrmap.values():
-                    attributes[attr] = [] 
+                attributestr = [attr for attr in attrmap.values() if attr!='']
+                for attr in attributestr:
+                    attributes[attr] = []                    
+     
 
                 # Write the data in datalist into a dictionary for better data access,
                 # and filtering the duplicate entries:
@@ -911,8 +913,9 @@ class FootprintHandler:
                         pass            
                 ignored_Attr = set(attrkeys0) - attrkeys
                 if ignored_Attr:
-                    print('Attribute mapping does not cover all attributes detected in' 
-                          ' the input GeoJSON. Ignoring detected attributes: ' +
+                    print('\nAttribute mapping does not cover all attributes detected in' 
+                          ' the input GeoJSON. Ignoring detected attributes '
+                          '(building positions extracted from geometry info): ' +
                           ', '.join(ignored_Attr) + '\n')
             else:
                 attrmap = {}
