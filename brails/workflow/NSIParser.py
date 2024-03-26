@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 02-01-2024  
+# 03-25-2024  
 
 import requests 
 import numpy as np
@@ -46,15 +46,170 @@ import os
 from requests.adapters import HTTPAdapter, Retry
 from shapely.strtree import STRtree
 from shapely import Polygon, Point
+import sys
+import json
 
 class NSIParser:
     def __init__(self): 
         self.inventory = []
         self.attributes = ['erabuilt','numstories','occupancy','constype']
-    
-    def GenerateBldgInventory(self,footprints,outFile=None):
+
+    def __get_bbox(self,footprints:list)->tuple:
         """
-        Function that reads NSI buildings points and matches the data to a set
+        Function that determines the extent of the area covered by the 
+        footprints as a tight-fit rectangular bounding box
+        
+        Input:  List of footprint data defined as a list of lists of 
+                coordinates in EPSG 4326, i.e., [[vert1],....[vertlast]].
+                Vertices are defined in [longitude,latitude] fashion
+        Output: Tuple containing the minimum and maximum latitude and 
+                longitude values 
+       """     
+       # :
+        minlat = footprints[0][0][1]
+        minlon = footprints[0][0][0]
+        maxlat = footprints[0][0][1]
+        maxlon = footprints[0][0][0]
+        for fp in footprints:
+            for vert in fp:
+                if vert[1]>maxlat:
+                    maxlat = vert[1]
+                if vert[0]>maxlon:
+                    maxlon = vert[0]
+                if vert[1]<minlat:
+                    minlat = vert[1]
+                if vert[0]<minlon:
+                    minlon = vert[0]
+        return (minlat,minlon,maxlat,maxlon)
+    
+    def __get_nbi_data(self,bbox:tuple)->dict: 
+        """
+        Function that gets the NBI data for a bounding box entry
+        Input:  Tuple containing the minimum and maximum latitude and 
+                longitude values 
+        Output: Dictionary containing extracted NBI data keyed using the
+                NBI point coordinates
+       """  
+        
+        # Unpack the bounding box coordinates:
+        (minlat,minlon,maxlat,maxlon) = bbox
+        
+        # Construct the query URL for the bounding box input
+        baseurl = "https://nsi.sec.usace.army.mil/nsiapi/structures?bbox="        
+        bboxstr = (f'{minlon:.5f},{minlat:.5f},{minlon:.5f},{maxlat:.5f},'
+                   f'{maxlon:.5f},{maxlat:.5f},{maxlon:.5f},{minlat:.5f},'
+                   f'{minlon:.5f},{minlat:.5f}')
+        url = baseurl + bboxstr                  
+        
+        # Define a retry stratey for common error codes to use in downloading
+        # NBI data:
+        s = requests.Session()
+        retries = Retry(total=5, 
+                        backoff_factor=0.1,
+                        status_forcelist=[500, 502, 503, 504])
+        s.mount('https://', HTTPAdapter(max_retries=retries))
+        
+        # Download NBI data using the defined retry strategy, read downloaded
+        # GeoJSON data into a list:
+        print('\nGetting National Structure Inventory (NSI) building data'
+              ' for the entered location input...')
+        response = s.get(url)       
+        datalist = response.json()['features']
+        
+        # Write the data in datalist into a dictionary for better data access,
+        # and filtering the duplicate entries:
+        datadict = {}
+        for data in datalist:
+            pt = Point(data['geometry']['coordinates'])
+            datadict[pt] = data['properties']
+        return datadict
+
+    def GetRawDataROI(self,roi,outfile:str)->None:
+        """
+        The method that reads NSI buildings data finds the points within a 
+        bounding polygon or matches a set of footprints, then writes the 
+        extracted data into a GeoJSON file.
+         
+        Input:  roi: Either 1) a list of footprint data defined as a list of 
+                lists of coordinates in EPSG 4326, i.e., [[vert1],....[vertlast]].
+                Vertices are defined in [longitude,latitude] fashion, or 
+                2) a shapely polygon or multipolygon for the boundary polygon
+                of the region of interest.
+                
+                outfile: string containing the name of the output file
+                Currently, only GeoJSON format is supported
+        """  
+        
+        # If ROI is defined as a list of lists of footprint coordinates:
+        if type(roi) is list:                
+            # Determine the coordinates of the bounding box including the footprints:
+            bbox = self.__get_bbox(roi)
+            footprints = roi.copy()
+            bpoly = None
+        else:
+            try:
+                roitype = roi.geom_type
+                bpoly = roi
+                # If ROI is defined as a Shapely polygon or multipolygon, 
+                # determine the coordinates of the bounding box for the bounding
+                # polygon:
+                if roitype in ['MultiPolygon','Polygon']:
+                    bbox = bpoly.bounds
+                    bbox = (bbox[1],bbox[0],bbox[3],bbox[2])
+                # Otherwise exit with a system error:
+            except:
+                sys.exit('Unimplemented region of interest data type')
+
+        # Get NBI data for the computed bounding box:
+        datadict = self.__get_nbi_data(bbox)  
+
+        pointsKeep = set()
+        points = list(datadict.keys())
+        if bpoly is None:
+            # Create an STR tree for the building points obtained from NBI: 
+
+            pttree = STRtree(points)
+            
+            # Find the data points that are enclosed in each footprint:
+            ptind = []
+            for fp in footprints:
+                res = pttree.query(Polygon(fp))
+                ptind.extend(res)
+            ptind = set(ptind)
+            
+            for ind in ptind:
+                pointsKeep.add(points[ind])
+        else:                
+            for pt in points:
+                if bpoly.contains(pt):
+                    pointsKeep.add(pt)                  
+        
+        pointsKeep = list(pointsKeep)           
+        
+        attrkeys = list(datadict[pointsKeep[0]].keys())
+        geojson = {'type':'FeatureCollection', 
+                   "crs": {"type": "name", "properties": 
+                           {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                   'features':[]}
+        for pt in pointsKeep:
+            feature = {'type':'Feature',
+                       'properties':{},
+                       'geometry':{'type':'Point',
+                                   'coordinates':[]}}
+            feature['geometry']['coordinates'] = [pt.x,pt.y]
+            attributes = datadict[pt]
+            for key in attrkeys:
+                attr = attributes[key]
+                feature['properties'][key] = 'NA' if attr is None else attr  
+            geojson['features'].append(feature)
+            
+        with open(outfile, 'w') as outputFile:
+            json.dump(geojson, outputFile, indent=2) 
+    
+    
+    def GenerateBldgInventory(self,footprints,bpoly=None,outFile=None):
+        """
+        Method that reads NSI buildings points and matches the data to a set
         of footprints. 
          
         Input:  List of footprint data defined as a list of lists of 
@@ -66,75 +221,8 @@ class NSIParser:
                 type, 8)occupancy class, 9)footprint polygon
         """  
         
-        def get_bbox(footprints):
-            """
-            Function that determines the extent of the area covered by the 
-            footprints as a tight-fit rectangular bounding box
-            
-            Input:  List of footprint data defined as a list of lists of 
-                    coordinates in EPSG 4326, i.e., [[vert1],....[vertlast]].
-                    Vertices are defined in [longitude,latitude] fashion
-            Output: Tuple containing the minimum and maximum latitude and 
-                    longitude values 
-           """     
-           # :
-            minlat = footprints[0][0][1]
-            minlon = footprints[0][0][0]
-            maxlat = footprints[0][0][1]
-            maxlon = footprints[0][0][0]
-            for fp in footprints:
-                for vert in fp:
-                    if vert[1]>maxlat:
-                        maxlat = vert[1]
-                    if vert[0]>maxlon:
-                        maxlon = vert[0]
-                    if vert[1]<minlat:
-                        minlat = vert[1]
-                    if vert[0]<minlon:
-                        minlon = vert[0]
-            return (minlat,minlon,maxlat,maxlon)
-        
-        def get_nbi_data(box): 
-            """
-            Function that gets the NBI data for a bounding box entry
-            Input:  Tuple containing the minimum and maximum latitude and 
-                    longitude values 
-            Output: Dictionary containing extracted NBI data keyed using the
-                    NBI point coordinates
-           """  
-            
-            # Unpack the bounding box coordinates:
-            (minlat,minlon,maxlat,maxlon) = bbox
-            
-            # Construct the query URL for the bounding box input
-            baseurl = "https://nsi.sec.usace.army.mil/nsiapi/structures?bbox="        
-            bboxstr = (f'{minlon:.5f},{minlat:.5f},{minlon:.5f},{maxlat:.5f},'
-                       f'{maxlon:.5f},{maxlat:.5f},{maxlon:.5f},{minlat:.5f},'
-                       f'{minlon:.5f},{minlat:.5f}')
-            url = baseurl + bboxstr                  
-            
-            # Define a retry stratey for common error codes to use in downloading
-            # NBI data:
-            s = requests.Session()
-            retries = Retry(total=5, 
-                            backoff_factor=0.1,
-                            status_forcelist=[500, 502, 503, 504])
-            s.mount('https://', HTTPAdapter(max_retries=retries))
-            
-            # Download NBI data using the defined retry strategy, read downloaded
-            # GeoJSON data into a list:
-            print('\nGetting National Structure Inventory (NSI) building data'
-                  ' for the building footprints...')
-            response = s.get(url)       
-            datalist = response.json()['features']
-            
-            # Write the data in datalist into a dictionary for better data access,
-            # and filtering the duplicate entries:
-            datadict = {}
-            for data in datalist:
-                pt = Point(data['geometry']['coordinates'])
-                datadict[pt] = data['properties']
-            return datadict
+
+                    
         
         def get_inv_from_datadict(datadict,footprints):
             # Create an STR tree for the building points obtained from NBI: 
@@ -145,6 +233,7 @@ class NSIParser:
             ress = []
             for fp in footprints:
                 res = pttree.query(Polygon(fp))
+                ress.extend(res)
                 if res.size!=0:
                     ress.append(res)
                 else:
@@ -204,10 +293,10 @@ class NSIParser:
             return (inventory, footprints_out_json)
 
         # Determine the coordinates of the bounding box including the footprints:
-        bbox = get_bbox(footprints)          
+        bbox = self.__get_bbox(footprints)          
 
         # Get the NBI data for computed bounding box:
-        datadict = get_nbi_data(bbox)  
+        datadict = self.__get_nbi_data(bbox)  
         
         # Create a footprint-merged building inventory from extracted NBI data:
         (self.inventory, footprints_out_json) = get_inv_from_datadict(datadict,footprints)    
