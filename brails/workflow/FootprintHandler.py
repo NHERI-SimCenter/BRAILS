@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-22-2024  
+# 03-26-2024  
 
 import math
 import json
@@ -1055,14 +1055,14 @@ class FootprintHandler:
                      ' shall be entered for the vertex pairs of any of the two' +
                      ' diagonals of the rectangular bounding box.')  
            
-        self.attributes['fpAreas'] = []
+        self.attributes['fparea'] = []
         for fp in footprints:
             lons = []
             lats = []
             for pt in fp:
                 lons.append(pt[0])
                 lats.append(pt[1])        
-            self.attributes['fpAreas'].append(int(polygon_area(lats,lons,
+            self.attributes['fparea'].append(int(polygon_area(lats,lons,
                                                                lengthUnit)))
 
         # Calculate centroids of the footprints and remove footprint data that
