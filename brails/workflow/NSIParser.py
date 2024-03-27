@@ -37,26 +37,37 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-25-2024  
+# 03-26-2024  
 
 import requests 
-import numpy as np
 import pandas as pd
 import os
 from requests.adapters import HTTPAdapter, Retry
-from shapely.strtree import STRtree
-from shapely import Polygon, Point
 import sys
 import json
+from shapely.geometry import Point 
+from brails.utils.geoTools import match_points2polygons
+from brails.workflow.FootprintHandler import FootprintHandler  
 
 class NSIParser:
     def __init__(self): 
-        self.inventory = []
-        self.attributes = ['erabuilt','numstories','occupancy','constype']
+        self.attributes = {}
+        self.brails2r2dmap = {'lon':'Longitude','lat':'Latitude',
+                              'fparea':'PlanArea',
+                              'numstories':'NumberOfStories',
+                              'erabuilt':'YearBuilt',
+                              'repaircost':'ReplacementCost',
+                              'constype':'StructureType',
+                              'occupancy':'OccupancyClass','fp':'Footprint'}        
+        self.footprints = {}
+        self.nsi2brailsmap = {'x':'lon','y':'lat','sqft':'fparea',
+                             'num_story':'numstories','med_yr_blt':'erabuilt',
+                             'val_struct':'repaircost','bldgtype':'constype',
+                             'occtype':'occupancy'}   
 
     def __get_bbox(self,footprints:list)->tuple:
         """
-        Function that determines the extent of the area covered by the 
+        Method that determines the extent of the area covered by the 
         footprints as a tight-fit rectangular bounding box
         
         Input:  List of footprint data defined as a list of lists of 
@@ -84,7 +95,8 @@ class NSIParser:
     
     def __get_nbi_data(self,bbox:tuple)->dict: 
         """
-        Function that gets the NBI data for a bounding box entry
+        Method that gets the NBI data for a bounding box entry
+        
         Input:  Tuple containing the minimum and maximum latitude and 
                 longitude values 
         Output: Dictionary containing extracted NBI data keyed using the
@@ -126,7 +138,7 @@ class NSIParser:
 
     def GetRawDataROI(self,roi,outfile:str)->None:
         """
-        The method that reads NSI buildings data finds the points within a 
+        Method that reads NSI buildings data finds the points within a 
         bounding polygon or matches a set of footprints, then writes the 
         extracted data into a GeoJSON file.
          
@@ -163,29 +175,23 @@ class NSIParser:
         # Get NBI data for the computed bounding box:
         datadict = self.__get_nbi_data(bbox)  
 
-        pointsKeep = set()
         points = list(datadict.keys())
-        if bpoly is None:
-            # Create an STR tree for the building points obtained from NBI: 
-
-            pttree = STRtree(points)
-            
-            # Find the data points that are enclosed in each footprint:
-            ptind = []
-            for fp in footprints:
-                res = pttree.query(Polygon(fp))
-                ptind.extend(res)
-            ptind = set(ptind)
-            
-            for ind in ptind:
-                pointsKeep.add(points[ind])
-        else:                
+        if bpoly is None:            
+            # Find the NBI points that are enclosed in each footprint:
+            pointsKeep, _ = match_points2polygons(points,footprints)
+        else:               
+            # Find the NBI points contained in bpoly:
+            pointsKeep = set()
             for pt in points:
                 if bpoly.contains(pt):
                     pointsKeep.add(pt)                  
+            pointsKeep = list(pointsKeep)
         
-        pointsKeep = list(pointsKeep)           
+        # Display the number of NSI points that are within roi:
+        print(f'Found a total of {len(pointsKeep)} building points in'
+              ' NSI that are within the entered region of interest')
         
+        # Write the extracted NSI data in a GeoJSON file:
         attrkeys = list(datadict[pointsKeep[0]].keys())
         geojson = {'type':'FeatureCollection', 
                    "crs": {"type": "name", "properties": 
@@ -204,93 +210,76 @@ class NSIParser:
             geojson['features'].append(feature)
             
         with open(outfile, 'w') as outputFile:
-            json.dump(geojson, outputFile, indent=2) 
+            json.dump(geojson, outputFile, indent=2)  
     
-    
-    def GenerateBldgInventory(self,footprints,bpoly=None,outFile=None):
+    def GetNSIData(self,footprints:list,lengthUnit:str='ft',outfile=None):
         """
         Method that reads NSI buildings points and matches the data to a set
-        of footprints. 
+        of footprints and writes the data in a BRAILS-compatible format
          
-        Input:  List of footprint data defined as a list of lists of 
+        Input:  roi: List of footprint data defined as a list of lists of 
                 coordinates in EPSG 4326, i.e., [[vert1],....[vertlast]].
                 Vertices are defined in [longitude,latitude] fashion.
-        Output: Building inventory for the footprints containing the attributes
+                
+                outfile: string containing the name of the output file
+                Currently, only GeoJSON format is supported
+                
+        Output: Attribute dictionary for the footprints containing the attributes:
                 1)latitude, 2)longitude, 3)building plan area, 4)number of 
                 floors, 5)year of construction, 6)replacement cost, 7)structure
                 type, 8)occupancy class, 9)footprint polygon
         """  
         
-
-                    
-        
-        def get_inv_from_datadict(datadict,footprints):
-            # Create an STR tree for the building points obtained from NBI: 
+        def get_attr_from_datadict(datadict,footprints,nsi2brailsmap):            
+            # Parsers for building and occupancy types:
+            def bldgtype_parser(bldgtype):                
+                bldgtype = bldgtype + '1'
+                if bldgtype=='M1':
+                    bldgtype = 'RM1'
+                return bldgtype
+            def occ_parser(occtype):                
+                if '-' in occtype:
+                    occtype = occtype.split('-')[0]
+                return occtype
+            
+            # Extract the NSI points from the data dictionary input:
             points = list(datadict.keys())
-            pttree = STRtree(points)
             
-            # Find the data points that are enclosed in each footprint:
-            ress = []
-            for fp in footprints:
-                res = pttree.query(Polygon(fp))
-                ress.extend(res)
-                if res.size!=0:
-                    ress.append(res)
-                else:
-                    ress.append(np.empty(shape=(0, 0)))
+            # Match NBI data to footprints:
+            _, fp2ptmap = match_points2polygons(points,footprints)
+
+            # Write the matched footprints to a list:
+            footprintsMatched = fp2ptmap.keys()
             
-            # Match NBI data to each footprint:
-            footprints_out_json = []
-            footprints_out = []
-            lat = []
-            lon = []
-            planarea = []
-            nstories = []
-            yearbuilt = []
-            repcost = []
-            strtype = []
-            occ = []
-            for ind, fp in enumerate(footprints):
-                if ress[ind].size!=0:
-                    footprints_out.append(fp)
-                    footprints_out_json.append(('{"type":"Feature","geometry":' + 
-                    '{"type":"Polygon","coordinates":[' + 
-                    f"""{fp}""" + 
-                    ']},"properties":{}}'))
-                    ptind = ress[ind][0]
-                    ptres = datadict[points[ptind]]
-                    lat.append(ptres['y'])
-                    lon.append(ptres['x'])
-                    planarea.append(ptres['sqft'])
-                    nstories.append(ptres['num_story'])
-                    yearbuilt.append(ptres['med_yr_blt'])
-                    repcost.append(ptres['val_struct'])
-                    bldgtype = ptres['bldgtype'] + '1'
-                    if bldgtype=='M1':
-                        strtype.append('RM1')
-                    else:
-                        strtype.append(bldgtype)
-                    if '-' in ptres['occtype']:
-                        occ.append(ptres['occtype'].split('-')[0])
-                    else:
-                        occ.append(ptres['occtype'])
-                    
+            # Initialize the attributes dictionary:
+            attributes = {'fp':[], 'fp_json':[]}
+            nsikeys = list(nsi2brailsmap.keys())
+            brailskeys = list(nsi2brailsmap.values())
+            for key in brailskeys:
+                attributes[key] = []
+
+            # Extract NSI attributes corresponding to each building footprint
+            # and write them in attributes dictionary:
+            for fpstr in footprintsMatched:
+                fp = json.loads(fpstr)
+                pt = fp2ptmap[fpstr]
+                ptres = datadict[pt]
+                attributes['fp'].append(fp)
+                attributes['fp_json'].append(('{"type":"Feature","geometry":' + 
+                                                          '{"type":"Polygon","coordinates":[' + 
+                                                          f"""{fp}""" +                                                           ']},"properties":{}}'))
+                for key in nsikeys:
+                    if key=='bldgtype':
+                        attributes[nsi2brailsmap[key]].append(bldgtype_parser(ptres[key]))                    
+                    elif key=='occtype':
+                        attributes[nsi2brailsmap[key]].append(occ_parser(ptres[key]))
+                    else:                        
+                        attributes[nsi2brailsmap[key]].append(ptres[key])
             
             # Display the number of footprints that can be matched to NSI points:
-            print(f'Found a total of {len(footprints_out)} building points in'
-                  ' NSI that match the footprint data.')
-            
-            # Write the extracted features into a Pandas dataframe:
-            inventory = pd.DataFrame(pd.Series(lat,name='Latitude'))
-            inventory['Longitude'] = lon
-            inventory['PlanArea'] = planarea
-            inventory['NumberOfStories'] = nstories
-            inventory['YearBuilt'] = yearbuilt
-            inventory['ReplacementCost'] = repcost
-            inventory['StructureType'] = strtype
-            inventory['OccupancyClass'] = occ
-            inventory['Footprint'] = footprints_out
-            return (inventory, footprints_out_json)
+            print(f'Found a total of {len(footprintsMatched)} building points'
+                  ' in NSI that match the footprint data.')
+            return attributes
 
         # Determine the coordinates of the bounding box including the footprints:
         bbox = self.__get_bbox(footprints)          
@@ -299,13 +288,42 @@ class NSIParser:
         datadict = self.__get_nbi_data(bbox)  
         
         # Create a footprint-merged building inventory from extracted NBI data:
-        (self.inventory, footprints_out_json) = get_inv_from_datadict(datadict,footprints)    
+        attributes = get_attr_from_datadict(datadict,footprints,self.nsi2brailsmap)
         
-        # If requested, write the created inventory in R2D-compatible CSV format:
-        if outFile:
-            inventory = self.inventory.copy(deep=True)
-            n = inventory.columns[-1]
-            inventory.drop(n, axis = 1, inplace = True)
-            inventory[n] = footprints_out_json
-            inventory.to_csv(outFile, index=True, index_label='id') 
-            print(f'\nFinal inventory data available in {os.getcwd()}/{outFile}')
+        # Convert to footprint areas to sqm if needed:
+        if lengthUnit=='m': 
+            fparea = [area/(3.28084**2) for area in attributes['fparea']]
+            attributes.update({'fparea':fparea})
+        
+        
+        self.attributes = attributes.copy()
+        if outfile:
+            if 'csv' in outfile.lower(): 
+                # Write the extracted features into a Pandas dataframe:
+                brailskeys = list(self.brails2r2dmap.keys())
+                inventory = pd.DataFrame(pd.Series(attributes[brailskeys[0]],
+                                                   name=self.brails2r2dmap[brailskeys[0]]))        
+                for key in brailskeys[1:]:
+                    inventory[self.brails2r2dmap[key]] = attributes[key]
+    
+                # Write the created inventory in R2D-compatible CSV format:
+                n = inventory.columns[-1]
+                inventory.drop(n, axis = 1, inplace = True)
+                inventory[n] = attributes['fp_json']
+                inventory.to_csv(outfile, index=True, index_label='id') 
+            else:
+                # Write the extracted features into a GeoJSON file:
+                footprints = attributes['fp'].copy()
+                del attributes['fp_json']
+                del attributes['fp']
+                fpHandler = FootprintHandler()
+                fpHandler._FootprintHandler__write_fp2geojson(footprints,attributes,outfile)
+                outfile = outfile.split('.')[0] + '.geojson'        
+        
+        print(f'\nFinal inventory data available in {os.getcwd()}/{outfile}')
+        
+        # Reformat the class variables to make them compatible with the 
+        # InventoryGenerator:
+        self.footprints = self.attributes['fp'].copy()
+        del self.attributes['fp']
+        del self.attributes['fp_json']
