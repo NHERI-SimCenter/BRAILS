@@ -37,11 +37,10 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-21-2024  
+# 03-27-2024  
 
 def BldgAttributes():
-    attr = ['buildingheight','chimney','erabuilt',
-                              'garage','numstories','occupancy',
-                              'roofeaveheight','roofshape','roofpitch',
-                              'constype', 'roofcover','constype']
+    attr = ['buildingheight','chimney','constype','erabuilt','garage',
+            'numstories','occupancy','roofcover','roofeaveheight','roofshape',
+            'roofpitch']
     return attr
