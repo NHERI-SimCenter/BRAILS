@@ -37,20 +37,21 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-15-2024
+# 03-26-2024
 
 from math import radians, sin, cos, atan2, sqrt
-from shapely import to_geojson
 from shapely.geometry import Polygon
+from shapely import to_geojson
+from shapely.strtree import STRtree
 import matplotlib.pyplot as plt
 import json
 
-def haversine_dist(p1,p2):
+def haversine_dist(p1:list,p2:list)->float:
     """
     Function that calculates the Haversine distance between two points.
     
-    Input: Two points with coordinates defined as latitude and longitude
-           with each point defined as a list of two floating-point values
+    Input: Two points with coordinates defined in latitude and longitude
+           order with each point defined as a list of two floating-point values
     Output: Distance between the input points in feet
     """
 
@@ -74,14 +75,14 @@ def haversine_dist(p1,p2):
     distance = R*c*3280.84
     return distance
 
-def mesh_polygon(polygon, rows:int, cols:int):
+def mesh_polygon(polygon,rows:int,cols:int)->list:
     """
     Function that splits a polygon into individual rectangular polygons.
     
     Inputs: A Shapely polygon and number of rows and columns of rectangular
             cells requested to mesh the area of the polygon.
-            with each point defined as a list of two floating-point values
-    Output: Individual rectangular cells stored as Shapely polygons
+    Output: A list containing the individual rectangular cells stored as 
+            Shapely polygons
     """
     
     # Get bounds of the polygon:
@@ -113,13 +114,13 @@ def mesh_polygon(polygon, rows:int, cols:int):
                     rectangles.append(poly.envelope)
     return rectangles
 
-def plot_polygon_cells(bpoly, rectangles, fout=False):
+def plot_polygon_cells(bpoly,rectangles:list,fout=False)->None:
     """
-    Function that plots the mesh for a polygon and saves the plot into a PNG image
+    Function that plots meshes for a polygon and saves the plot into a PNG image
     
     Inputs: A Shapely polygon and a list of rectangular mesh cells saved as
-            Shapely polygons. Optional input is a string containing the name of the
-            output file
+            Shapely polygons. Optional input is a string containing the name of
+            the output file
     """
     
     if bpoly.geom_type == 'MultiPolygon':
@@ -136,11 +137,12 @@ def plot_polygon_cells(bpoly, rectangles, fout=False):
         plt.savefig(fout, dpi=600, bbox_inches="tight")
     plt.show()
 
-def write_polygon2geojson(poly,outfile):
+def write_polygon2geojson(poly,outfile:str)->None:
     """
-    Function that writes a single Shapely polygon into a GeoJSON file
+    Function that writes a single Shapely polygon into a GeoJSON file. 
     
-    Input: A Shapely polygon or multi polygon
+    Inputs: A Shapely polygon or multi polygon and a string containing the name 
+           of the GeoJSON file
     """
 
     if 'geojson' not in outfile.lower():
@@ -162,4 +164,37 @@ def write_polygon2geojson(poly,outfile):
         to_geojson(poly).split('"coordinates":')[-1][:-1])
     geojson['features'].append(feature)
     with open(outfile, 'w') as outputFile:
-        json.dump(geojson, outputFile, indent=2)    
+        json.dump(geojson, outputFile, indent=2)   
+        
+def match_points2polygons(points:list,polygons:list)->list:
+    """
+    Function that finds the set of points that match a set of polygons 
+    
+    Inputs:  A list of Shapely points and a list of footprint data defined as a
+             list of lists of coordinates in EPSG 4326, i.e., [[vert1],....
+             [vertlast]]. Vertices are defined in [longitude,latitude] fashion.
+    Outputs: A list of Shapely points and a dictionary that maps each footprint
+             list of coordinates (converted to string) to the first matched 
+             Shapely point
+    """
+
+    # Create an STR tree for the input points: 
+    pttree = STRtree(points)
+    
+    # Find the data points that are enclosed in each polygon:
+    ptkeepind = []
+    fp2ptmap = {}
+    for poly in polygons:
+        res = pttree.query(Polygon(poly))
+        if res.size!=0:
+            ptkeepind.extend(res)
+            fp2ptmap[str(poly)] = points[res[0]]
+    ptkeepind = set(ptkeepind)
+    
+    # Create a list of points that include just the points that have a polygon
+    # match:
+    ptskeep = []
+    for ind in ptkeepind:
+        ptskeep.append(points[ind])
+    
+    return ptskeep,fp2ptmap
