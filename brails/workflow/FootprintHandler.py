@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-26-2024  
+# 03-29-2024  
 
 import math
 import json
@@ -64,7 +64,7 @@ class FootprintHandler:
         self.lengthUnit = 'ft'
         self.queryarea = []
     
-    def __fetch_roi(self,queryarea,outfile=False):
+    def __fetch_roi(self,queryarea:str,outfile:str=''):
         # Search for the query area using Nominatim API:
         print(f"\nSearching for {queryarea}...")
         queryarea = queryarea.replace(" ", "+").replace(',','+')
@@ -145,7 +145,7 @@ class FootprintHandler:
             write_polygon2geojson(bpoly,outfile)   
         return bpoly, queryarea_printname, queryarea_osmid
     
-    def __bbox2poly(self,queryarea,outfile=False):
+    def __bbox2poly(self,queryarea:tuple,outfile:str=''):
         # Parse the entered bounding box into a polygon:
         if len(queryarea)%2==0 and len(queryarea)!=0:                        
             if len(queryarea)==4:
@@ -169,7 +169,7 @@ class FootprintHandler:
             write_polygon2geojson(bpoly,outfile)  
         return bpoly, queryarea_printname
     
-    def __write_fp2geojson(self,footprints,attributes,outputFilename):
+    def __write_fp2geojson(self,footprints:list,attributes:dict,outputFilename:str):
         attrkeys = list(attributes.keys())
         geojson = {'type':'FeatureCollection', 
                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
@@ -188,8 +188,8 @@ class FootprintHandler:
         with open(outputFilename, 'w') as outputFile:
             json.dump(geojson, outputFile, indent=2)    
     
-    def fetch_footprint_data(self,queryarea,fpSource='osm',attrmap=None,
-                             lengthUnit='ft',outputFile='footprints.geojson'):
+    def fetch_footprint_data(self,queryarea,fpSource:str='osm',attrmap:str='',
+                             lengthUnit:str='ft',outputFile:str=''):
         """
         Function that loads footprint data from OpenStreetMap, Microsoft, USA
         Structures, user-defined data
@@ -1084,4 +1084,5 @@ class FootprintHandler:
                 del self.attributes[key][i]
                        
         # Write the footprint data into a GeoJSON file:
-        self.__write_fp2geojson(self.footprints, self.attributes, outputFile)
+        if outputFile:
+            self.__write_fp2geojson(self.footprints, self.attributes, outputFile)
