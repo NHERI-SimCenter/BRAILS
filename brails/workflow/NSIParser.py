@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-26-2024  
+# 03-28-2024  
 
 import requests 
 import pandas as pd
@@ -212,7 +212,7 @@ class NSIParser:
         with open(outfile, 'w') as outputFile:
             json.dump(geojson, outputFile, indent=2)  
     
-    def GetNSIData(self,footprints:list,lengthUnit:str='ft',outfile=None):
+    def GetNSIData(self,footprints:list,lengthUnit:str='ft',outfile:str=''):
         """
         Method that reads NSI buildings points and matches the data to a set
         of footprints and writes the data in a BRAILS-compatible format
