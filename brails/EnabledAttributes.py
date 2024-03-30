@@ -37,11 +37,20 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-21-2024  
+# 03-28-2024  
 
 def BldgAttributes():
-    attr = ['buildingheight','chimney','erabuilt',
-                              'garage','numstories','occupancy',
-                              'roofeaveheight','roofshape','roofpitch',
-                              'constype', 'roofcover','constype']
+    attr = ['buildingheight','chimney','constype','erabuilt','garage',
+            'numstories','occupancy','roofcover','roofeaveheight','roofshape',
+            'roofpitch','windarea']
     return attr
+
+def BRAILStoR2D_BldgAttrMap():
+    r2dHeaders = ['BuildingHeight','ChimneyExists','StructureType',
+                   'YearBuilt','GarageExists','NumberOfStories',
+                   'OccupancyClass','RoofCoverType','RoofEaveHeight',
+                    'RoofShape','RoofPitch','WindowAreaRatio']
+    brailsAttributes = BldgAttributes()
+    brails2r2dmap = {}
+    for ind,attr in enumerate(brailsAttributes):
+        brails2r2dmap[attr] = r2dHeaders[ind]
