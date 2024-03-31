@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-29-2024  
+# 03-30-2024  
 
 import math
 import json
@@ -54,6 +54,11 @@ from brails.utils.geoTools import *
 import concurrent.futures
 from requests.adapters import HTTPAdapter, Retry
 import unicodedata
+import warnings
+
+# Set a custom warning message format:
+warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
+                         f"{category.__name__}: {message}\n"
 
 class FootprintHandler:
     def __init__(self): 
@@ -287,8 +292,7 @@ class FootprintHandler:
                        'height':'buildingheight',           
                        }
             
-            levelkeys = {'building:levels','roof:levels',
-                         'building:levels:underground'}
+            levelkeys = {'building:levels','roof:levels'} # Excluding 'building:levels:underground'
             otherattrkeys = set(attrmap.keys())
             datakeys = levelkeys.union(otherattrkeys)
             
@@ -1021,7 +1025,8 @@ class FootprintHandler:
             elif self.fpSource=='usastr':
                 footprints, attributes = get_usastruct_footprints(self.queryarea,lengthUnit)
             else:
-                print('Unimplemented footprint source. Setting footprint source to OSM')
+                warnings.warn('Unimplemented footprint source. Setting footprint source to OSM',
+                              UserWarning)
                 footprints, attributes = get_osm_footprints(self.queryarea,lengthUnit)
             return footprints, attributes
 
