@@ -59,7 +59,7 @@ import warnings
 # Set a custom warning message format:
 warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
                          f"{category.__name__}: {message}\n"
-warnings.simplefilter('always')                                
+warnings.simplefilter('always',UserWarning)                                
 
 class FootprintHandler:
     def __init__(self): 

@@ -63,7 +63,7 @@ from brails.workflow.NSIParser import NSIParser
 # Set a custom warning message format:
 warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
                          f"{category.__name__}: {message}\n"
-warnings.simplefilter('always')                         
+warnings.simplefilter('always',UserWarning)                         
 
 class InventoryGenerator:
     def __init__(self, location='Berkeley California', fpSource:str='osm', 
@@ -90,9 +90,9 @@ class InventoryGenerator:
         fpHandler = FootprintHandler()
         # If a baseline inventory is not specified:
         if not baselineInv:
-            # If location entry is a string containing geojson or csv file 
-            # extension and an attribute mapping file is specified:
-            if ('csv' in location.lower() or 'geojson' in location.lower()) and attrmap:
+            # If location entry is a string containing geojson file extension
+            # and an attribute mapping file is specified:
+            if (location is str and 'geojson' in location.lower()) and attrmap:
                 fpHandler.fetch_footprint_data(location,
                                                fpSource=fpSource,
                                                attrmap=attrmap,
@@ -111,7 +111,7 @@ class InventoryGenerator:
             # If a user-specified inventory is defined and is accompanied by an
             # attribute mapping file:
             elif attrmap:
-                if ('csv' in location.lower() or 'geojson' in location.lower()):
+                if (location is str and 'csv' in location.lower() or 'geojson' in location.lower()):
                     self.fpSource = 'user-specified'
                     fpInp = location
                 else:
@@ -126,7 +126,8 @@ class InventoryGenerator:
             # accompanied by an attribute mapping file, ignore the entered:
             else:
                 warnings.warn('Missing attribute mapping file. ' +
-                              'Ignoring the user-specified baseline inventory')
+                              'Ignoring the user-specified baseline inventory',
+                              UserWarning)
                 fpHandler.fetch_footprint_data(location,fpSource=fpSource,lengthUnit=lengthUnit)              
  
         # Write geometry information from footprint data into a DataFrame:
@@ -248,7 +249,8 @@ class InventoryGenerator:
             # inventory output in GeoJSON format:
             if '.geojson' not in outputFile.lower():
                 warnings.warn('Output format unimplemented! '
-                              'Writing the inventory output in GeoJSON format.')
+                              'Writing the inventory output in GeoJSON format',
+                              UserWarning)
                 outputFile = outputFile.replace(outputFile.split('.')[-1],'geojson')
             
             # Define GeoJSON file dictionary including basic metadata:
@@ -434,7 +436,8 @@ class InventoryGenerator:
                 warnings.warn('Incorrect attributes entry. Supported attributes' +
                               ' entries are a list containing the string labels ' +
                               " for requested attributes, 'all' or 'hazuseq'. " +
-                              ' Running BRAILS for roof shape detection only...')
+                              ' Running BRAILS for roof shape detection only...',
+                              UserWarning)
                 attrOut=['roofshape']
             return attrOut
 
