@@ -37,12 +37,12 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-30-2024  
+# 03-31-2024  
 
 def BldgAttributes()->list:
     attr = ['buildingheight','chimney','constype','erabuilt','garage',
             'numstories','occupancy','repaircost','roofcover','roofeaveheight',
-            'roofshape','roofpitch','windarea']
+            'roofshape','roofpitch','winarea']
     return attr
 
 def BRAILStoR2D_BldgAttrMap()->dict:

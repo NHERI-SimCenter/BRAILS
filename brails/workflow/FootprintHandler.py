@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-30-2024  
+# 04-01-2024  
 
 import math
 import json
@@ -59,6 +59,7 @@ import warnings
 # Set a custom warning message format:
 warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
                          f"{category.__name__}: {message}\n"
+warnings.simplefilter('always')                                
 
 class FootprintHandler:
     def __init__(self): 

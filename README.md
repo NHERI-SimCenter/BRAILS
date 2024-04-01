@@ -22,9 +22,13 @@ pip install BRAILS
 
 This example demonstrates how to use the ``InventoryGenerator`` method embedded in BRAILS to generate regional-level inventories. 
 
-The primary input to ``InventoryGenerator`` is location. ``InventoryGenerator`` accepts four different location input: 1) region name, 2) list of region names, 3) bounding box of a region, 4) A GeoJSON file containing building footprints.
+The primary input to ``InventoryGenerator`` is location. ``InventoryGenerator`` accepts four different ``location`` input types: 1) region name, 2) list of region names, 3) a tuple containing the coordinates for two opposite vertices of a bounding box for a region (e.g., ``(vert1lon,vert1lat,vert2lon,vert2lat)``), and a 4) GeoJSON file containing building footprints or location points.
 
-Please note that you will need a Google API Key to run ``InventoryGenerator``.
+InventoryGenerator automatically detects building locations in a region by downloading footprint data for the ``location`` input. The three footprint data sources, ``fpSource``, included in BRAILS are i) OpenStreetMaps, ii) Microsoft Global Building Footprints dataset, and iii) FEMA USA Structures. The keywords for these sources are ``osm``, ``ms``, and ``usastr``, respectively.
+
+``InventoryGenerator`` also allows inventory data to be imported from the National Structure Inventory or another user-specified file to create a baseline building inventory.
+
+Please note that to run the ``generate`` method of ``InventoryGenerator``, you will need a Google API Key.
 
 ```python
 #import InventoryGenerator:
@@ -32,12 +36,20 @@ from brails.InventoryGenerator import InventoryGenerator
 
 # Initialize InventoryGenerator:
 invGenerator = InventoryGenerator(location='Berkeley, CA',
-                                  nbldgs=100, randomSelection=True,
-                                  GoogleAPIKey="")
+                                  fpSource='usastr', 
+                                  baselineInv='nsi',
+                                  lengthUnit='m',
+                                  outputFile='BaselineInvBerkeleyCA.geojson')
+
+# View a list of building attributes that can be obtained using BRAILS:
+invGenerator.enabled_attributes()
 
 # Run InventoryGenerator to generate an inventory for the entered location:
 # To run InventoryGenerator for all enabled attributes set attributes='all':
-invGenerator.generate(attributes=['numstories','roofshape','buildingheight'])
+invGenerator.generate(attributes=['numstories','roofshape','buildingheight'],
+                      GoogleAPIKey='ENTER-YOUR-API-KEY-HERE',
+                      nbldgs=100,
+                      outputFile='BldgInvBerkeleyCA.geojson')
 
 # View generated inventory:
 invGenerator.inventory
