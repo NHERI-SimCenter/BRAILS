@@ -22,9 +22,9 @@ pip install BRAILS
 
 This example demonstrates how to use the ``InventoryGenerator`` method embedded in BRAILS to generate regional-level inventories. 
 
-The primary input to ``InventoryGenerator`` is location. ``InventoryGenerator`` accepts four different ``location`` input types: 1) region name, 2) list of region names, 3) a tuple containing the coordinates for two opposite vertices of a bounding box for a region (e.g., (vert1lon,vert1lat,vert2lon,vert2lat), and a 4) GeoJSON file containing building footprints or location points.
+The primary input to ``InventoryGenerator`` is location. ``InventoryGenerator`` accepts four different ``location`` input types: 1) region name, 2) list of region names, 3) a tuple containing the coordinates for two opposite vertices of a bounding box for a region (e.g., ``(vert1lon,vert1lat,vert2lon,vert2lat)``), and a 4) GeoJSON file containing building footprints or location points.
 
-InventoryGenerator automatically detects building locations in a region by downloading footprint data for the ``location`` input. The three footprint data sources (``fpSource``) included in BRAILS are i) OpenStreetMaps, ii) Microsoft Global Building Footprints dataset, and iii) FEMA USA Structures. The keywords for these sources are ``osm``, ``ms``, and ``usastr``, respectively.
+InventoryGenerator automatically detects building locations in a region by downloading footprint data for the ``location`` input. The three footprint data sources, ``fpSource``, included in BRAILS are i) OpenStreetMaps, ii) Microsoft Global Building Footprints dataset, and iii) FEMA USA Structures. The keywords for these sources are ``osm``, ``ms``, and ``usastr``, respectively.
 
 ``InventoryGenerator`` also allows inventory data to be imported from the National Structure Inventory or another user-specified file to create a baseline building inventory.
 
