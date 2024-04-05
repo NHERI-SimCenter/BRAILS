@@ -38,7 +38,7 @@
 # Frank McKenna
 #
 # Last updated:
-# 04-01-2024 
+# 04-05-2024 
 
 from datetime import datetime
 from importlib.metadata import version
@@ -63,7 +63,8 @@ from brails.workflow.NSIParser import NSIParser
 # Set a custom warning message format:
 warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
                          f"{category.__name__}: {message}\n"
-warnings.simplefilter('always',UserWarning)                         
+warnings.simplefilter('always',UserWarning)        
+warnings.filterwarnings("ignore", message="Implicit dimension choice for softmax has been deprecated.*")                 
 
 class InventoryGenerator:
     def __init__(self, location='Berkeley California', fpSource:str='osm', 
@@ -335,47 +336,60 @@ class InventoryGenerator:
                 buildings
         """  
         
-        def write_to_dataframe(df:pd.DataFrame,predictions,column:str,
-                               imtype:str='street_images')->pd.DataFrame:
+        def merge_results2inventory(inventory:pd.DataFrame, 
+                                    predictions:pd.DataFrame, 
+                                    attrname:str,
+                                    imtype:str='street_images')->pd.DataFrame:
             """
-            Function that writes predictions of a model by going through the 
-            DataFrame, df, and finding the image name matches between the 
-            list of images corresponding to the predictions, i.e., imagelist,
-            then assigning the predictions to df. The function only searches 
-            the column named im_type for image names in imagelist.
+            Function that merges predictions of a model to an inventory by 
+            finding the image name matches between the inventory and predictions 
+            The function only searches the column named imtype for image names
             
             Inputs: 
-                df: DataFrame
+                inventory: DataFrame
                     A DataFrame containing at least a column of names of source
                     images named either 'satellite_images' or 'street_images',
-                    depending on the value of im_type
-                predictions: list or DataFrame
-                    A list consisting of two lists: 1) list of image names. 
-                    These names need to correspond to the predictions in 
-                    predictionlist 2) list of predictions. These predictions
-                    need to correspond to the image names in imagelist.
-                    Alternately, a Pandas DataFrame with a column titled image 
-                    for image names, and a column for the predictions titled
-                    predictions
+                    depending on the value of imtype
+                predictions: DataFrame
+                    A DataFrame containing two columns for 1) image names
+                    and 2) model predictions. Columns of this DataFrame are 
+                    titled with the strings contained in imtype and attrname
                 imtype: string
                     'satellite_images' or 'street_images' depending on the
                     type of source images
                 column: string 
-                    Name of the column where the predictions will be written
+                    Name of the column where the predictions are stored and 
+                    will be written
             
-            Output: An updated version of df that includes an extra column for 
-                    the predictions
+            Output: inventory expanded such that it includes a new or updated 
+                    column for the predictions
             """
-            if isinstance(predictions,list):
-                imagelist = predictions[0][:]
-                predictionlist = predictions[1][:]
-                for ind, im in enumerate(imagelist):
-                    df.loc[df.index[df[imtype] == im],column] = predictionlist[ind]
-            else:    
-                for index, row in predictions.iterrows():
-                    df.loc[df.index[df[imtype] == row['image']],column] = row['prediction']
-                          
-            return df      
+
+            # If inventory does not contain a column for attrname:
+            if attrname not in inventory:
+                # Merge the prediction results to inventory DataFrame:
+                inventory = inventory.merge(predictions,
+                                            how='left',
+                                            on=[imtype])
+                
+            else:                        
+                # Merge the prediction results to inventory DataFrame:
+                mergedInv = inventory.merge(predictions,
+                                            how='left',
+                                            on=[imtype])
+
+                # Augment prediction results by merging values from the 
+                # first attribute column only if the corresponding value
+                # in the second (predictions) column is nan:
+                mergedInv[attrname] = mergedInv[attrname+'_y'].fillna(
+                    mergedInv[attrname+'_x'])
+                
+                # Remove the two attribute columns, keeping the combined
+                # column, and assign the resulting DataFrame to inventory:
+                inventory = mergedInv.drop(columns=[attrname+'_x',
+                                                    attrname+'_y'],
+                                           errors='ignore')
+            return inventory 
         
         def parse_attribute_input(attrIn:list,attrEnabled:list)->list:             
             """
@@ -476,7 +490,7 @@ class InventoryGenerator:
                               ['occupancy','constype','repaircost','roofcover']]
         
         # Download the images required for the requested attributes:
-        if 'roofshape' or 'roofcover' in attributes_process:
+        if 'roofshape' in attributes_process or 'roofcover' in attributes_process:
             image_handler.GetGoogleSatelliteImage(footprints)
             imsat = [im for im in image_handler.satellite_images if im is not None]
             self.inventory['satellite_images'] = image_handler.satellite_images
@@ -488,21 +502,30 @@ class InventoryGenerator:
             imstreet = [im for im in image_handler.street_images if im is not None]
             self.inventory['street_images'] = image_handler.street_images
 
+        # Get the dictionary that maps between BRAILS and R2D attribute names:
+        brails2r2dmap = BRAILStoR2D_BldgAttrMap()
+
         # Run the obtained images through BRAILS computer vision models:
         for attribute in attributes_process:
+            # Define the column name:
+            colname = brails2r2dmap[attribute]
+            
             if attribute=='chimney':
                 # Initialize the chimney detector object:
                 chimneyModel = ChimneyDetector()
 
                 # Call the chimney detector to determine the existence of chimneys:
                 chimneyModel.predict(imstreet)
-
+                
                 # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,
-                                   [chimneyModel.system_dict['infer']['images'],
-                                   chimneyModel.system_dict['infer']['predictions']],
-                                   'chimneyExists')
-                self.inventory['chimneyExists'] = self.inventory['chimneyExists'].astype(dtype="boolean")
+                predResults = pd.DataFrame(list(zip(chimneyModel.system_dict['infer']['images'],
+                                                    chimneyModel.system_dict['infer']['predictions'])),
+                                           columns=['street_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
+                self.inventory[colname] = self.inventory[colname].astype(
+                    dtype="boolean")
                 
             elif attribute=='erabuilt':
                 # Initialize the era of construction classifier:
@@ -511,10 +534,15 @@ class InventoryGenerator:
                 # Call the classifier to determine the era of construction for
                 # each building:
                 yearModel.predict(imstreet)
-                
+
                 # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,yearModel.results_df,'YearBuilt')
-                self.inventory['YearBuilt'] = self.inventory['YearBuilt'].fillna('N/A')
+                predResults = yearModel.results_df.copy(deep=True) 
+                predResults = predResults.rename(columns={'prediction': colname,
+                                                          'image':'street_images'}).drop(
+                                                              columns=['probability'])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
 
             elif attribute=='garage':
                 # Initialize the garage detector object:
@@ -524,11 +552,14 @@ class InventoryGenerator:
                 garageModel.predict(imstreet)
 
                 # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,
-                                   [garageModel.system_dict['infer']['images'],
-                                   garageModel.system_dict['infer']['predictions']],
-                                   'garageExists')
-                self.inventory['garageExists'] = self.inventory['garageExists'].astype(dtype="boolean")
+                predResults = pd.DataFrame(list(zip(garageModel.system_dict['infer']['images'],
+                                                    garageModel.system_dict['infer']['predictions'])),
+                                           columns=['street_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
+                self.inventory[colname] = self.inventory[colname].astype(
+                    dtype="boolean")
                 
             elif attribute=='numstories':
                 # Initialize the floor detector object:
@@ -539,11 +570,14 @@ class InventoryGenerator:
                 storyModel.predict(imstreet)
 
                 # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,
-                                   [storyModel.system_dict['infer']['images'],
-                                   storyModel.system_dict['infer']['predictions']],
-                                   'NumberOfStories')
-                self.inventory['NumberOfStories'] = self.inventory['NumberOfStories'].astype(dtype='Int64')
+                predResults = pd.DataFrame(list(zip(storyModel.system_dict['infer']['images'],
+                                                    storyModel.system_dict['infer']['predictions'])),
+                                           columns=['street_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
+                self.inventory[colname] = self.inventory[colname].astype(
+                    dtype='Int64')
                 
             elif attribute=='occupancy': 
                 # Initialize the occupancy classifier object:
@@ -553,12 +587,12 @@ class InventoryGenerator:
                 # class of each building:
                 occupancyModel.predict(imstreet)
                 
-                # Write the results to the inventory DataFrame:
-                occupancy = [[im for (im,_) in occupancyModel.preds],
-                             [pred for (_,pred) in occupancyModel.preds]]
-                self.inventory = write_to_dataframe(self.inventory,occupancy,
-                                                    'OccupancyClass')
-                self.inventory['OccupancyClass'] = self.inventory['OccupancyClass'].fillna('N/A')
+                # Write the prediction results to a DataFrame:
+                predResults = pd.DataFrame(occupancyModel.preds, columns=
+                                           ['street_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
             
             elif attribute=='roofcover':
                 # Initialize the roof cover classifier object:
@@ -567,12 +601,14 @@ class InventoryGenerator:
                 # Call the roof cover classifier to classify roof cover type of
                 # each building:                
                 roofCoverModel.predict(imsat)
-
-                # Write the results to the inventory DataFrame:
-                self.inventory = write_to_dataframe(self.inventory,
-                                                    roofCoverModel.system_dict['infer']['predictions'],
-                                                    'roofCover',
-                                                    'satellite_images')
+                
+                # Write the prediction results to a DataFrame:
+                predResults = pd.DataFrame(roofCoverModel.preds, columns=
+                                           ['satellite_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname,
+                                                         'satellite_images')                
             
             elif attribute=='roofshape':
                 # Initialize the roof type classifier object:
@@ -582,12 +618,13 @@ class InventoryGenerator:
                 # each building:                
                 roofModel.predict(imsat)
                 
-                # Write the results to the inventory DataFrame:
-                roofShape = [[im for (im,_) in roofModel.preds],
-                             [pred for (_,pred) in roofModel.preds]]
-                self.inventory = write_to_dataframe(self.inventory,roofShape,
-                                                    'roofshape',
-                                                    'satellite_images')
+                # Write the prediction results to a DataFrame:
+                predResults = pd.DataFrame(roofModel.preds, columns=
+                                           ['satellite_images', colname])
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname,
+                                                         'satellite_images')
                 
             elif attribute in ['buildingheight','roofeaveheight','roofpitch','winarea']:
                 if 'facadeParserModel' not in locals():                
@@ -597,22 +634,20 @@ class InventoryGenerator:
                     # Call the facade parser to determine the requested 
                     # attribute for each building:
                     facadeParserModel.predict(image_handler)
-                    
-                self.inventory = write_to_dataframe(self.inventory,
-                                                    [facadeParserModel.predictions['image'].to_list(),
-                                                     facadeParserModel.predictions[attribute].to_list()],
-                                                     attribute)    
-        
-            elif attribute=='constype':
-                self.inventory['StructureType'] = ['W1' for ind in range(len(self.inventory.index))] 
-        
-        # Bring the attribute values to the desired length unit:
-        if self.lengthUnit.lower()=='m':
-            self.inventory['PlanArea'] = self.inventory['PlanArea'].apply(lambda x: x*0.0929)
-            if 'buildingheight' in attributes_process:
-                self.inventory['buildingheight'] = self.inventory['buildingheight'].apply(lambda x: x*0.3048)
-            if 'roofeaveheight' in attributes_process:
-                self.inventory['roofeaveheight'] = self.inventory['roofeaveheight'].apply(lambda x: x*0.3048)
+                               
+                # Get the relevant subset of the prediction results:                
+                predResults = facadeParserModel.predictions[['image',attribute]]
+                
+                # Bring the results to the desired length unit:
+                if self.lengthUnit.lower()=='m' and (attribute in ['buildingheight','roofeaveheight']):
+                   predResults[colname] = predResults[colname]*0.3048
+                predResults = predResults.rename(columns={'image': 'street_images',
+                                                          attribute: colname})   
+                
+                # Write the results to the inventory DataFrame:
+                self.inventory = merge_results2inventory(self.inventory, 
+                                                         predResults,
+                                                         colname)
 
         # Write the genereated inventory in outFile:
         if outputFile:
