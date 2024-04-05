@@ -469,14 +469,14 @@ class InventoryGenerator:
             # pull nbldgs at random with an arbitrary seed:  
             if randomSelection<0:
                 randomSelection = random.randint(0,1e8)
-                print(f'Randomly selected {nbldgs} buildings')
+                print(f'\nRandomly selected {nbldgs} buildings\n')
             else:
-                print(f'Randomly selected {nbldgs} buildings using the seed {randomSelection}')
+                print(f'\nRandomly selected {nbldgs} buildings using the seed {randomSelection}\n')
             self.inventory = self.baselineInventory.sample(n=nbldgs, 
                                                            random_state=randomSelection)
             self.randomSelection = randomSelection
         else:
-            print(f'Selected all {len(self.baselineInventory.index)} buildings')
+            print(f'\nSelected all {len(self.baselineInventory.index)} buildings\n')
             self.inventory = self.baselineInventory.copy(deep=True)
         
         # Parse/correct the list of user requested building attributes:
@@ -501,6 +501,7 @@ class InventoryGenerator:
             image_handler.GetGoogleStreetImage(footprints)
             imstreet = [im for im in image_handler.street_images if im is not None]
             self.inventory['street_images'] = image_handler.street_images
+        print('')
 
         # Get the dictionary that maps between BRAILS and R2D attribute names:
         brails2r2dmap = BRAILStoR2D_BldgAttrMap()

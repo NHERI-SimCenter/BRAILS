@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 03-28-2024  
+# 04-05-2024  
 
 import requests 
 import pandas as pd
@@ -319,8 +319,7 @@ class NSIParser:
                 fpHandler = FootprintHandler()
                 fpHandler._FootprintHandler__write_fp2geojson(footprints,attributes,outfile)
                 outfile = outfile.split('.')[0] + '.geojson'        
-        
-        print(f'\nFinal inventory data available in {os.getcwd()}/{outfile}')
+            print(f'\nFinal inventory data available in {os.getcwd()}/{outfile}')
         
         # Reformat the class variables to make them compatible with the 
         # InventoryGenerator:
