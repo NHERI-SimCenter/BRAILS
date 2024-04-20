@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-05-2024  
+# 04-19-2024  
 
 import requests 
 import pandas as pd
@@ -65,7 +65,7 @@ class NSIParser:
                              'val_struct':'repaircost','bldgtype':'constype',
                              'occtype':'occupancy'}   
 
-    def __get_bbox(self,footprints:list)->tuple:
+    def __get_bbox(self, footprints:list) -> tuple:
         """
         Method that determines the extent of the area covered by the 
         footprints as a tight-fit rectangular bounding box
@@ -93,7 +93,7 @@ class NSIParser:
                     minlon = vert[0]
         return (minlat,minlon,maxlat,maxlon)
     
-    def __get_nbi_data(self,bbox:tuple)->dict: 
+    def __get_nbi_data(self, bbox:tuple) -> dict: 
         """
         Method that gets the NBI data for a bounding box entry
         
@@ -136,7 +136,7 @@ class NSIParser:
             datadict[pt] = data['properties']
         return datadict
 
-    def GetRawDataROI(self,roi,outfile:str)->None:
+    def GetRawDataROI(self, roi, outfile:str) -> None:
         """
         Method that reads NSI buildings data finds the points within a 
         bounding polygon or matches a set of footprints, then writes the 
@@ -212,7 +212,7 @@ class NSIParser:
         with open(outfile, 'w') as outputFile:
             json.dump(geojson, outputFile, indent=2)  
     
-    def GetNSIData(self,footprints:list,lengthUnit:str='ft',outfile:str=''):
+    def GetNSIData(self, footprints:list, lengthUnit:str='ft', outfile:str=''):
         """
         Method that reads NSI buildings points and matches the data to a set
         of footprints and writes the data in a BRAILS-compatible format
@@ -230,7 +230,7 @@ class NSIParser:
                 type, 8)occupancy class, 9)footprint polygon
         """  
         
-        def get_attr_from_datadict(datadict,footprints,nsi2brailsmap):            
+        def get_attr_from_datadict(datadict, footprints, nsi2brailsmap):            
             # Parsers for building and occupancy types:
             def bldgtype_parser(bldgtype):                
                 bldgtype = bldgtype + '1'
@@ -266,8 +266,9 @@ class NSIParser:
                 ptres = datadict[pt]
                 attributes['fp'].append(fp)
                 attributes['fp_json'].append(('{"type":"Feature","geometry":' + 
-                                                          '{"type":"Polygon","coordinates":[' + 
-                                                          f"""{fp}""" +                                                           ']},"properties":{}}'))
+                                              '{"type":"Polygon","coordinates":[' + 
+                                              f"""{fp}""" +
+                                              ']},"properties":{}}'))
                 for key in nsikeys:
                     if key=='bldgtype':
                         attributes[nsi2brailsmap[key]].append(bldgtype_parser(ptres[key]))                    
