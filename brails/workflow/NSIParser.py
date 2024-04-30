@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-19-2024  
+# 04-30-2024  
 
 import requests 
 import pandas as pd
@@ -191,26 +191,27 @@ class NSIParser:
         print(f'Found a total of {len(pointsKeep)} building points in'
               ' NSI that are within the entered region of interest')
         
-        # Write the extracted NSI data in a GeoJSON file:
-        attrkeys = list(datadict[pointsKeep[0]].keys())
-        geojson = {'type':'FeatureCollection', 
-                   "crs": {"type": "name", "properties": 
-                           {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
-                   'features':[]}
-        for pt in pointsKeep:
-            feature = {'type':'Feature',
-                       'properties':{},
-                       'geometry':{'type':'Point',
-                                   'coordinates':[]}}
-            feature['geometry']['coordinates'] = [pt.x,pt.y]
-            attributes = datadict[pt]
-            for key in attrkeys:
-                attr = attributes[key]
-                feature['properties'][key] = 'NA' if attr is None else attr  
-            geojson['features'].append(feature)
-            
-        with open(outfile, 'w') as outputFile:
-            json.dump(geojson, outputFile, indent=2)  
+        if len(pointsKeep)!=0:
+            # Write the extracted NSI data in a GeoJSON file:
+            attrkeys = list(datadict[pointsKeep[0]].keys())
+            geojson = {'type':'FeatureCollection', 
+                       "crs": {"type": "name", "properties": 
+                               {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                       'features':[]}
+            for pt in pointsKeep:
+                feature = {'type':'Feature',
+                           'properties':{},
+                           'geometry':{'type':'Point',
+                                       'coordinates':[]}}
+                feature['geometry']['coordinates'] = [pt.x,pt.y]
+                attributes = datadict[pt]
+                for key in attrkeys:
+                    attr = attributes[key]
+                    feature['properties'][key] = 'NA' if attr is None else attr  
+                geojson['features'].append(feature)
+                
+            with open(outfile, 'w') as outputFile:
+                json.dump(geojson, outputFile, indent=2)  
     
     def GetNSIData(self, footprints:list, lengthUnit:str='ft', outfile:str=''):
         """
@@ -318,7 +319,10 @@ class NSIParser:
                 del attributes['fp_json']
                 del attributes['fp']
                 fpHandler = FootprintHandler()
-                fpHandler._FootprintHandler__write_fp2geojson(footprints,attributes,outfile)
+                fpHandler._FootprintHandler__write_fp2geojson(footprints,
+                                                              attributes,
+                                                              outfile,
+                                                              convertKeys=True)
                 outfile = outfile.split('.')[0] + '.geojson'        
             print(f'\nFinal inventory data available in {os.getcwd()}/{outfile}')
         
