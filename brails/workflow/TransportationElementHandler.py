@@ -37,97 +37,22 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-26-2024  
+# 04-19-2024  
 
 import requests
 import copy
 import json
-import sys
-from shapely.geometry import Polygon, LineString, Point, box
+from shapely.geometry import LineString, Point
 from shapely import wkt
-from itertools import groupby
 from requests.adapters import HTTPAdapter, Retry
+from brails.workflow.FootprintHandler import FootprintHandler 
 
 class TransportationElementHandler:
     def __init__(self): 
-        self.queryarea = []
+        self.queryarea = ''
         self.output_files = {'roads':'Roads.geojson'}
         
     def fetch_transportation_elements(self,queryarea):
-
-        def fetch_roi(queryarea):
-            if isinstance(queryarea,str):
-                # Search for the query area using Nominatim API:
-                print(f"\nSearching for {queryarea}...")
-                queryarea = queryarea.replace(" ", "+").replace(',','+')
-                
-                queryarea_formatted = ""
-                for i, j in groupby(queryarea):
-                    if i=='+':
-                        queryarea_formatted += i
-                    else:
-                        queryarea_formatted += ''.join(list(j))
-                
-                nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
-                                  f"q={queryarea_formatted}&format=jsonv2")                
-                r = requests.get(nominatimquery)
-                datalist = r.json()
-                
-                areafound = False
-                for data in datalist:
-                    queryarea_osmid = data['osm_id']
-                    queryarea_name = data['display_name']
-                    if(data['osm_type']=='relation' and 
-                        'university' in queryarea.lower() and
-                        data['type']=='university'):
-                        areafound = True
-                        break
-                    elif (data['osm_type']=='relation' and 
-                          data['type']=='administrative'): 
-                        areafound = True
-                        break
-            
-                if areafound==True:
-                    print(f"Found {queryarea_name}")
-                else:
-                    sys.exit(f"Could not locate an area named {queryarea}. " + 
-                             'Please check your location query to make sure' +
-                             'it was entered correctly.')
-                
-                queryarea_printname = queryarea_name.split(",")[0]  
-                
-                print(f"\nFetching the transportation network for {queryarea_printname}...")
-                url = 'http://overpass-api.de/api/interpreter'
-                
-                if isinstance(queryarea,str):
-                    query = f"""
-                    [out:json][timeout:5000];
-                    rel({queryarea_osmid});
-                    out geom;
-                    """
-                r = requests.get(url, params={'data': query})
-                
-                datastruct = r.json()['elements'][0]
-                
-                boundarypoly = []
-                if datastruct['tags']['type']=='boundary':
-                    for coorddict in datastruct['members']:
-                        if coorddict['role']=='outer':
-                            for coord in coorddict['geometry']:
-                                boundarypoly.append([coord['lon'],coord['lat']])
-                
-                bpoly = Polygon(boundarypoly)                  
-                                
-            elif isinstance(queryarea,tuple):
-                bpoly = box(queryarea[0],queryarea[1],queryarea[2],queryarea[3])
-                print("\nFetching the transportation network for the bounding box: " +
-                      f"[{queryarea[0]}, {queryarea[1]}, {queryarea[2]},{queryarea[3]}]...")
-            else:
-                sys.exit('Incorrect location entry. The location entry must be defined' + 
-                         ' as a string or a list of strings containing the area name(s)' + 
-                         ' or a tuple containing the longitude and latitude pairs for' +
-                         ' the bounding box of the area of interest.')       
-            return bpoly
 
         def query_generator(bpoly,eltype):
             bbox = bpoly.bounds
@@ -177,11 +102,32 @@ class TransportationElementHandler:
             else:
                 raise NotImplementedError('Element type not implemented')
             return query
-
+        
+        def get_el_counts(bpoly, eltype: str) -> int:
+            # Define a retry stratey for common error codes to use when
+            # downloading data:
+            s = requests.Session()
+            retries = Retry(total=10, 
+                            backoff_factor=0.1,
+                            status_forcelist=[500, 502, 503, 504])
+            s.mount('https://', HTTPAdapter(max_retries=retries))
+            
+            # Create the query required to get the element counts:
+            query = query_generator(bpoly,eltype)
+            query.replace('outSR=4326','returnCountOnly=true')
+            
+            # Download element count using the defined retry strategy:
+            r = s.get(query)
+            elcount = r.json()['count']
+            
+            return elcount      
+            
+        
         def conv2geojson(datalist,eltype,bpoly):
             eltype = eltype.lower()
             geojson = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                       "crs": {"type": "name", "properties": 
+                               {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                        'features':[]}
             for item in datalist:
                 if eltype in ['bridge','tunnel']:
@@ -277,7 +223,8 @@ class TransportationElementHandler:
 
         def combine_write_roadjsons(roadjsons,bpoly):
             roadjsons_combined = {'type':'FeatureCollection', 
-                       "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                       "crs": {"type": "name", "properties": 
+                               {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                        'features':[]}
             rtype = {'primary_road':'P','secondary_road':'S','local_road':'L'}
             for key, roadjson in roadjsons.items(): 
@@ -300,9 +247,11 @@ class TransportationElementHandler:
                         nedges = len(inds)
                         for i in range(nedges):
                             if i+1!=nedges:
-                                edge = wkt.loads('LINESTRING ' + mlstring_wkt[inds[i]:inds[i+1]-2])
+                                edge = wkt.loads('LINESTRING ' + 
+                                                 mlstring_wkt[inds[i]:inds[i+1]-2])
                             else:
-                                edge = wkt.loads('LINESTRING ' + mlstring_wkt[inds[i]:-1])
+                                edge = wkt.loads('LINESTRING ' + 
+                                                 mlstring_wkt[inds[i]:-1])
                             coordsout = lstring2xylist(edge)  
                             newitem = copy.deepcopy(item)
                             newitem['geometry']['coordinates'] = [coordsout]
@@ -323,14 +272,24 @@ class TransportationElementHandler:
                               ("This may be solved by running Brails again"))
                     left['attributes'].update(right['attributes'])
             return merged
-
-        
+       
         self.queryarea = queryarea
-        bpoly = fetch_roi(self.queryarea)
+        
+        # Initialize FootprintHandler:
+        fpHandler = FootprintHandler()
+        
+        # Run FootprintHandler to get the boundary for the entered location:
+        if isinstance(queryarea,tuple):
+            bpoly,_ = fpHandler._FootprintHandler__bbox2poly(queryarea)
+        else:
+            bpoly,_,_ = fpHandler._FootprintHandler__fetch_roi(queryarea)   
 
-        eltypes = ['bridge','tunnel','railroad','primary_road','secondary_road','local_road']
-
-        roadjsons = {'primary_road':[],'secondary_road':[],'local_road':[]}
+        # Define supported element types:
+        eltypes = ['bridge', 'tunnel', 'railroad', 'primary_road',
+                   'secondary_road', 'local_road']
+        roadjsons = {'primary_road':[], 'secondary_road':[], 'local_road':[]}
+        
+        # Write the GeoJSON output for each element:
         for eltype in eltypes:
             if '_road' not in eltype:
                 jsonout = write2geojson(bpoly,eltype)

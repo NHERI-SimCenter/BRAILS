@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-05-2024  
+# 04-30-2024  
 
 import requests 
 import pandas as pd
@@ -65,7 +65,7 @@ class NSIParser:
                              'val_struct':'repaircost','bldgtype':'constype',
                              'occtype':'occupancy'}   
 
-    def __get_bbox(self,footprints:list)->tuple:
+    def __get_bbox(self, footprints:list) -> tuple:
         """
         Method that determines the extent of the area covered by the 
         footprints as a tight-fit rectangular bounding box
@@ -93,7 +93,7 @@ class NSIParser:
                     minlon = vert[0]
         return (minlat,minlon,maxlat,maxlon)
     
-    def __get_nbi_data(self,bbox:tuple)->dict: 
+    def __get_nbi_data(self, bbox:tuple) -> dict: 
         """
         Method that gets the NBI data for a bounding box entry
         
@@ -136,7 +136,7 @@ class NSIParser:
             datadict[pt] = data['properties']
         return datadict
 
-    def GetRawDataROI(self,roi,outfile:str)->None:
+    def GetRawDataROI(self, roi, outfile:str) -> None:
         """
         Method that reads NSI buildings data finds the points within a 
         bounding polygon or matches a set of footprints, then writes the 
@@ -191,28 +191,29 @@ class NSIParser:
         print(f'Found a total of {len(pointsKeep)} building points in'
               ' NSI that are within the entered region of interest')
         
-        # Write the extracted NSI data in a GeoJSON file:
-        attrkeys = list(datadict[pointsKeep[0]].keys())
-        geojson = {'type':'FeatureCollection', 
-                   "crs": {"type": "name", "properties": 
-                           {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
-                   'features':[]}
-        for pt in pointsKeep:
-            feature = {'type':'Feature',
-                       'properties':{},
-                       'geometry':{'type':'Point',
-                                   'coordinates':[]}}
-            feature['geometry']['coordinates'] = [pt.x,pt.y]
-            attributes = datadict[pt]
-            for key in attrkeys:
-                attr = attributes[key]
-                feature['properties'][key] = 'NA' if attr is None else attr  
-            geojson['features'].append(feature)
-            
-        with open(outfile, 'w') as outputFile:
-            json.dump(geojson, outputFile, indent=2)  
+        if len(pointsKeep)!=0:
+            # Write the extracted NSI data in a GeoJSON file:
+            attrkeys = list(datadict[pointsKeep[0]].keys())
+            geojson = {'type':'FeatureCollection', 
+                       "crs": {"type": "name", "properties": 
+                               {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                       'features':[]}
+            for pt in pointsKeep:
+                feature = {'type':'Feature',
+                           'properties':{},
+                           'geometry':{'type':'Point',
+                                       'coordinates':[]}}
+                feature['geometry']['coordinates'] = [pt.x,pt.y]
+                attributes = datadict[pt]
+                for key in attrkeys:
+                    attr = attributes[key]
+                    feature['properties'][key] = 'NA' if attr is None else attr  
+                geojson['features'].append(feature)
+                
+            with open(outfile, 'w') as outputFile:
+                json.dump(geojson, outputFile, indent=2)  
     
-    def GetNSIData(self,footprints:list,lengthUnit:str='ft',outfile:str=''):
+    def GetNSIData(self, footprints:list, lengthUnit:str='ft', outfile:str=''):
         """
         Method that reads NSI buildings points and matches the data to a set
         of footprints and writes the data in a BRAILS-compatible format
@@ -230,7 +231,7 @@ class NSIParser:
                 type, 8)occupancy class, 9)footprint polygon
         """  
         
-        def get_attr_from_datadict(datadict,footprints,nsi2brailsmap):            
+        def get_attr_from_datadict(datadict, footprints, nsi2brailsmap):            
             # Parsers for building and occupancy types:
             def bldgtype_parser(bldgtype):                
                 bldgtype = bldgtype + '1'
@@ -266,8 +267,9 @@ class NSIParser:
                 ptres = datadict[pt]
                 attributes['fp'].append(fp)
                 attributes['fp_json'].append(('{"type":"Feature","geometry":' + 
-                                                          '{"type":"Polygon","coordinates":[' + 
-                                                          f"""{fp}""" +                                                           ']},"properties":{}}'))
+                                              '{"type":"Polygon","coordinates":[' + 
+                                              f"""{fp}""" +
+                                              ']},"properties":{}}'))
                 for key in nsikeys:
                     if key=='bldgtype':
                         attributes[nsi2brailsmap[key]].append(bldgtype_parser(ptres[key]))                    
@@ -317,7 +319,10 @@ class NSIParser:
                 del attributes['fp_json']
                 del attributes['fp']
                 fpHandler = FootprintHandler()
-                fpHandler._FootprintHandler__write_fp2geojson(footprints,attributes,outfile)
+                fpHandler._FootprintHandler__write_fp2geojson(footprints,
+                                                              attributes,
+                                                              outfile,
+                                                              convertKeys=True)
                 outfile = outfile.split('.')[0] + '.geojson'        
             print(f'\nFinal inventory data available in {os.getcwd()}/{outfile}')
         

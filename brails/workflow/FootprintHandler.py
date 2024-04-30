@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-01-2024  
+# 04-30-2024   
 
 import math
 import json
@@ -55,6 +55,7 @@ import concurrent.futures
 from requests.adapters import HTTPAdapter, Retry
 import unicodedata
 import warnings
+from brails.EnabledAttributes import BRAILStoR2D_BldgAttrMap
 
 # Set a custom warning message format:
 warnings.formatwarning = lambda message, category, filename, lineno, line=None: \
@@ -175,20 +176,29 @@ class FootprintHandler:
             write_polygon2geojson(bpoly,outfile)  
         return bpoly, queryarea_printname
     
-    def __write_fp2geojson(self,footprints:list,attributes:dict,outputFilename:str):
+    def __write_fp2geojson(self,footprints:list,attributes:dict,
+                           outputFilename:str,convertKeys:bool=False):
+        attrmap = BRAILStoR2D_BldgAttrMap(); attrmap['lat'] = 'Latitude'; 
+        attrmap['lon'] = 'Longitude'; attrmap['fparea'] = 'PlanArea'
         attrkeys = list(attributes.keys())
         geojson = {'type':'FeatureCollection', 
                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                    'features':[]}
         for ind,fp in enumerate(footprints):
-            feature = {'type':'Feature',
+            feature = {'id': str(ind),
+                       'type':'Feature',
                        'properties':{},
                        'geometry':{'type':'Polygon',
                                    'coordinates':[]}}
             feature['geometry']['coordinates'] = [fp]
             for key in attrkeys:
                 attr = attributes[key][ind]
-                feature['properties'][key] = 'NA' if attr is None else attr  
+                if convertKeys:
+                    keyout = attrmap[key]
+                else:
+                    keyout = key
+                feature['properties'][keyout] = 'NA' if attr is None else attr  
+            feature['properties']['type'] = 'Building'
             geojson['features'].append(feature)
             
         with open(outputFilename, 'w') as outputFile:
@@ -685,13 +695,18 @@ class FootprintHandler:
                 bpoly, queryarea_printname = self.__bbox2poly(queryarea)  
             elif isinstance(queryarea,str):
                 bpoly, queryarea_printname, _ = self.__fetch_roi(queryarea)
-                
-            plotCells = True
-                
+             
+            ####################### For debugging only #######################  
+            #plotCells = True
+            plotCells = False
             if plotCells:
                 meshInitialfout = queryarea_printname.replace(' ','_') + '_Mesh_Initial.png'
                 meshFinalfout = queryarea_printname.replace(' ','_') + '_Mesh_Final.png'
-
+            else:
+                meshInitialfout = False
+                meshFinalfout = False
+            ##################################################################
+                
             print('\nMeshing the defined area...')
             cellsPrem = get_polygon_cells(bpoly, plotfout=meshInitialfout)    
 
@@ -705,9 +720,11 @@ class FootprintHandler:
             else:
                 cellsFinal = cellsPrem.copy()
                 print(f'\nMeshing complete. Covered {queryarea_printname} with a rectangular cell')
-
+            
+            ####################### For debugging only #######################     
             if plotCells:
                 plot_polygon_cells(bpoly, cellsFinal, meshFinalfout)
+            #################################################################
                 
             footprints, attributes = download_ustruct_bldgattr4region(cellsFinal,bpoly)
             print(f"\nFound a total of {len(footprints)} building footprints in {queryarea_printname}")      
