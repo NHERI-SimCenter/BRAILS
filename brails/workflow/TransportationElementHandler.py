@@ -42,7 +42,7 @@
 import requests
 import copy
 import json
-from shapely.geometry import LineString, Point
+from shapely.geometry import Polygon, LineString, Point, box
 from shapely import wkt
 from requests.adapters import HTTPAdapter, Retry
 from brails.workflow.FootprintHandler import FootprintHandler 
@@ -52,11 +52,16 @@ class TransportationElementHandler:
         self.queryarea = ''
         self.output_files = {'roads':'Roads.geojson'}
         
-    def fetch_transportation_elements(self,queryarea):
+    def fetch_transportation_elements(self, queryarea:str):
 
-        def query_generator(bpoly,eltype):
+        def query_generator(bpoly: Polygon, eltype:str) -> str:
+            # Get the bounds of the entered bounding polygon and lowercase the
+            # entered element type:
             bbox = bpoly.bounds
             eltype = eltype.lower()
+            
+            # If element type is bridge, generate an NBI query for the bounds
+            # of bpoly:
             if eltype=='bridge':
                 query = ('https://geo.dot.gov/server/rest/services/Hosted/' + 
                           'National_Bridge_Inventory_DS/FeatureServer/0/query?'+
@@ -64,6 +69,9 @@ class TransportationElementHandler:
                           f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" +
                           '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                           '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')
+            
+            # If element type is tunnel, generate an NTI query for the bounds
+            # of bpoly:
             elif eltype=='tunnel':
                 query = ('https://geo.dot.gov/server/rest/services/Hosted/' +
                          'National_Tunnel_Inventory_DS/FeatureServer/0/query?' +
@@ -71,6 +79,9 @@ class TransportationElementHandler:
                          f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" + 
                          '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                          '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')                    
+        
+            # If element type is railroad, generate an NARNL query for the 
+            # bounds of bpoly:
             elif eltype=='railroad':
                 query = ('https://geo.dot.gov/server/rest/services/Hosted/' + 
                          'North_American_Rail_Network_Lines_DS/FeatureServer/0/query?' + 
@@ -78,6 +89,9 @@ class TransportationElementHandler:
                           f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" +
                           '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                           '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')                         
+        
+            # If element type is primary_road, generate a TIGER query for the 
+            # bounds of bpoly:
             elif eltype=='primary_road':
                 query = ('https://tigerweb.geo.census.gov/arcgis/rest/services/' + 
                           'TIGERweb/Transportation/MapServer/2/query?where=&text='+
@@ -85,6 +99,9 @@ class TransportationElementHandler:
                           f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" +
                           '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                           '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')                    
+        
+            # If element type is secondary_road, generate a TIGER query for the 
+            # bounds of bpoly:
             elif eltype=='secondary_road':
                 query = ('https://tigerweb.geo.census.gov/arcgis/rest/services/' + 
                           'TIGERweb/Transportation/MapServer/6/query?where=&text='+
@@ -92,6 +109,9 @@ class TransportationElementHandler:
                           f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" +
                           '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                           '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')              
+        
+            # If element type is local_road, generate a TIGER query for the 
+            # bounds of bpoly:
             elif eltype=='local_road':
                 query = ('https://tigerweb.geo.census.gov/arcgis/rest/services/' + 
                           'TIGERweb/Transportation/MapServer/8/query?where=&text='+
@@ -99,11 +119,13 @@ class TransportationElementHandler:
                           f"&geometry={bbox[0]}%2C{bbox[1]}%2C{bbox[2]}%2C{bbox[3]}" +
                           '&geometryType=esriGeometryEnvelope&inSR=4326' + 
                           '&spatialRel=esriSpatialRelIntersects&outSR=4326&f=json')  
+            
+            # Otherwise, raise a NotImplementedError:
             else:
                 raise NotImplementedError('Element type not implemented')
             return query
         
-        def get_el_counts(bpoly, eltype: str) -> int:
+        def create_pooling_session():
             # Define a retry stratey for common error codes to use when
             # downloading data:
             s = requests.Session()
@@ -112,24 +134,54 @@ class TransportationElementHandler:
                             status_forcelist=[500, 502, 503, 504])
             s.mount('https://', HTTPAdapter(max_retries=retries))
             
+            return s
+        
+        def get_el_counts(bpoly:Polygon, eltype: str) -> int:            
+            # Create a persistent requests session:
+            s = create_pooling_session()
+            
             # Create the query required to get the element counts:
             query = query_generator(bpoly,eltype)
-            query.replace('outSR=4326','returnCountOnly=true')
+            query = query.replace('outSR=4326','returnCountOnly=true')
             
-            # Download element count using the defined retry strategy:
+            # Download the element count for the bounding polygon using the 
+            # defined retry strategy:
             r = s.get(query)
             elcount = r.json()['count']
             
-            return elcount      
+            return elcount                 
+
+        def get_max_el_count(eltype: str) -> int:            
+            # Create a persistent requests session:
+            s = create_pooling_session()
             
+            # Create the query required to get the element counts:
+            query = query_generator(box(-1,1,-1,1),eltype)
+            query = query.split('/query?')
+            query = query[0] + '?f=pjson'
+            
+            # Download the maximum element count for the bounding polygon using
+            # the defined retry strategy:
+            r = s.get(query)
+            maxelcount = r.json()['maxRecordCount']
+            
+            return maxelcount
         
-        def conv2geojson(datalist,eltype,bpoly):
+        def list2geojson(datalist:list, eltype:str, bpoly:Polygon) -> dict:
+            # Lowercase the entered element type string:
             eltype = eltype.lower()
+            
+            # Populate the geojson header:
             geojson = {'type':'FeatureCollection', 
                        "crs": {"type": "name", "properties": 
                                {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                        'features':[]}
+            
+            # Scroll through each item in the datalist:
             for item in datalist:
+                # If the element is a bridge or tunnel, parse its geometry as a
+                # point and check if the extracted point is within the bounding
+                # polygon:
                 if eltype in ['bridge','tunnel']:
                     geometry = [item['geometry']['x'],item['geometry']['y']]
                     if bpoly.contains(Point(geometry)):
@@ -140,6 +192,9 @@ class TransportationElementHandler:
                     else:
                         continue
                 else:
+                # If the element is a road segment, parse it as a MultiLineString
+                # and check if the extracted segment is within the bounding
+                # polygon:
                     geometry = item['geometry']['paths']
                     if bpoly.intersects(LineString(geometry[0])):
                         feature = {'type':'Feature',
@@ -148,18 +203,34 @@ class TransportationElementHandler:
                                                'coordinates':[]}}
                     else:
                         continue
+                
+                # Copy the obtained geometry in a feature dictionary:
                 feature['geometry']['coordinates'] = geometry.copy()
+                
+                # Read item attributes 
                 properties = item['attributes']
-                for prop in properties:
-                    if prop.count('_')>1:
-                        propname = prop[:prop.rindex('_')]
+                
+                # For each attribute:
+                for prop in properties.keys():
+                    # Clean up the property name from redundant numeric text:
+                    if '_' in prop:
+                        strsegs = prop.split('_')
+                        removestr = ''
+                        for seg in strsegs:
+                            if any(char.isdigit() for char in seg):
+                                removestr = '_' + seg
+                        propname = prop.replace(removestr,'')
                     else:
                         propname = prop
+                    
+                    # Write the property in a feature dictionary:
                     feature['properties'][propname] = properties[prop]
+                
+                # Add the feature in the geojson dictionary:
                 geojson['features'].append(feature)
             return geojson
 
-        def print_el_counts(datalist,eltype):
+        def print_el_counts(datalist: list, eltype:str):
             nel = len(datalist)
             eltype_print = eltype.replace('_',' ')
             
@@ -175,14 +246,11 @@ class TransportationElementHandler:
             
             print(f'Found {nel} {eltype_print} {elntype}{suffix}')
 
-        def write2geojson(bpoly,eltype):
-            # Define a retry stratey for common error codes to use when
-            # downloading data:
-            s = requests.Session()
-            retries = Retry(total=10, 
-                            backoff_factor=0.1,
-                            status_forcelist=[500, 502, 503, 504])
-            s.mount('https://', HTTPAdapter(max_retries=retries))
+        def write2geojson(bpoly:Polygon, eltype:str) -> dict:
+            nel = get_el_counts(bpoly,eltype)
+            
+            # Create a persistent requests session:
+            s = create_pooling_session()
             
             # Download element data using the defined retry strategy:
             query = query_generator(bpoly,eltype)
@@ -197,7 +265,7 @@ class TransportationElementHandler:
                 datalist = r.json()['features']
             
             # If road data convert it into GeoJSON format:
-            jsonout = conv2geojson(datalist,eltype,bpoly)  
+            jsonout = list2geojson(datalist,eltype,bpoly)  
             
             # If not road data convert it into GeoJSON format and write it into
             # a file: 
@@ -260,18 +328,6 @@ class TransportationElementHandler:
             print_el_counts(roadjsons_combined['features'],'road')
             with open('Roads.geojson', 'w') as output_file:
                 json.dump(roadjsons_combined, output_file, indent=2)
-
-        def mergeDataList(dataLists):
-            merged = dataLists[0]
-            for i in range(1,len(dataLists)):
-                data = dataLists[i]
-                for left, right in zip(merged,data):
-                    if left['attributes']['OBJECTID'] != right['attributes']['OBJECTID']:
-                        print(("Data downloaded from the National Bridge Inventory")+
-                              ("has miss matching OBJECTID between batches.")+ 
-                              ("This may be solved by running Brails again"))
-                    left['attributes'].update(right['attributes'])
-            return merged
        
         self.queryarea = queryarea
         

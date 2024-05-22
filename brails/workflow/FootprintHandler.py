@@ -91,13 +91,19 @@ class FootprintHandler:
         r = requests.get(nominatimquery, headers=headers)
         datalist = r.json()
         
-        areafound = False
-        for data in datalist:
-            queryarea_osmid = data['osm_id']
-            queryarea_name = data['display_name']
-            if data['osm_type']=='relation':
-                areafound = True
-                break
+        if r.status_code==200:
+            areafound = False            
+            for data in datalist:
+                queryarea_osmid = data['osm_id']
+                queryarea_name = data['display_name']
+                if data['osm_type']=='relation':
+                    areafound = True
+                    break
+        else:
+            sys.exit('Please try again. Server performing region search '
+                     "returned the following error message: {datalist['title']}. " +
+                     ' This is a server-side error that does not require a' +  
+                     ' change to BRAILS inputs.')
         
         if areafound==True:
             try:

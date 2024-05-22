@@ -154,10 +154,13 @@ class NSIParser:
         
         # If ROI is defined as a list of lists of footprint coordinates:
         if type(roi) is list:                
-            # Determine the coordinates of the bounding box including the footprints:
-            bbox = self.__get_bbox(roi)
-            footprints = roi.copy()
-            bpoly = None
+            if len(roi)>0:
+                # Determine the coordinates of the bounding box including the footprints:
+                bbox = self.__get_bbox(roi)
+                footprints = roi.copy()
+                bpoly = None
+            else:
+                sys.exit('No building footprint detected. Please try again for a larger region of interest')
         else:
             try:
                 roitype = roi.geom_type
@@ -284,7 +287,11 @@ class NSIParser:
             return attributes
 
         # Determine the coordinates of the bounding box including the footprints:
-        bbox = self.__get_bbox(footprints)          
+        if len(footprints)>0:
+            bbox = self.__get_bbox(footprints)          
+        else:
+            sys.exit('No building footprint detected. Please provide valid ' +
+                     'footprint data to run this method.')
 
         # Get the NBI data for computed bounding box:
         datadict = self.__get_nbi_data(bbox)  
