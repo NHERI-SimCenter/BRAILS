@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-09-2024   
+# 03-08-2024   
 
 
 import os
@@ -60,24 +60,20 @@ from tqdm import tqdm
 
 class ImageHandler:
     def __init__(self,apikey: str):        
-        # Check if the provided Google API Key successfully obtains street-level
-        # imagery for Doe Memorial Library of UC Berkeley:
-        responseStreet = requests.get('https://maps.googleapis.com/maps/api/streetview?' + 
-                                      'size=600x600&location=37.87251874078189,' +
-                                      '-122.25960286494328&heading=280&fov=120&' +
-                                      f"pitch=20&key={apikey}").ok
+        # Check if the provided Google API Key successfully obtains street view
+        # imagery metadata for Doe Memorial Library of UC Berkeley:
+        responseStreet = requests.get('https://maps.googleapis.com/maps/api/streetview/metadata?' + 
+                                      'location=37.8725187407,-122.2596028649' +
+                                      '&source=outdoor' + 
+                                      f'&key={apikey}')
 
         # If the requested image cannot be downloaded, notify the user of the
         # error and stop program execution:
-        if responseStreet==False:
+        if 'error' in responseStreet.text.lower():
             error_message = ('Google API key error. The entered API key is valid '
                              + 'but does not have Street View Static API enabled. ' 
-                             + 'Please enter a key that has both Maps Static API '
-                             + 'and Street View Static API enabled.')
-        else:
-            error_message = None
-    
-        if error_message!=None:
+                             + 'Please enter a key that has the Street View' 
+                             + 'Static API enabled.')
             sys.exit(error_message)
             
         self.apikey = apikey
@@ -707,7 +703,7 @@ class ImageHandler:
             try:
                 pano['id'] = get_pano_id(pano['queryLatLon'],apikey)
             except:
-                return
+                return None
             
             # Get the metdata for the pano:
             pano = get_pano_meta(pano, savedmap = True, dmapoutname = depthmap_name)
@@ -740,7 +736,7 @@ class ImageHandler:
         # street-level imagery:
         self.footprints = footprints
         self.centroids = []
-        self.street_images = []
+        street_images = []
         inps = [] 
         for footprint in footprints:
             fp = np.fliplr(np.squeeze(np.array(footprint))).tolist()
@@ -750,7 +746,7 @@ class ImageHandler:
             imName.replace(".","")
             im_name = f"tmp/images/street/imstreet_{imName}.jpg"
             depthmap_name = f"tmp/images/depthmap/dmstreet_{imName}.txt"            
-            self.street_images.append(im_name)
+            street_images.append(im_name)
             inps.append((fp,(fp_cent.y,fp_cent.x),im_name,depthmap_name))
         
         # Download building-wise street-level imagery and depthmap strings:
@@ -778,11 +774,12 @@ class ImageHandler:
         if save_all_cam_metadata==False:
             self.cam_elevs = []
             self.depthmaps = [] 
-            for im in self.street_images:
+            for (ind,im) in enumerate(street_images):
                 if results[im] is not None:
                     self.cam_elevs.append(results[im][0])
                     self.depthmaps.append(results[im][1])
                 else:
+                    street_images[ind] = None
                     self.cam_elevs.append(None)
                     self.depthmaps.append(None)
         else:
@@ -793,7 +790,7 @@ class ImageHandler:
             self.headings = []
             self.pitch = []
             self.zoom_levels = []
-            for im in self.street_images:
+            for (ind,im) in enumerate(street_images):
                 if results[im] is not None:
                     self.cam_elevs.append(results[im][0])
                     self.cam_latlons.append(results[im][1])
@@ -810,7 +807,9 @@ class ImageHandler:
                     self.headings.append(None)
                     self.pitch.append(None)
                     self.zoom_levels.append(None)
-
+                    street_images[ind] = None
+        self.street_images = street_images.copy()
+        
     def GetGoogleStreetImageAPI(self,footprints):
         self.footprints = footprints[:]
         # Function that downloads a file given its URL and the desired path to save it:

@@ -40,7 +40,7 @@
 
 #
 # Last updated:
-# 01-26-2024
+# 01-29-2024
 
 
 import geopandas as gpd
@@ -52,7 +52,7 @@ import json
 import warnings
 import numpy as np
 from datetime import datetime
-import brails
+from importlib.metadata import version
 from brails.workflow.TransportationElementHandler import TransportationElementHandler
 
 # The map defines the default values according to MTFCC code
@@ -70,7 +70,6 @@ ROADLANES_MAP = {'S1100':4, "S1200":2, "S1400":1, "S1500":1, "S1630":1, "S1640":
 ROADCAPACITY_MAP = {'S1100':70, "S1200":55, "S1400":25, "S1500":25, "S1630":25, "S1640":25,
                     "S1710":25, "S1720":25, "S1730":25, "S1740":10, "S1750":10, "S1780":10,
                     "S1810":10, "S1820":10, "S1830":10}
-
 
 class TranspInventoryGenerator:
 
@@ -112,7 +111,7 @@ class TranspInventoryGenerator:
             bnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             bridgesDict = {'type':'FeatureCollection', 
                            'generated':str(datetime.now()),
-                           'brails_version': brails.__version__,
+                           'brails_version': version('BRAILS'),
                            "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                            'units': {"length": lengthUnit},
                            'features':[]}
@@ -132,7 +131,7 @@ class TranspInventoryGenerator:
             rnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             roadsDict = {'type':'FeatureCollection', 
                         'generated':str(datetime.now()),
-                        'brails_version': brails.__version__,
+                        'brails_version': version('BRAILS'),
                         "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                         'units': {"length": lengthUnit},
                         'features':[]}
@@ -146,7 +145,7 @@ class TranspInventoryGenerator:
             tnodeDF = gpd.GeoDataFrame(columns = ["nodeID", "geometry"], crs = "epsg:4326")
             tunnelsDict = {'type':'FeatureCollection',
                            'generated':str(datetime.now()),
-                           'brails_version': brails.__version__,
+                           'brails_version': version('BRAILS'),
                            "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                            'units': {"length": lengthUnit},
                            'features':[]}
@@ -158,9 +157,9 @@ class TranspInventoryGenerator:
         # Dump to json file
         with open("hwy_inventory.geojson", "w") as f:
             json.dump(combinedGeoJSON, f, indent = 2)
-        
+            print('Combined transportation inventory saved in hwy_inventory.geojson.'
+                  f' This file is suitable for R2D use and is available in {os.getcwd()}')
         return
-
 
 # Convert common length units
 def convertUnits(value, unit_in, unit_out):
@@ -179,7 +178,6 @@ def convertUnits(value, unit_in, unit_out):
         return
     value = value*scale_map[unit_in]/scale_map[unit_out]
     return value
-
 
 # Break down long roads according to delta
 def breakDownLongEdges(edges, delta, nodes = None, tolerance = 10e-3):
@@ -401,7 +399,6 @@ def explodeLineString(roads_gdf):
             expandedRoads.append(newRoad)
     expandedRoads = gpd.GeoDataFrame(expandedRoads, crs=crs)
     return expandedRoads
-
     
 def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
     if roads_gdf.shape[0] == 0:
@@ -494,14 +491,13 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     tunnels_gdf["type"] = "Tunnel"
     tunnels_gdf["assetSubtype"] = "HwyTunnel"
     tunnelDict = json.loads(tunnels_gdf.to_json())
-    return tnodeDF, tunnelDict
-    
+    return tnodeDF, tunnelDict   
 
 def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,
                 connectivity, lengthUnit, crs="epsg:4326"):
     combinedDict = {'type':'FeatureCollection', 
                     'generated':str(datetime.now()),
-                    'brails_version': brails.__version__,
+                    'brails_version': version('BRAILS'),
                     "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                     'units': {"length": lengthUnit},
                     'features':[]}

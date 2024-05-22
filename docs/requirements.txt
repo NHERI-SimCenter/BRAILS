@@ -10,3 +10,4 @@ sphinx_panels
 jsonpath2
 sphinxcontrib.spelling==7.2.1
 sphinx_toolbox
+rst2pdf
