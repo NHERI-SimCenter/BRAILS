@@ -196,7 +196,7 @@ class FacadeParser:
         
                 if not os.path.isfile(model_path):
                     print('Loading default facade parser model file to tmp/models folder...')
-                    torch.hub.download_url_to_file('https://zenodo.org/record/5809365/files/facadeParser.pth',
+                    torch.hub.download_url_to_file('https://zenodo.org/record/10448047/files/facadeParserv2.pth',
                                                    model_path, progress=False)
                     print('Default facade parser model loaded')
                 else: 
