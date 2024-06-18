@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 04-30-2024   
+# 06-18-2024   
 
 import math
 import json
@@ -83,15 +83,23 @@ class FootprintHandler:
             else:
                 queryarea_formatted += ''.join(list(j))
         
-        nominatimquery = ('https://nominatim.openstreetmap.org/search?' +
-                          f"q={queryarea_formatted}&format=jsonv2") 
-        headers = {'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'+
-                                  ' AppleWebKit/537.36 (KHTML, like Gecko)'+
-                                  ' Chrome/39.0.2171.95 Safari/537.36')}               
-        r = requests.get(nominatimquery, headers=headers)
-        datalist = r.json()
+        nominatim_endpoint = 'https://nominatim.openstreetmap.org/search'
+        
+        params = {'q': queryarea_formatted,
+                  'format': 'jsonv2'
+                  }
+        
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                   '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                   'Accept-Language': 'en-US,en;q=0.5',
+                   'Referer': 'https://www.openstreetmap.org/',
+                   'Connection': 'keep-alive'
+                   }
+        
+        r = requests.get(nominatim_endpoint, params=params, headers=headers)
         
         if r.status_code==200:
+            datalist = r.json()
             areafound = False            
             for data in datalist:
                 queryarea_osmid = data['osm_id']
