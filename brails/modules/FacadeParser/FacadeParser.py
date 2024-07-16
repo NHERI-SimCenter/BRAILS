@@ -437,7 +437,7 @@ class FacadeParser:
             maskRoof = (pred==1).astype(np.uint8)
             maskFacade = (pred==2).astype(np.uint8)
             maskWin = (pred==3).astype(np.uint8)
-            #maskDoor = (pred==4).astype(np.uint8)
+            maskDoor = (pred==4).astype(np.uint8)
             
             # Open and close masks
             kernel = np.ones((10,10), np.uint8)
@@ -555,13 +555,29 @@ class FacadeParser:
             R0 = (depthmap_cl_depths[0]*math.sin(angleTop) 
                       - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
             scale = R0/R0PixHeight
-            R1 = R1PixHeight*scale                
+            R1 = R1PixHeight*scale
+                                        
+            # Calculate first floor elevation:
+            contours, _ = cv2.findContours(maskDoor,cv2.RETR_EXTERNAL,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+            try:
+                doorContour = max(contours, key = cv2.contourArea).squeeze()
+            except:
+                continue
+            
+            doorPoly = gen_bbox(doorContour)
+            x,y = doorPoly.exterior.xy
+                      
+            angleBottomDoor = ((imHeight/2 - max(y))/(imHeight/2))*math.pi/facadeParserv2
+            ffe = depthmap_cl_depths[0]*math.sin(angleBottomDoor) - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
+            
+            if ffe<0: ffe = 0       
         
             # Calculate roof pitch:            
             roof_run = compute_roofrun(footprint)
             roofPitch = (R1-R0)/roof_run
             self.predictions.loc[polyNo] = [self.street_images[polyNo], 
-                                            R0, R1, roofPitch]
+                                            R0, R1, roofPitch, ffe]
         
             # Save segmented images
             if save_segimages:
@@ -573,7 +589,8 @@ class FacadeParser:
             
         self.predictions = self.predictions.round({'roofeaveheight': 1, 
                                 'buildingheight': 1,
-                                'roofpitch': 2})
+                                'roofpitch': 2},
+                                'firstfloorheight': 1})
         
         # Unload the model from GPU
         if torch.cuda.is_available():
