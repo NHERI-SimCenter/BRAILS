@@ -74,7 +74,7 @@ ROADCAPACITY_MAP = {'S1100':70, "S1200":55, "S1400":25, "S1500":25, "S1630":25, 
 class TranspInventoryGenerator:
 
     def __init__(self, location='Berkeley, CA'):                
-        # self.enabledElements = ['roads','bridge','tunnel','railroads']
+        self.enabledElements = ['roads','bridge','tunnel','railroads']
         self.location = location
         self.workDir = 'tmp'
         self.modelDir = 'tmp/models'
