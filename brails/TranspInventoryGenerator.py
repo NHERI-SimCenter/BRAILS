@@ -74,11 +74,12 @@ ROADCAPACITY_MAP = {'S1100':70, "S1200":55, "S1400":25, "S1500":25, "S1630":25, 
 class TranspInventoryGenerator:
 
     def __init__(self, location='Berkeley, CA'):                
-        self.enabledElements = ['roads','bridges','tunnels','railroads']
+        # self.enabledElements = ['roads','bridge','tunnel','railroads']
         self.location = location
         self.workDir = 'tmp'
         self.modelDir = 'tmp/models'
         self.inventory_files = ''
+        self.roadDataSource = 'TIGER' # OSM or TIGER
     
     def enabled_elements(self):
         print('Here is the list of elements currently enabled in TranspInventoryGenerator:\n')
@@ -86,7 +87,7 @@ class TranspInventoryGenerator:
             print(f'       {element}')
 
     def generate(self):
-        tphandler = TransportationElementHandler()
+        tphandler = TransportationElementHandler(self.enabledElements)
         tphandler.fetch_transportation_elements(self.location) 
         
         self.inventory_files = tphandler.output_files

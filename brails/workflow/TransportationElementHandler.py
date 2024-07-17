@@ -48,9 +48,15 @@ from requests.adapters import HTTPAdapter, Retry
 from brails.workflow.FootprintHandler import FootprintHandler 
 
 class TransportationElementHandler:
-    def __init__(self): 
+    def __init__(self, enabledElements, roadDataSource = 'TIGER'): 
         self.queryarea = ''
-        self.output_files = {'roads':'Roads.geojson'}
+        if 'roads' in enabledElements:
+            self.output_files = {'roads':'Roads.geojson'}
+        else:
+            self.output_files = {}
+        self.roadDataSource = roadDataSource
+        self.enabledElements = enabledElements
+        
         
     def fetch_transportation_elements(self, queryarea:str):
 
@@ -146,8 +152,10 @@ class TransportationElementHandler:
             
             # Download the element count for the bounding polygon using the 
             # defined retry strategy:
+            print("Querying element count for the bounding polygon")
             r = s.get(query)
             elcount = r.json()['count']
+            print(f"Querying finished with count {elcount}")
             
             return elcount                 
 
@@ -341,9 +349,13 @@ class TransportationElementHandler:
             bpoly,_,_ = fpHandler._FootprintHandler__fetch_roi(queryarea)   
 
         # Define supported element types:
-        eltypes = ['bridge', 'tunnel', 'railroad', 'primary_road',
-                   'secondary_road', 'local_road']
+        eltypes = self.enabledElements.copy()
         roadjsons = {'primary_road':[], 'secondary_road':[], 'local_road':[]}
+        if 'roads' in eltypes:
+            eltypes.remove('roads')
+            eltypes += ['primary_road',
+                   'secondary_road', 'local_road']
+            
         
         # Write the GeoJSON output for each element:
         for eltype in eltypes:
@@ -354,4 +366,5 @@ class TransportationElementHandler:
             else:
                 print(f"Fetching {eltype.replace('_',' ')}s, may take some time...")
                 roadjsons[eltype] = (write2geojson(bpoly,eltype))
-        combine_write_roadjsons(roadjsons,bpoly)
+        if ['roads'] in self.enabledElements:
+            combine_write_roadjsons(roadjsons,bpoly)
