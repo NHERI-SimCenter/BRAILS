@@ -37,7 +37,7 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 01-09-2024
+# 07-23-2024
 
 import math
 import torch
@@ -569,8 +569,8 @@ class FacadeParser:
             doorPoly = gen_bbox(doorContour)
             x,y = doorPoly.exterior.xy
                       
-            angleBottomDoor = ((imHeight/2 - max(y))/(imHeight/2))*math.pi/facadeParserv2
-            ffe = depthmap_cl_depths[0]*math.sin(angleBottomDoor) - depthmap_cl_depths[-1]*math.sin(angleBottom))*3.28084
+            angleBottomDoor = ((imHeight/2 - max(y))/(imHeight/2))*math.pi
+            ffe = depthmap_cl_depths[0]*math.sin(angleBottomDoor) - depthmap_cl_depths[-1]*math.sin(angleBottom)*3.28084
             
             if ffe<0: ffe = 0       
         
@@ -590,7 +590,7 @@ class FacadeParser:
             
         self.predictions = self.predictions.round({'roofeaveheight': 1, 
                                 'buildingheight': 1,
-                                'roofpitch': 2},
+                                'roofpitch': 2,
                                 'firstfloorheight': 1})
         
         # Unload the model from GPU
