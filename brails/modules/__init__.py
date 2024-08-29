@@ -35,11 +35,12 @@
 #
 # Contributors:
 # Barbaros Cetiner
-# Yunhui Guo 
+# Yunhui Guo
 # Sascha Hornauer
 
 from brails.modules.ImageClassifier.ImageClassifier import ImageClassifier
 from brails.modules.ImageSegmenter.ImageSegmenter import ImageSegmenter
+from brails.modules.ConstructionTypeClassifier.ConstructionTypeClassifier import ConsTypeClassifier
 from brails.modules.RoofTypeClassifier.RoofTypeClassifier import RoofClassifier
 from brails.modules.OccupancyClassifier.OccupancyClassifier import OccupancyClassifier
 from brails.modules.ChimneyDetector.ChimneyDetector import ChimneyDetector
