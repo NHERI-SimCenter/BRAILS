@@ -39,13 +39,13 @@
 # Barbaros Cetiner
 #
 # Last updated:
-# 08-19-2024
+# 09-03-2024
 
 
 import copy
 import json
 from collections import defaultdict
-from typing import List, Set, Tuple, Dict, Literal, Union
+from typing import List, Set, Tuple, Dict, Literal, Union, Optional
 import requests
 import numpy as np
 from shapely.ops import split
@@ -69,6 +69,24 @@ ROADSPEED_MAP = {'S1100': 70, "S1200": 55, "S1400": 25, "S1500": 25,
                  "S1630": 25, "S1640": 25, "S1710": 25, "S1720": 25,
                  "S1730": 25, "S1740": 10, "S1750": 10, "S1780": 10,
                  "S1810": 10, "S1820": 10, "S1830": 10}
+
+
+def calculate_road_capacity(nlanes: int,
+                            traffic_volume_per_lane: int = 1800
+                            ) -> int:
+    """
+    Calculate road capacity from number of lanes & traffic volume/lane.
+
+    Parameters__
+    nlanes (int): The number of lanes on the road.
+    traffic_volume_per_lane (int, optional): The traffic volume
+        capacity per lane. Default is 1800 vehicles.
+
+    Returns__
+    int: The total road capacity, which is the product of the number
+        of lanes and the traffic volume per lane.
+    """
+    return nlanes * traffic_volume_per_lane
 
 
 class TransportationElementHandler:
@@ -98,8 +116,13 @@ class TransportationElementHandler:
         else:
             self.output_files = {}
         self.requested_elements = requested_elements
+        self.datasource = ''
         self.attribute_maps = {'lanes': ROADLANES_MAP,
-                               'speed': ROADSPEED_MAP}
+                               'speed': ROADSPEED_MAP,
+                               'capcity': calculate_road_capacity}
+        self.graph_network = {'edges': dict,
+                              'nodes': dict,
+                              'output_files': list}
 
     def fetch_transportation_elements(
         self,
@@ -125,7 +148,7 @@ class TransportationElementHandler:
 
         Returns__
             list: A list of transportation elements (e.g., roads, railways)
-                    that are withing the query area as obtained from data
+                    that are within the query area as obtained from data
                     source.
 
         Examples__
@@ -255,7 +278,7 @@ class TransportationElementHandler:
 
         def get_el_counts(bpoly: Polygon, eltype: str) -> int:
             # Create a persistent requests session:
-            s = create_pooling_session()
+            session = create_pooling_session()
 
             # Create the query required to get the element counts:
             query = query_generator(bpoly, eltype, 'counts')
@@ -263,23 +286,23 @@ class TransportationElementHandler:
             # Download the element count for the bounding polygon using the
             # defined retry strategy:
             print("Querying element count for the bounding polygon")
-            r = s.get(query)
-            elcount = r.json()["count"]
+            response = session.get(query)
+            elcount = response.json()["count"]
             print(f"Querying finished with count {elcount}")
 
             return elcount
 
         def get_max_el_count(eltype: str) -> int:
             # Create a persistent requests session:
-            s = create_pooling_session()
+            session = create_pooling_session()
 
             # Create the query required to get the maximum element count:
             query = query_generator(bpoly, eltype, 'maxcounts')
 
             # Download the maximum element count for the bounding polygon using
             # the defined retry strategy:
-            r = s.get(query)
-            maxelcount = r.json()["maxRecordCount"]
+            response = session.get(query)
+            maxelcount = response.json()["maxRecordCount"]
 
             return maxelcount
 
@@ -375,21 +398,21 @@ class TransportationElementHandler:
             # nel = get_el_counts(bpoly, eltype)
 
             # Create a persistent requests session:
-            s = create_pooling_session()
+            session = create_pooling_session()
 
             # Download element data using the defined retry strategy:
             query = query_generator(bpoly, eltype)
-            r = s.get(query)
+            response = session.get(query)
 
             # Check to see if the data was successfully downloaded:
-            if "error" in r.text:
+            if "error" in response.text:
                 print(
                     f"Data server for {eltype.replace('_',' ')}s is currently"
                     + "unresponsive. Please try again later."
                 )
                 datalist = []
             else:
-                datalist = r.json()["features"]
+                datalist = response.json()["features"]
 
             # If road data convert it into GeoJSON format:
             jsonout = list2geojson(datalist, eltype, bpoly)
@@ -400,14 +423,15 @@ class TransportationElementHandler:
                 print_el_counts(jsonout["features"], eltype)
                 if len(datalist) != 0:
                     output_filename = f"{eltype.title()}s.geojson"
-                    with open(output_filename, "w") as output_file:
+                    with open(output_filename, "w", encoding="utf-8") as \
+                            output_file:
                         json.dump(jsonout, output_file, indent=2)
                 else:
                     jsonout = ""
             return jsonout
 
-        def find(s, ch):
-            return [i for i, ltr in enumerate(s) if ltr == ch]
+        def find(string, character):
+            return [i for i, ltr in enumerate(string) if ltr == character]
 
         def lstring2xylist(lstring):
             coords = lstring.xy
@@ -466,7 +490,7 @@ class TransportationElementHandler:
                             roadjsons_combined["features"].append(newitem)
 
             print_el_counts(roadjsons_combined["features"], "road")
-            with open("Roads.geojson", "w") as output_file:
+            with open("Roads.geojson", "w", encoding="utf-8") as output_file:
                 json.dump(roadjsons_combined, output_file, indent=2)
 
         # Initialize FootprintHandler:
@@ -506,8 +530,9 @@ class TransportationElementHandler:
         if "roads" in self.requested_elements:
             combine_write_roadjsons(roadjsons, bpoly)
 
-    def get_graph_network(self, inventory_files: List[str],
-                          output_files: List[str] = ['edges.csv', 'nodes.csv'],
+    def get_graph_network(self,
+                          inventory_files: List[str],
+                          output_files: Optional[List[str]] = None,
                           save_additional_attributes:
                               Literal['', 'residual_demand'] = ''
                           ) -> Tuple[Dict, Dict]:
@@ -521,10 +546,11 @@ class TransportationElementHandler:
 
         Args__
             inventory_files (List[str]): A list of file paths to inventory data
-                files used to create the graph network.
-            output_files (List[str]): A list of file paths where the node and
-                edge features will be saved. The first file in the list is used
-                for edges and the second for nodes.
+                files used to create the graph network. These files should be
+                created using fetch_transportation_elements method
+            output_files (Optional[List[str]]): A list of file paths where the
+                node and edge features will be saved. The first file in the
+                list is used for edges and the second for nodes.
             save_additional_attributes (Literal['', 'residual_demand']):
                 A flag indicating whether to save additional attributes.
                 The only supported additional attribute is 'residual_demand'.
@@ -544,6 +570,8 @@ class TransportationElementHandler:
             >>> print(edges)
             >>> print(nodes)
         """
+        if output_files is None:
+            self.graph_network['output_files'] = ['edges.csv', 'nodes.csv']
 
         def create_circle_from_lat_lon(lat, lon, radius_ft, num_points=100):
             """
@@ -552,17 +580,17 @@ class TransportationElementHandler:
             Args__
                 lat (float): Latitude of the center.
                 lon (float): Longitude of the center.
-                radius_km (float): Radius of the circle in kilometers.
+                radius_ft (float): Radius of the circle in feet.
                 num_points (int): Number of points to approximate the circle.
 
             Returns__
                 Polygon: A Shapely polygon representing the circle.
             """
             # Earth's radius in kilometers
-            earth_radius_ft = 20925721.784777
+            R_EARTH_FT = 20925721.784777
 
             # Convert radius from kilometers to radians
-            radius_rad = radius_ft / earth_radius_ft
+            radius_rad = radius_ft / R_EARTH_FT
 
             # Convert latitude and longitude to radians
             lat_rad = np.radians(lat)
@@ -582,7 +610,8 @@ class TransportationElementHandler:
             return Polygon(points)
 
         def parse_element_geometries_from_geojson(
-                output_files: List[str], save_additional_attributes: str
+                output_files: List[str],
+                save_additional_attributes: str
         ) -> Tuple[List[Dict], Tuple[List[LineString], List[Dict]]]:
             """
             Parse geometries from a list of GeoJSON files.
@@ -618,10 +647,18 @@ class TransportationElementHandler:
             """
             ptdata = []
             for file_name in output_files:
-                with open(file_name, "r") as file:
+                with open(file_name, "r", encoding="utf-8") as file:
+                    # Read the JSON file:
+                    temp = json.load(file)
+                    # If the file contains road information:
                     if "road" in file_name.lower():
-                        temp = json.load(file)
+                        # Extract road features:
                         road_features = temp["features"]
+
+                        # Read road polygons, add asset type information to
+                        # road features and, if required, parse existing road
+                        # attributes to infer information required for network
+                        # analysis:
                         road_polys = []
                         for ind, road in enumerate(road_features):
                             road_polys.append(
@@ -630,23 +667,37 @@ class TransportationElementHandler:
                             road_features[ind]['properties']['asset_type'] = \
                                 'road'
                             if save_additional_attributes:
-                                mtfcc = road_features[ind]['properties']['MTFCC']
-                                road_features[ind]['properties']['lanes'] = \
-                                    self.attribute_maps['lanes'][mtfcc]
-                                road_features[ind]['properties']['maxspeed'] = \
-                                    self.attribute_maps['speed'][mtfcc]
-                                road_features[ind]['properties']['capacity'] = \
-                                    road_features[ind]['properties']['lanes']*1800
+                                # Access properties for element at index ind:
+                                properties = road_features[ind]['properties']
+
+                                # Get MTFCC value:
+                                mtfcc = properties['MTFCC']
+
+                                # Update road features for the indexed element
+                                # with number of lanes, maximum speed, and
+                                # road capacity:
+                                properties.update({
+                                    'lanes':
+                                        self.attribute_maps['lanes'][mtfcc],
+                                    'maxspeed':
+                                        self.attribute_maps['speed'][mtfcc],
+                                    'capacity':
+                                        self.attribute_maps['capacity'][
+                                            properties['lanes']]
+                                })
                     else:
-                        temp = json.load(file)
-                        if 'structure_number' in temp["features"][0]['properties']:
+                        # Access the properties of the first feature
+                        first_feature_prop = temp["features"][0]['properties']
+
+                        # Determine point asset type:
+                        if 'structure_number' in first_feature_prop:
                             asset_type = 'bridge'
                         else:
                             asset_type = 'tunnel'
-                        for index, _ in enumerate(temp["features"]):
-                            temp["features"][index]['properties']['asset_type'] = \
-                                asset_type
 
+                        # Set asset type for all features and append to ptdata:
+                        for feature in temp["features"]:
+                            feature['properties']['asset_type'] = asset_type
                         ptdata += temp["features"]
 
             return ptdata, (road_polys, road_features)
@@ -719,14 +770,16 @@ class TransportationElementHandler:
                     the lines are intersected and split.
 
             Returns__
-                List[LineString]: A list of `LineString` objects resulting from cutting
-                                    the original lines at the intersection points.
+                List[LineString]: A list of `LineString` objects resulting from
+                                  cutting the original lines at the
+                                  intersection points.
 
             Notes__
-                - The `split` function from `shapely.ops` is used to perform the
-                    cutting of lines at intersection points.
+                - The `split` function from `shapely.ops` is used to perform
+                    the cutting of lines at intersection points.
                 - The function handles cases where splitting results in a
-                    `GeometryCollection` by extracting only `LineString` geometries.
+                    `GeometryCollection` by extracting only `LineString`
+                    geometries.
 
             Example__
                 >>> from shapely.geometry import LineString, Point
@@ -759,9 +812,12 @@ class TransportationElementHandler:
                                     for geom in split_result.geoms
                                     if geom.geom_type == "LineString"
                                 )
-                                features.extend([copy.deepcopy(line_features[ind_line])
-                                                 for _ in range(len(split_result.geoms)
-                                                                )])
+                                features.extend([copy.deepcopy(
+                                    line_features[ind_line])
+                                    for _ in range(
+                                    len(
+                                        split_result.geoms
+                                    ))])
                             elif split_result.geom_type == "LineString":
                                 segments.append(split_result)
                                 features.append(line_features[ind_line])
@@ -770,7 +826,8 @@ class TransportationElementHandler:
                             features.append(line_features[ind_line])
                     segments = new_segments
 
-                # Add remaining segments that were not intersected by any points
+                # Add remaining segments that were not intersected by any
+                # points:
                 new_lines.extend(segments)
                 new_line_features.extend(features)
 
@@ -781,27 +838,28 @@ class TransportationElementHandler:
             """
             Save LineString and Point objects to separate GeoJSON files.
 
-            This function converts lists of `LineString` and `Point` objects to GeoJSON
-            format and saves them to separate files. The `LineString` objects are saved
-            to "lines.geojson", and the `Point` objects are saved to "points.geojson".
+            This function converts lists of `LineString` and `Point` objects to
+            GeoJSON format and saves them to separate files. The `LineString`
+            objects are saved to "lines.geojson", and the `Point` objects are
+            saved to "points.geojson".
 
             Args__
                 lines (List[LineString]): A list of `LineString` objects to be
                                                 saved in GeoJSON format.
-                intersections (List[Point]): A list of `Point` objects to be saved in
-                                                GeoJSON format.
+                intersections (List[Point]): A list of `Point` objects to be
+                                                saved in GeoJSON format.
 
             Returns__
-                None: This function does not return any value. It writes GeoJSON data
-                        to files.
+                None: This function does not return any value. It writes
+                        GeoJSON data to files.
 
             Notes__
-                - The function uses the `mapping` function from `shapely.geometry` to
-                    convert geometries to GeoJSON format.
-                - Two separate GeoJSON files are created: one for lines and one for
-                    points.
-                - The output files are named "lines.geojson" and "points.geojson"
-                    respectively.
+                - The function uses the `mapping` function from
+                    `shapely.geometry` to convert geometries to GeoJSON format.
+                - Two separate GeoJSON files are created: one for lines and one
+                    for points.
+                - The output files are named "lines.geojson" and
+                    "points.geojson" respectively.
 
             Example__
                 >>> from shapely.geometry import LineString, Point
@@ -814,8 +872,8 @@ class TransportationElementHandler:
                 ...     Point(1.5, 1.5)
                 ... ]
                 >>> save_cut_lines_and_intersections(lines, points)
-                # This will create "lines.geojson" and "points.geojson" files with the
-                    corresponding GeoJSON data.
+                # This will create "lines.geojson" and "points.geojson" files
+                    with the corresponding GeoJSON data.
             """
             # Convert LineString objects to GeoJSON format
             features = []
@@ -829,7 +887,7 @@ class TransportationElementHandler:
             geojson = {"type": "FeatureCollection", "features": features}
 
             # Save the GeoJSON to a file
-            with open("lines.geojson", "w") as file:
+            with open("lines.geojson", "w", encoding="utf-8") as file:
                 json.dump(geojson, file, indent=2)
 
             # Convert Point objects to GeoJSON format
@@ -844,29 +902,29 @@ class TransportationElementHandler:
             geojson = {"type": "FeatureCollection", "features": features}
 
             # Save the GeoJSON to a file
-            with open("points.geojson", "w") as file:
+            with open("points.geojson", "w", encoding="utf-8") as file:
                 json.dump(geojson, file, indent=2)
 
         def find_repeated_line_pairs(lines: List[LineString]) -> Set[Tuple]:
             """
             Find and groups indices of repeated LineString objects from a list.
 
-            This function processes a list of `LineString` objects to identify and
-            group all unique index pairs where LineString objects are repeated. The
-            function converts each `LineString` to its Well-Known Text (WKT)
-            representation to identify duplicates.
+            This function processes a list of `LineString` objects to identify
+            and group all unique index pairs where LineString objects are
+            repeated. The function converts each `LineString` to its
+            Well-Known Text (WKT) representation to identify duplicates.
 
             Args__
-                lines (List[LineString]): A list of `LineString` objects to be analyzed
-                                            for duplicates.
+                lines (List[LineString]): A list of `LineString` objects to be
+                    analyzed for duplicates.
 
             Returns__
-                Set[Tuple]: A set of tuples, where each tuple contains indices for
-                LineString objects that are repeated.
+                Set[Tuple]: A set of tuples, where each tuple contains indices
+                    for LineString objects that are repeated.
 
             Raises__
-                TypeError: If any element in the `lines` list is not an instance of
-                            `LineString`.
+                TypeError: If any element in the `lines` list is not an
+                    instance of `LineString`.
 
             Example__
                 >>> from shapely.geometry import LineString
@@ -885,10 +943,11 @@ class TransportationElementHandler:
             for index, line in enumerate(lines):
                 if not isinstance(line, LineString):
                     raise TypeError(
-                        "All elements in the input list must be LineString objects.")
+                        'All elements in the input list must be LineString'
+                        ' objects.')
 
-                # Convert LineString to its WKT representation to use as a unique
-                # identifier:
+                # Convert LineString to its WKT representation to use as a
+                # unique identifier:
                 line_wkt = line.wkt
                 line_indices[line_wkt].append(index)
 
@@ -918,38 +977,38 @@ class TransportationElementHandler:
 
         def match_edges_to_points(ptdata: List[Dict],
                                   road_polys: List[LineString],
-                                  road_features: List[Dict]) -> List[List[int]]:
+                                  road_features: List[Dict]
+                                  ) -> List[List[int]]:
             """
-            Match points to the closest road polylines based on name similarity.
+            Match points to closest road polylines based on name similarity.
 
-            This function takes a list of points and a list of road polylines. For each
-            point, it searches for intersecting road polylines within a specified
-            radius and calculates the similarity between the point's associated
-            facility name and the road's name. It returns a list of lists where each
-            sublist contains indices of the road polylines that best match the point
-            based on the similarity score.
+            This function takes a list of points and a list of road polylines.
+            For each point, it searches for intersecting road polylines within
+            a specified radius and calculates the similarity between the
+            point's associated facility name and the road's name. It returns a
+            list of lists where each sublist contains indices of the road
+            polylines that best match the point based on the similarity score.
 
             Args__
-                ptdata (List[Dict[str, Any]]): A list of dictionaries where each
-                                                dictionary represents a point with its
-                                                geometry and properties. The 'geometry'
-                                                key should contain 'coordinates', and
-                                                the 'properties' key should contain
-                                                'tunnel_name' or 'facility_carried'.
+                ptdata (List[Dict[str, Any]]): A list of dictionaries where
+                    each dictionary represents a point with its geometry and
+                    properties. The 'geometry' key should contain 'coordinates'
+                    , and the 'properties' key should contain 'tunnel_name' or
+                    'facility_carried'.
                 road_polys (List[LineString]): A list of `LineString` objects
-                                                representing road polylines.
+                    representing road polylines.
 
             Returns__
-                List[List[int]]: A list of lists where each sublist contains the
-                                    indices of road polylines that have the highest
-                                    textual similarity to the point's facility name.
-                                    If no similarity is found, the sublist is empty.
+                List[List[int]]: A list of lists where each sublist contains
+                    the indices of road polylines that have the highest textual
+                    similarity to the point's facility name. If no similarity
+                    is found, the sublist is empty.
 
             Notes__
-                - The function uses a search radius of 100 feet to find intersecting
-                    road polylines.
-                - TF-IDF vectors are used to compute the textual similarity between the
-                    facility names and road names.
+                - The function uses a search radius of 100 feet to find
+                    intersecting road polylines.
+                - TF-IDF vectors are used to compute the textual similarity
+                    between the facility names and road names.
                 - Cosine similarity is used to determine the best matches.
 
             Example__
@@ -977,10 +1036,11 @@ class TransportationElementHandler:
                     for (ind, poly) in enumerate(road_polys)
                     if poly.intersects(search_radius)
                 ]
-                try:
-                    facility = point["properties"]["tunnel_name"].lower()
-                except Exception:
-                    facility = point["properties"]["facility_carried"]
+                properties = point["properties"]
+                if 'tunnel_name' in properties:
+                    facility = properties["tunnel_name"].lower()
+                else:
+                    facility = properties["facility_carried"]
                 similarities = []
                 for polyline in intersecting_polylines:
                     roadway = road_features[polyline]["properties"]["NAME"]
@@ -1010,49 +1070,59 @@ class TransportationElementHandler:
 
             return edge_matches
 
-        def merge_brtn_features(ptdata: List[Dict], road_features_brtn: List[Dict],
+        def merge_brtn_features(ptdata: List[Dict],
+                                road_features_brtn: List[Dict],
                                 edge_matches: List[List],
                                 save_additional_attributes: str) -> List[Dict]:
             """
-            Merge bridge or tunnel features into road features based on edge matches.
+            Merge bridge/tunnel features to road features using edge matches.
 
-            This function updates road features with additional attributes derived from
-            bridge or tunnel point data. It uses edge matches to determine how to
-            distribute lane and capacity information among road features.
+            This function updates road features with additional attributes
+            derived from bridge or tunnel point data. It uses edge matches to
+            determine how to distribute lane and capacity information among
+            road features.
 
             Args__
-                ptdata (List[Dict]): A list of dictionaries where each dictionary
-                    contains properties of bridge or tunnel features. Each dictionary
-                    should have 'asset_type', 'traffic_lanes_on', 'structure_number',
+                ptdata (List[Dict]): A list of dictionaries where each
+                    dictionary contains properties of bridge or tunnel
+                    features. Each dictionary should have 'asset_type',
+                    'traffic_lanes_on', 'structure_number',
                     'total_number_of_lanes', and 'tunnel_number' as keys.
-                road_features_brtn (List[Dict]): A list of dictionaries representing
-                    road features that will be updated. Each dictionary should
-                    have a 'properties' key where attributes are stored.
-                edge_matches (List[List[int]]): A list of lists, where each sublist
-                    contains indices that correspond to `road_features_brtn` and
-                    represent which features should be updated together.
-                save_additional_attributes (str): A flag indicating whether to save
-                    additional attributes like 'lanes' and 'capacity'. If non-empty,
-                    additional attributes will be saved.
+                road_features_brtn (List[Dict]): A list of dictionaries
+                    representing road features that will be updated. Each
+                    dictionary should have a 'properties' key where attributes
+                    are stored.
+                edge_matches (List[List[int]]): A list of lists, where each
+                    sublist contains indices that correspond to
+                    `road_features_brtn` and represent which features should be
+                    updated together.
+                save_additional_attributes (str): A flag indicating whether to
+                    save additional attributes like 'lanes' and 'capacity'. If
+                    non-empty, additional attributes will be saved.
 
             Returns__
-                List[Dict]: The updated list of road features with merged attributes.
+                List[Dict]: The updated list of road features with merged
+                attributes.
 
             Example__
                 >>> ptdata = [
-                ...     {'properties': {'asset_type': 'bridge', 'traffic_lanes_on': 4,
+                ...     {'properties': {'asset_type': 'bridge',
+                                        'traffic_lanes_on': 4,
                                         'structure_number': '12345'}},
                 ...     {'properties': {'asset_type': 'tunnel',
                                         'total_number_of_lanes': 6,
                                         'tunnel_number': '67890'}}
                 ... ]
-                >>> road_features_brtn = [{} for _ in range(4)]  # List of empty
+                # List of empty
+                >>> road_features_brtn = [{} for _ in range(4)]
                     dictionaries for demonstration
                 >>> edge_matches = [[0, 1], [2, 3]]
                 >>> save_additional_attributes = 'yes'
-                >>> updated_features = merge_brtn_features(ptdata, road_features_brtn,
-                                                           edge_matches,
-                                                           save_additional_attributes)
+                >>> updated_features = merge_brtn_features(
+                    ptdata,
+                    road_features_brtn,
+                    edge_matches,
+                    save_additional_attributes)
                 >>> print(updated_features)
             """
             poly_index = 0
@@ -1070,13 +1140,13 @@ class TransportationElementHandler:
                 lanes_per_item = round(int(total_nlanes)/nitems)
 
                 for index in range(poly_index, poly_index + nitems):
-                    road_features_brtn[index]['properties']['asset_type'] = asset_type
-                    road_features_brtn[index]['properties']['OID'] = struct_no
+                    properties = road_features_brtn[index]['properties']
+                    properties['asset_type'] = asset_type
+                    properties['OID'] = struct_no
                     if save_additional_attributes:
-                        road_features_brtn[index]['properties']['lanes'] =  \
-                            lanes_per_item
-                        road_features_brtn[index]['properties']['capacity'] = \
-                            lanes_per_item*1800
+                        properties['lanes'] = lanes_per_item
+                        properties['capacity'] = calculate_road_capacity(
+                            lanes_per_item)
 
                 poly_index += nitems
             return road_features_brtn
@@ -1087,34 +1157,35 @@ class TransportationElementHandler:
             """
             Extract nodes and edges from a list of LineString objects.
 
-            This function processes a list of `LineString` geometries to generate
-            nodes and edges. Nodes are defined by their unique coordinates, and
-            edges are represented by their start and end nodes, length, and geometry.
+            This function processes a list of `LineString` geometries to
+            generate nodes and edges. Nodes are defined by their unique
+            coordinates, and edges are represented by their start and end
+            nodes, length, and geometry.
 
             Args__
-                lines (List[LineString]): A list of `LineString` objects representing
-                    road segments.
-                length_unit (Literal['ft', 'm']): The unit of length for the edge
-                    distances. Defaults to 'ft'. Acceptable values are 'ft' for feet
-                    and 'm' for meters.
+                lines (List[LineString]): A list of `LineString` objects
+                    representing road segments.
+                length_unit (Literal['ft', 'm']): The unit of length for the
+                    edge distances. Defaults to 'ft'. Acceptable values are
+                    'ft' for feet and 'm' for meters.
 
             Returns__
                 Tuple[Dict[int, Dict[str, float]], Dict[int, Dict[str, Any]]]:
-                    - A dictionary where keys are node IDs and values are dictionaries
-                        with node attributes:
+                    - A dictionary where keys are node IDs and values are
+                        dictionaries with node attributes:
                         - 'lon': Longitude of the node.
                         - 'lat': Latitude of the node.
                         - 'geometry': WKT representation of the node.
-                    - A dictionary where keys are edge IDs and values are dictionaries
-                        with edge attributes:
+                    - A dictionary where keys are edge IDs and values are
+                        dictionaries with edge attributes:
                         - 'start_nid': ID of the start node.
                         - 'end_nid': ID of the end node.
                         - 'length': Length of the edge in the specified unit.
                         - 'geometry': WKT representation of the edge.
 
             Raises__
-                TypeError: If any element in the `lines` list is not an instance of
-                    `LineString`.
+                TypeError: If any element in the `lines` list is not an
+                    instance of `LineString`.
 
             Example__
                 >>> from shapely.geometry import LineString
@@ -1174,7 +1245,8 @@ class TransportationElementHandler:
                 for node_id, node_coords in enumerate(node_list):
                     nodes[node_id] = {'lon': node_coords[0],
                                       'lat': node_coords[1],
-                                      'geometry': f'POINT ({node_coords[0]:.7f} ' +
+                                      'geometry': 'POINT ('
+                                                  f'{node_coords[0]:.7f} '
                                                   f'{node_coords[1]:.7f})'}
 
             return (nodes, edges)
@@ -1184,18 +1256,19 @@ class TransportationElementHandler:
                                    output_files: List[str]
                                    ) -> Tuple[Dict, Dict]:
             """
-            Extract and write node and edge features from updated road polygons.
+            Extract/write node and edge features from updated road polygons.
 
-            This function processes road polygon data to generate nodes and edges,
-            then writes the extracted features to specified output files.
+            This function processes road polygon data to generate nodes and
+            edges, then writes the extracted features to specified output
+            files.
 
             Args__
-                updated_road_polys (List[LineString]): A list of LineString objects
-                    representing updated road polygons.
-                updated_road_features (List[Dict]): A list of dictionaries containing
-                    feature properties for each road segment.
-                output_files (List[str]): A list of two file paths where the first path
-                    is for edge data and the second for node data.
+                updated_road_polys (List[LineString]): A list of LineString
+                    objects representing updated road polygons.
+                updated_road_features (List[Dict]): A list of dictionaries
+                    containing feature properties for each road segment.
+                output_files (List[str]): A list of two file paths where the
+                    first path is for edge data and the second for node data.
 
             Returns__
                 Tuple[Dict, Dict]: A tuple containing two dictionaries:
@@ -1209,29 +1282,30 @@ class TransportationElementHandler:
                 >>> from shapely.geometry import LineString
                 >>> road_polys = [LineString([(0, 0), (1, 1)]),
                                   LineString([(1, 1), (2, 2)])]
-                >>> road_features = [{'properties': {'OID': 1, 'asset_type': 'road',
-                                                     'lanes': 2, 'capacity': 2000,
+                >>> road_features = [{'properties': {'OID': 1,
+                                                     'asset_type': 'road',
+                                                     'lanes': 2,
+                                                     'capacity': 2000,
                                                      'maxspeed': 30}}]
                 >>> output_files = ['edges.csv', 'nodes.csv']
-                >>> get_node_edge_features(road_polys, road_features, output_files)
+                >>> get_node_edge_features(road_polys,
+                                           road_features,
+                                           output_files)
             """
-            self.graph_network = {'edges': dict,
-                                  'nodes': dict,
-                                  'output_files': list}
-
             (nodes, edges) = get_nodes_edges(
                 updated_road_polys, length_unit='m')
 
-            with open(output_files[1], 'w') as nodes_file:
+            with open(output_files[1], 'w', encoding="utf-8") as nodes_file:
                 nodes_file.write('node_id, lon, lat, geometry\n')
                 for key in nodes:
                     nodes_file.write(f'{key}, {nodes[key]["lon"]}, '
                                      f'{nodes[key]["lat"]}, '
                                      f'{nodes[key]["geometry"]}\n')
 
-            with open(output_files[0], 'w') as edge_file:
-                edge_file.write('uniqueid, start_nid, end_nid, osmid, length, type, '
-                                'lanes, maxspeed, capacity, fft, geometry\n')
+            with open(output_files[0], 'w', encoding="utf-8") as edge_file:
+                edge_file.write('uniqueid, start_nid, end_nid, osmid, length, '
+                                'type, lanes, maxspeed, capacity, fft, '
+                                'geometry\n')
 
                 for key in edges:
                     features = updated_road_features[key]['properties']
@@ -1245,10 +1319,13 @@ class TransportationElementHandler:
                         (maxspeed*1609.34/3600)
                     edges[key]['fft'] = free_flow_time
                     edge_file.write(f'{key}, {edges[key]["start_nid"]}, '
-                                    f'{edges[key]["end_nid"]}, {edges[key]["osmid"]}, '
-                                    f'{edges[key]["length"]}, {edges[key]["type"]}, '
+                                    f'{edges[key]["end_nid"]}, '
+                                    f'{edges[key]["osmid"]}, '
+                                    f'{edges[key]["length"]}, '
+                                    f'{edges[key]["type"]}, '
                                     f'{edges[key]["lanes"]}, {maxspeed}, '
-                                    f'{edges[key]["capacity"]}, {free_flow_time}, '
+                                    f'{edges[key]["capacity"]}, '
+                                    f'{free_flow_time}, '
                                     f'{edges[key]["geometry"]}\n')
 
             return (edges, nodes)
@@ -1258,9 +1335,8 @@ class TransportationElementHandler:
 
         # Read inventory data:
         ptdata, (road_polys, road_features) = \
-            parse_element_geometries_from_geojson(
-            inventory_files,
-            save_additional_attributes=save_additional_attributes)
+            parse_element_geometries_from_geojson(inventory_files,
+                                                  save_additional_attributes=save_additional_attributes)
 
         # Find edges that match bridges and tunnels:
         edge_matches = match_edges_to_points(ptdata, road_polys, road_features)
@@ -1304,10 +1380,10 @@ class TransportationElementHandler:
         intersections = find_intersections(road_polys_local)
 
         # Cut road polygons at intersection points:
-        cut_lines, cut_features = \
-            cut_lines_at_intersections(road_polys_local,
-                                       road_features_local,
-                                       intersections)
+        cut_lines, cut_features = cut_lines_at_intersections(
+            road_polys_local,
+            road_features_local,
+            intersections)
         # Come back and update cut_lines_at_intersections to not intersect
         # lines within a certain diameter of a bridge point
 
@@ -1324,7 +1400,6 @@ class TransportationElementHandler:
                                                 output_files)
         self.graph_network['edges'] = edges
         self.graph_network['nodes'] = nodes
-        self.graph_network['output_files'] = output_files
 
         print('Edges and nodes of the graph network are saved in '
               f'{", ".join(output_files)}')
