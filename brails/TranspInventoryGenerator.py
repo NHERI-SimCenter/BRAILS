@@ -392,7 +392,7 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
             columns=["nodeID", "geometry"], crs=bridges_gdf.crs)
     # Format bridge items
     bridges_gdf["BridgeClass"] = bridges_gdf['structure_kind'].apply(int)*100 +\
-        bridges_gdf['structure_kind'].apply(int)
+        bridges_gdf['structure_type'].apply(int)
     bridges_gdf = bridges_gdf.rename(columns={'structure_number': "StructureNumber",
                                               "year_built": "YearBuilt", "main_unit_spans": "NumOfSpans",
                                               'max_span_len_mt': "MaxSpanLength", "state_code": "StateCode",
