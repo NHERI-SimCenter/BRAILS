@@ -226,7 +226,7 @@ class TranspInventoryGenerator:
                 for index, value in (similarities).items()
                 if value == max_similarity
             ]
-            bridge['properties']['RoadID'] = indices_of_max
+            bridge['properties']['RoadID'] = ','.join(indices_of_max)
         for tunnel in tunnels_dict["features"]:
             lon = tunnel['geometry']['coordinates'][0]
             lat = tunnel['geometry']['coordinates'][1]
@@ -265,7 +265,7 @@ class TranspInventoryGenerator:
                 for index, value in (similarities).items()
                 if value == max_similarity
             ]
-            tunnel['properties']['RoadID'] = indices_of_max
+            tunnel['properties']['RoadID'] = ','.join(indices_of_max)
         return bridges_dict, tunnels_dict
     def create_circle_from_lat_lon(self, lat, lon, radius_ft, num_points=100):
         """
@@ -397,16 +397,19 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
                                               "year_built": "YearBuilt", "main_unit_spans": "NumOfSpans",
                                               'max_span_len_mt': "MaxSpanLength", "state_code": "StateCode",
                                               'degrees_skew': "Skew", "deck_width_mt": "DeckWidth",
-                                              'facility_carried': 'FacilityCarried'})
+                                              'facility_carried': 'FacilityCarried',
+                                              'structure_len_mt': 'StructureLength'})
     # bridges_gdf["StructureNumber"] = bridges_gdf["StructureNumber"].\apply(lambda x: x.replace(" ",""))
     bridges_gdf["DeckWidth"] = bridges_gdf["DeckWidth"].apply(lambda x:
                                                               convertUnits(x, "m", lengthUnit))
     bridges_gdf["MaxSpanLength"] = bridges_gdf["MaxSpanLength"].apply(lambda x:
                                                                       convertUnits(x, "m", lengthUnit))
+    bridges_gdf["StructureLength"] = bridges_gdf["StructureLength"].apply(lambda x:
+                                                                      convertUnits(x, "m", lengthUnit))
     if minimumHAZUS:
         columnsNeededByHAZUS = ["StructureNumber", "geometry", "BridgeClass", "YearBuilt",
                                 "NumOfSpans", "MaxSpanLength", "StateCode", "Skew",
-                                "DeckWidth"]
+                                "DeckWidth", "StructureLength"]
         columnsNeededByHAZUS += ["FacilityCarried"]
         if connectivity:
             columnsNeededByHAZUS.append('Location')
@@ -651,10 +654,11 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
         tunnels_gdf["cons_type"] = "unclassified"
     tunnels_gdf = tunnels_gdf.rename(columns={"tunnel_number": "TunnelNumber",
                                               "cons_type": "ConstructType",
-                                              'tunnel_name': "TunnelName"})
+                                              'tunnel_name': "TunnelName",
+                                              'tunnel_length': "TunnelLength"})
     if minimumHAZUS:
         columnsNeededByHAZUS = ["TunnelNumber", "ConstructType", "geometry"]
-        columnsNeededByHAZUS += ["TunnelName"]
+        columnsNeededByHAZUS += ["TunnelName", "TunnelLength"]
         if connectivity:
             columnsNeededByHAZUS.append('Location')
         tunnels_gdf = tunnels_gdf.loc[:, columnsNeededByHAZUS]
