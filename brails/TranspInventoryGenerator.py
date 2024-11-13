@@ -411,8 +411,6 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
                                 "NumOfSpans", "MaxSpanLength", "StateCode", "Skew",
                                 "DeckWidth", "StructureLength"]
         columnsNeededByHAZUS += ["FacilityCarried"]
-        if connectivity:
-            columnsNeededByHAZUS.append('Location')
         bridges_gdf = bridges_gdf.loc[:, columnsNeededByHAZUS]
     # Format the hwy_bridges geojson
     bridges_gdf["type"] = "Bridge"
@@ -659,8 +657,6 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
     if minimumHAZUS:
         columnsNeededByHAZUS = ["TunnelNumber", "ConstructType", "geometry"]
         columnsNeededByHAZUS += ["TunnelName", "TunnelLength"]
-        if connectivity:
-            columnsNeededByHAZUS.append('Location')
         tunnels_gdf = tunnels_gdf.loc[:, columnsNeededByHAZUS]
     # tunnels_gdf["ID"] = tunnels_gdf["ID"].apply(lambda x: x.replace(" ",""))
     # Format the hwy_tunnels dict array
