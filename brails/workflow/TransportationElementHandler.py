@@ -257,7 +257,7 @@ class TransportationElementHandler:
             # If the query is intended for obtaining element counts, modify
             # the obtained query accordingly:
             if querytype == 'counts':
-                query.replace("outSR=4326", "returnCountOnly=true")
+                query = query.replace("outSR=4326", "returnCountOnly=true")
             elif querytype == 'maxcounts':
                 query = query.split("/query?")
                 query = query[0] + "?f=pjson"

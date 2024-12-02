@@ -54,6 +54,8 @@ import numpy as np
 from datetime import datetime
 from importlib.metadata import version
 from brails.workflow.TransportationElementHandler import TransportationElementHandler
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 # The map defines the default values according to MTFCC code
 # https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2009/TGRSHP09AF.pdf
@@ -158,6 +160,10 @@ class TranspInventoryGenerator:
                            "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                            'units': {"length": lengthUnit},
                            'features': []}
+        # Find the edges each bridge and tunnel corresponds
+        if connectivity:
+            bridgesDict, tunnelsDict = self.match_edges_to_points(
+                bridgesDict, tunnelsDict, roadsDict)
 
         # Combine nodes and update dicts
         combinedGeoJSON = combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict,
@@ -169,6 +175,126 @@ class TranspInventoryGenerator:
             print('Combined transportation inventory saved in hwy_inventory.geojson.'
                   f' This file is suitable for R2D use and is available in {os.getcwd()}')
         return
+    
+    def match_edges_to_points(self, bridges_dict, tunnels_dict, roads_dict):
+        """
+            Match points to closest road polylines based on name similarity.
+
+            This function takes a list of points and a list of road polylines.
+            For each point, it searches for intersecting road polylines within
+            a specified radius and calculates the similarity between the
+            point's associated facility name and the road's name. It returns a
+            list of lists where each sublist contains indices of the road
+            polylines that best match the point based on the similarity score.
+        """
+
+        for bridge in bridges_dict["features"]:
+            lon = bridge['geometry']['coordinates'][0]
+            lat = bridge['geometry']['coordinates'][1]
+            search_radius = self.create_circle_from_lat_lon(lat, lon, 100)
+            # Check for intersections:
+            intersecting_polylines = [
+                ind
+                for ind, road in enumerate(roads_dict['features'])
+                if (shapely.geometry.shape(road['geometry']).intersects(search_radius) or 
+                    shapely.geometry.shape(road['geometry']).within(search_radius))
+            ]
+            facility = bridge['properties']['FacilityCarried'].lower()
+            max_similarity = 0
+            similarities = {}
+            for ind in intersecting_polylines:
+                roadway = roads_dict['features'][ind]['properties'].get("NAME", None)
+                if roadway:
+                    # Create TF-IDF vectors:
+                    vectorizer = TfidfVectorizer()
+                    tfidf_matrix = vectorizer.fit_transform(
+                        [facility, roadway.lower()]
+                    )
+                    # Calculate cosine similarity:
+                    similarity = cosine_similarity(
+                        tfidf_matrix[0:1], tfidf_matrix[1:2]
+                    )
+                else:
+                    similarity = -1
+                similarities.update({roads_dict['features'][ind]['id']:similarity})
+                if similarity > max_similarity:
+                    max_similarity = similarity
+            if max_similarity == 0:
+                max_similarity = -1
+            indices_of_max = [
+                index
+                for index, value in (similarities).items()
+                if value == max_similarity
+            ]
+            bridge['properties']['RoadID'] = ','.join(indices_of_max)
+        for tunnel in tunnels_dict["features"]:
+            lon = tunnel['geometry']['coordinates'][0]
+            lat = tunnel['geometry']['coordinates'][1]
+            search_radius = self.create_circle_from_lat_lon(lat, lon, 100)
+            # Check for intersections:
+            intersecting_polylines = [
+                ind
+                for ind, road in enumerate(roads_dict['features'])
+                if (shapely.geometry.shape(road['geometry']).intersects(search_radius) or 
+                    shapely.geometry.shape(road['geometry']).within(search_radius))
+            ]
+            facility = tunnel['properties']['TunnelName'].lower()
+            max_similarity = 0
+            similarities = {}
+            for ind in intersecting_polylines:
+                roadway = roads_dict['features'][ind]['properties'].get("NAME", None)
+                if roadway:
+                    # Create TF-IDF vectors:
+                    vectorizer = TfidfVectorizer()
+                    tfidf_matrix = vectorizer.fit_transform(
+                        [facility, roadway.lower()]
+                    )
+                    # Calculate cosine similarity:
+                    similarity = cosine_similarity(
+                        tfidf_matrix[0:1], tfidf_matrix[1:2]
+                    )
+                else:
+                    similarity = -1
+                similarities.update({roads_dict['features'][ind]['id']:similarity})
+                if similarity > max_similarity:
+                    max_similarity = similarity
+            if max_similarity == 0:
+                max_similarity = -1
+            indices_of_max = [
+                index
+                for index, value in (similarities).items()
+                if value == max_similarity
+            ]
+            tunnel['properties']['RoadID'] = ','.join(indices_of_max)
+        return bridges_dict, tunnels_dict
+    def create_circle_from_lat_lon(self, lat, lon, radius_ft, num_points=100):
+        """
+        Create a circle polygon from latitude and longitude.
+        Args__
+            lat (float): Latitude of the center.
+            lon (float): Longitude of the center.
+            radius_ft (float): Radius of the circle in feet.
+            num_points (int): Number of points to approximate the circle.
+        Returns__
+            Polygon: A Shapely polygon representing the circle.
+        """
+        # Earth's radius in kilometers
+        R_EARTH_FT = 20925721.784777
+        # Convert radius from kilometers to radians
+        radius_rad = radius_ft / R_EARTH_FT
+        # Convert latitude and longitude to radians
+        lat_rad = np.radians(lat)
+        lon_rad = np.radians(lon)
+        # Generate points around the circle
+        angle = np.linspace(0, 2 * np.pi, num_points)
+        lat_points = lat_rad + radius_rad * np.cos(angle)
+        lon_points = lon_rad + radius_rad * np.sin(angle)
+        # Convert radians back to degrees
+        lat_points_deg = np.degrees(lat_points)
+        lon_points_deg = np.degrees(lon_points)
+        # Create a polygon from the points
+        points = list(zip(lon_points_deg, lat_points_deg))
+        return shapely.geometry.Polygon(points)
 
 # Convert common length units
 
@@ -266,22 +392,25 @@ def formatBridges(minimumHAZUS, connectivity, bridges_gdf, lengthUnit):
             columns=["nodeID", "geometry"], crs=bridges_gdf.crs)
     # Format bridge items
     bridges_gdf["BridgeClass"] = bridges_gdf['structure_kind'].apply(int)*100 +\
-        bridges_gdf['structure_kind'].apply(int)
+        bridges_gdf['structure_type'].apply(int)
     bridges_gdf = bridges_gdf.rename(columns={'structure_number': "StructureNumber",
                                               "year_built": "YearBuilt", "main_unit_spans": "NumOfSpans",
                                               'max_span_len_mt': "MaxSpanLength", "state_code": "StateCode",
-                                              'degrees_skew': "Skew", "deck_width_mt": "DeckWidth"})
+                                              'degrees_skew': "Skew", "deck_width_mt": "DeckWidth",
+                                              'facility_carried': 'FacilityCarried',
+                                              'structure_len_mt': 'StructureLength'})
     # bridges_gdf["StructureNumber"] = bridges_gdf["StructureNumber"].\apply(lambda x: x.replace(" ",""))
     bridges_gdf["DeckWidth"] = bridges_gdf["DeckWidth"].apply(lambda x:
                                                               convertUnits(x, "m", lengthUnit))
     bridges_gdf["MaxSpanLength"] = bridges_gdf["MaxSpanLength"].apply(lambda x:
                                                                       convertUnits(x, "m", lengthUnit))
+    bridges_gdf["StructureLength"] = bridges_gdf["StructureLength"].apply(lambda x:
+                                                                      convertUnits(x, "m", lengthUnit))
     if minimumHAZUS:
         columnsNeededByHAZUS = ["StructureNumber", "geometry", "BridgeClass", "YearBuilt",
                                 "NumOfSpans", "MaxSpanLength", "StateCode", "Skew",
-                                "DeckWidth"]
-        if connectivity:
-            columnsNeededByHAZUS.append('Location')
+                                "DeckWidth", "StructureLength"]
+        columnsNeededByHAZUS += ["FacilityCarried"]
         bridges_gdf = bridges_gdf.loc[:, columnsNeededByHAZUS]
     # Format the hwy_bridges geojson
     bridges_gdf["type"] = "Bridge"
@@ -493,6 +622,7 @@ def formatRoads(minimumHAZUS, connectivity, maxRoadLength, roads_gdf):
     if minimumHAZUS:
         columnsNeededByHAZUS = ['TigerOID', 'RoadType',
                                 'NumOfLanes', 'MaxMPH', 'geometry']
+        columnsNeededByHAZUS += ["MTFCC", "NAME"]
         if connectivity:
             columnsNeededByHAZUS += ["StartNode", "EndNode", "ExplodeID"]
         if maxRoadLength is not None:
@@ -521,11 +651,12 @@ def formatTunnels(minimumHAZUS, connectivity, tunnels_gdf):
         print("Construction type data could not be obtained for tunnels. Construction type for tunnels was set as unclassified")
         tunnels_gdf["cons_type"] = "unclassified"
     tunnels_gdf = tunnels_gdf.rename(columns={"tunnel_number": "TunnelNumber",
-                                              "cons_type": "ConstructType"})
+                                              "cons_type": "ConstructType",
+                                              'tunnel_name': "TunnelName",
+                                              'tunnel_length': "TunnelLength"})
     if minimumHAZUS:
         columnsNeededByHAZUS = ["TunnelNumber", "ConstructType", "geometry"]
-        if connectivity:
-            columnsNeededByHAZUS.append('Location')
+        columnsNeededByHAZUS += ["TunnelName", "TunnelLength"]
         tunnels_gdf = tunnels_gdf.loc[:, columnsNeededByHAZUS]
     # tunnels_gdf["ID"] = tunnels_gdf["ID"].apply(lambda x: x.replace(" ",""))
     # Format the hwy_tunnels dict array
@@ -546,31 +677,31 @@ def combineDict(bnodeDF, bridgesDict, rnodeDF, roadsDict, tnodeDF, tunnelsDict,
     combinedDict["features"] += bridgesDict['features']
     combinedDict["features"] += tunnelsDict['features']
     combinedDict["features"] += roadsDict['features']
-    if connectivity:
-        NumOfBridgeNodes = bnodeDF.shape[0]
-        NumOfRoadwayNode = rnodeDF.shape[0]
-        NumOfTunnelNodes = tnodeDF.shape[0]
-        # Append tunnels to bridges
-        tnodeDF["nodeID"] = tnodeDF["nodeID"].apply(
-            lambda x: x + NumOfBridgeNodes)
-        for tunnel in tunnelsDict['features']:
-            tunnel["properties"]["Location"] = tunnel["properties"]["Location"] + \
-                NumOfBridgeNodes
-        # Append roadways to tunnels and bridges
-        rnodeDF["nodeID"] = rnodeDF["nodeID"].apply(
-            lambda x: x + NumOfBridgeNodes + NumOfTunnelNodes)
-        for road in roadsDict['features']:
-            road["properties"]["StartNode"] = road["properties"]["StartNode"] + \
-                NumOfBridgeNodes + NumOfTunnelNodes
-            road["properties"]["EndNode"] = road["properties"]["EndNode"] + \
-                NumOfBridgeNodes + NumOfTunnelNodes
-    # Create the combined dic
-        allNodeDict = pd.concat(
-            [bnodeDF, tnodeDF, rnodeDF], axis=0, ignore_index=True)
-        allNodeDict.to_file('hwy_inventory_nodes.geojson', driver='GeoJSON')
-        print(
-            f"\nCombined inventory data available in hwy_inventory_nodes.geojson in {os.getcwd()}")
-        # allNodeDict["type"] = "TransportationNode"
-        # allNodeDict = json.loads(allNodeDict.to_json())
-        # combinedDict["features"]+=allNodeDict['features']
+    # if connectivity:
+    #     NumOfBridgeNodes = bnodeDF.shape[0]
+    #     NumOfRoadwayNode = rnodeDF.shape[0]
+    #     NumOfTunnelNodes = tnodeDF.shape[0]
+    #     # Append tunnels to bridges
+    #     tnodeDF["nodeID"] = tnodeDF["nodeID"].apply(
+    #         lambda x: x + NumOfBridgeNodes)
+    #     for tunnel in tunnelsDict['features']:
+    #         tunnel["properties"]["Location"] = tunnel["properties"]["Location"] + \
+    #             NumOfBridgeNodes
+    #     # Append roadways to tunnels and bridges
+    #     rnodeDF["nodeID"] = rnodeDF["nodeID"].apply(
+    #         lambda x: x + NumOfBridgeNodes + NumOfTunnelNodes)
+    #     for road in roadsDict['features']:
+    #         road["properties"]["StartNode"] = road["properties"]["StartNode"] + \
+    #             NumOfBridgeNodes + NumOfTunnelNodes
+    #         road["properties"]["EndNode"] = road["properties"]["EndNode"] + \
+    #             NumOfBridgeNodes + NumOfTunnelNodes
+    # # Create the combined dic
+    #     allNodeDict = pd.concat(
+    #         [bnodeDF, tnodeDF, rnodeDF], axis=0, ignore_index=True)
+    #     allNodeDict.to_file('hwy_inventory_nodes.geojson', driver='GeoJSON')
+    #     print(
+    #         f"\nCombined inventory data available in hwy_inventory_nodes.geojson in {os.getcwd()}")
+    #     # allNodeDict["type"] = "TransportationNode"
+    #     # allNodeDict = json.loads(allNodeDict.to_json())
+    #     # combinedDict["features"]+=allNodeDict['features']
     return combinedDict
