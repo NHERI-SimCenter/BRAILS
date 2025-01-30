@@ -2,6 +2,8 @@
 [![PyPi version](https://badgen.net/pypi/v/BRAILS/)](https://pypi.org/project/BRAILS/)
 [![PyPI download month](https://img.shields.io/pypi/dm/BRAILS.svg)](https://pypi.python.org/pypi/BRAILS/)
 
+:stop_sign: This repository is DEPRECATED. For the latest supported version of BRAILS, please visit the <a href="https://github.com/NHERI-SimCenter/BrailsPlusPlus">BRAILS++ repository</a>. 
+
 ## What is BRAILS?
 
 BRAILS (Building and Infrastructure Recognition using AI at Large-Scale) provides a set of Python modules that utilize deep learning (DL), and computer vision (CV) techniques to extract information from satellite and street level images. The BRAILS framework also provides turn-key applications allowing users to put individual modules together to determine multiple attributes in a single pass or train general-purpose image classification, object detection, or semantic segmentation models.
