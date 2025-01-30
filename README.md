@@ -3,7 +3,7 @@
 [![PyPI download month](https://img.shields.io/pypi/dm/BRAILS.svg)](https://pypi.python.org/pypi/BRAILS/)
 
 <p align="center">
-:stop_sign: This repository is DEPRECATED and is no longer supported. For the latest supported version of BRAILS, please visit the <a href="https://github.com/NHERI-SimCenter/BrailsPlusPlus">BRAILS++ repository</a>.
+This repository is DEPRECATED and is no longer supported. For the latest supported version of BRAILS, please visit the <a href="https://github.com/NHERI-SimCenter/BrailsPlusPlus">BRAILS++ repository</a>.
 </p>
 
 ## What is BRAILS?
